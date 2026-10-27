@@ -34,4 +34,3 @@ with tempfile.TemporaryDirectory() as tmp:
             icon.resize((px, px), Image.LANCZOS).save(
                 os.path.join(iconset, f"icon_{s}x{s}{'@2x' if scale == 2 else ''}.png"))
     subprocess.check_call(["iconutil", "-c", "icns", iconset, "-o", os.path.join(ROOT, "App", "Resources", "AppIcon.icns")])
-icon.save(os.path.join(ROOT, "art", "icon_preview.png"))

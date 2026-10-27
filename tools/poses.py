@@ -1,4 +1,4 @@
-"""Frames for the pet at full detail, built from art/raw4 (see extract4.py).
+"""Frames for the pet at full detail, built from art/parts (see extract.py).
 
 Sprites keep soft anti-aliased edges; the app draws them with smooth scaling.
 """
@@ -7,10 +7,10 @@ import os
 import numpy as np
 from PIL import Image, ImageDraw
 
-from extract4 import blend
+from extract import blend
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-RAW = os.path.join(ROOT, "art", "raw4")
+RAW = os.path.join(ROOT, "art", "parts")
 
 HIP = 214  # rows below this are legs on the front body
 FACES = ["normal", "blink", "happy", "shy", "love", "surprised", "scared", "dizzy", "sleepy", "sleep", "yawn"]

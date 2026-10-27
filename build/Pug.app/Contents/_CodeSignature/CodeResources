@@ -6,7 +6,7 @@
 	<dict>
 		<key>Resources/AppIcon.icns</key>
 		<data>
-		cUzlnnDjizx0W0UrWtVcjX9LVWw=
+		+rouHKP+WS9yoaUfhVC4Uko0vaE=
 		</data>
 		<key>Resources/messages.json</key>
 		<data>
@@ -14,19 +14,19 @@
 		</data>
 		<key>Resources/sprites/effects.json</key>
 		<data>
-		3mNlICxoDQd0401QiUoD6TSUqDA=
+		bjfYlGjGv3zH6DtJzDiR+La+zrc=
 		</data>
 		<key>Resources/sprites/effects.png</key>
 		<data>
-		PDOMB3F95+F71XicQeYMdAlgew4=
+		VHYdofAYzMywdzxTdJyykDjEkQ0=
 		</data>
 		<key>Resources/sprites/pet.json</key>
 		<data>
-		EBsLqhp5G0NkdV6lRFmHZ77Dau0=
+		hYPJ783bwnwE6wSGUSS18/IRIpg=
 		</data>
 		<key>Resources/sprites/pet.png</key>
 		<data>
-		f5UZCgM2hRXvUOZ+YsPMb7PmvE8=
+		V87dYEIA5mPg1fLyXuzpzLI60Gc=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -35,7 +35,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			n3PMEQGzc6mTKkJ9ZUU+fWG+vH9w0IDKvc+2B+OZSe4=
+			TegpNPW/yE5MYO+J7BmJXsWddaKnhxoqqOIJzt7oiJU=
 			</data>
 		</dict>
 		<key>Resources/messages.json</key>
@@ -49,28 +49,28 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Z2lifD/oz8pDaAiOiBa+dEC3HR+limsMaWbwWp9Op+A=
+			yWpNcblm/jsV9/c8C+4jJWR6Q49roXS49aenfjLGt0s=
 			</data>
 		</dict>
 		<key>Resources/sprites/effects.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			WzsG9g/WW6cIapUetq6bkXF7IUQdM8G+tNmKZgmr60Q=
+			o78vsiStjzr7oK1HR+Ob6ZYu7HHx7c9L8nymeD/yUyY=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Nt0fssa8eHIOxb8swjt5meesYCJhlufFC+qFBB0UfSU=
+			7mtN6qVWjF8kboCojYeRytMPUcBcpprj2zZmvAkfIcE=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			b5x+xtdbLHYrO5OrJVnyeLNvKyG30FzPYiT+9PCmozc=
+			PXMcfXR0xmW/NNP9IeHUnf362M/uFKAqlLwrmiukiTE=
 			</data>
 		</dict>
 	</dict>
