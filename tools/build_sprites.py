@@ -12,6 +12,7 @@ from PIL import Image
 
 sys.path.insert(0, os.path.dirname(__file__))
 import effects  # noqa: E402
+import outfits  # noqa: E402
 import poses  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -60,6 +61,10 @@ def preview(frames, path, scale=3, cols=12):
 
 def main():
     styles = {"pet": poses.build()}
+    for n in range(1, len(outfits.NAMES) + 1):
+        styles[f"pet_o{n}"] = poses.build(n)
+    with open(os.path.join(OUT, "outfits.json"), "w") as f:
+        json.dump(["สูทดำ (ชุดเดิม)"] + outfits.NAMES, f, ensure_ascii=False)
     fx = effects.build()
     prev = None
     if "--preview" in sys.argv:

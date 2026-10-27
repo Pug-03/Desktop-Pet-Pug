@@ -212,6 +212,18 @@ final class PetEngine {
 
     func noteInteraction() { lastInteraction = clock }
 
+    /// A little sparkle and a line after changing clothes.
+    func newOutfit() {
+        lastInteraction = clock
+        let c = bodyCenter
+        for k in 0..<8 {
+            let a = Double(k) / 8 * 2 * .pi
+            spawn(k % 2 == 0 ? "sparkle" : "star", at: CGPoint(x: c.x + CGFloat(cos(a)) * 60 * scale, y: c.y + CGFloat(sin(a)) * 90 * scale),
+                  vel: CGVector(dx: cos(a) * 20, dy: sin(a) * 20 + 15), life: 0.9)
+        }
+        startTalk([(pick("outfit") ?? "ชุดใหม่ ✨", .wave)], then: .idle)
+    }
+
     // MARK: - pointer
 
     @discardableResult
