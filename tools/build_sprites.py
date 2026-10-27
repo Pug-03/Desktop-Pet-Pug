@@ -1,7 +1,7 @@
 """Build every sprite atlas the app needs.
 
 Usage: python3 tools/build_sprites.py [--preview DIR]
-Run tools/extract4.py first if reference/sheet3.png changed.
+Run tools/extract.py first if reference/sheet3.png changed.
 """
 import json
 import os
@@ -12,7 +12,7 @@ from PIL import Image
 
 sys.path.insert(0, os.path.dirname(__file__))
 import effects  # noqa: E402
-import pet4  # noqa: E402
+import poses  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "App", "Resources", "sprites")
@@ -59,7 +59,7 @@ def preview(frames, path, scale=3, cols=12):
 
 
 def main():
-    styles = {"pet": pet4.build()}
+    styles = {"pet": poses.build()}
     fx = effects.build()
     prev = None
     if "--preview" in sys.argv:

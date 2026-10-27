@@ -37,7 +37,13 @@
 
 ## สำหรับคนทำ
 
-- `./build.sh` สร้าง sprite จาก `art/raw/*.png` แล้ว build `build/Pug.app` (รองรับทั้ง Apple Silicon และ Intel, macOS 12+)
-- `build/Pug.app/Contents/MacOS/Pug --record demo [ชื่อคลิป]` อัดคลิปตัวอย่างลงโฟลเดอร์ `demo` (ต้องมี ffmpeg)
-- `tools/extract.py` ดึง sprite จากรูปต้นฉบับ `reference/sheet.jpg`, `tools/full.py` ประกอบท่าทางและสีหน้า
-- `App/Sources` เป็นโค้ด Swift: `Engine.swift` พฤติกรรม/ฟิสิกส์, `Renderer.swift` วาด, `App.swift` หน้าต่างและเมนู, `Recorder.swift` อัดคลิป
+- `./build.sh` ทำทุกอย่างในคำสั่งเดียว: ดึงภาพจาก `reference/` → ประกอบท่า → สร้าง `build/Pug.app` (Apple Silicon + Intel, macOS 12+)
+- `build/Pug.app/Contents/MacOS/Pug --record demo [ชื่อคลิป]` อัดคลิปตัวอย่างลง `demo/` (ต้องมี ffmpeg)
+
+โครงสร้าง:
+
+- `reference/` รูปต้นฉบับ: `sheet3.png` (ตัว ท่าเดิน มุมข้าง), `expressions.png` (สีหน้า 11 แบบ), `yawn.jpg` (หน้าหาว), `outfits.png` (ชุด สำหรับฟีเจอร์เปลี่ยนชุดภายหลัง)
+- `tools/extract.py` ตัดตัวละครออกจากรูป แปะสีหน้าใหม่ → `art/parts/`
+- `tools/poses.py` ประกอบทุกท่า (ยืน เดิน หัวเราะ ถูกยก ตก มึน นอนห่มผ้า)
+- `tools/effects.py` หัวใจ ดาว Zzz แบบ pixel, `tools/build_sprites.py` รวมเป็น atlas ใน `App/Resources/sprites/`, `tools/make_icon.py` ไอคอนแอป
+- `App/Sources/` โค้ด Swift: `Engine.swift` พฤติกรรมและฟิสิกส์, `Renderer.swift` วาดตัว กล่องคำพูด เอฟเฟกต์, `App.swift` หน้าต่างและเมนู, `Messages.swift` ข้อความ, `Recorder.swift` อัดคลิป

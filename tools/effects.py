@@ -1,7 +1,20 @@
 """Small particle sprites drawn around the pet (hearts, stars, Zzz...)."""
 import numpy as np
 
-from pixel import canvas, outline
+
+def canvas(w, h):
+    return np.zeros((h, w, 4), np.uint8)
+
+
+def outline(img, c):
+    """1px outline around every opaque pixel."""
+    a = img[..., 3] > 0
+    grown = np.zeros_like(a)
+    grown[1:] |= a[:-1]
+    grown[:-1] |= a[1:]
+    grown[:, 1:] |= a[:, :-1]
+    grown[:, :-1] |= a[:, 1:]
+    img[grown & ~a] = (*c, 255)
 
 PATTERNS = {
     "heart": ([".##.##.",
@@ -70,5 +83,3 @@ def build():
         out[name] = (img, {"anchor": [(w + 2) // 2, (h + 2) // 2]})
     return out
 
-
-_ = np

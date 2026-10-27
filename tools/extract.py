@@ -5,21 +5,17 @@ to a common working size (WORK_H pixels for a standing body) with smooth resampl
 and keep soft anti-aliased edges. Each expression head from the expression sheet is fitted
 onto the front body (and the closed-eye profile onto the side body).
 
-Writes art/raw4/*.png
+Writes art/parts/*.png
 """
 import os
-import sys
 
 import numpy as np
 from PIL import Image
 
-sys.path.insert(0, os.path.dirname(__file__))
-from extract3 import components, fill_holes  # noqa: E402
-
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SHEET = os.path.join(ROOT, "reference", "sheet3.png")
 EXPR = os.path.join(ROOT, "reference", "expressions.png")
-OUT = os.path.join(ROOT, "art", "raw4")
+OUT = os.path.join(ROOT, "art", "parts")
 WORK_H = 354  # standing body height in the app's sprites (0.6 of the sheet)
 
 PANELS = {"front": (5, 40, 265, 648), "back": (270, 40, 520, 648), "side": (526, 40, 742, 648)}
@@ -31,6 +27,52 @@ EXPRESSIONS = {
     "yawn": (926, 430, 1214, 714), "sleep": (1230, 430, 1517, 714),
     "side_sleep": (1230, 766, 1517, 1007),
 }
+
+
+def components(mask, min_size):
+    """Label 8-connected components (simple flood fill), return list of boolean masks."""
+    h, w = mask.shape
+    seen = np.zeros_like(mask)
+    out = []
+    for y0, x0 in zip(*np.where(mask)):
+        if seen[y0, x0]:
+            continue
+        stack = [(y0, x0)]
+        seen[y0, x0] = True
+        pts = []
+        while stack:
+            y, x = stack.pop()
+            pts.append((y, x))
+            for dy in (-1, 0, 1):
+                for dx in (-1, 0, 1):
+                    ny, nx = y + dy, x + dx
+                    if 0 <= ny < h and 0 <= nx < w and mask[ny, nx] and not seen[ny, nx]:
+                        seen[ny, nx] = True
+                        stack.append((ny, nx))
+        if len(pts) >= min_size:
+            m = np.zeros_like(mask)
+            ys, xs = zip(*pts)
+            m[list(ys), list(xs)] = True
+            out.append(m)
+    return out
+
+
+def fill_holes(mask):
+    """Close small gaps inside the figure (e.g. white shoe areas near the background colour)."""
+    h, w = mask.shape
+    outside = np.zeros_like(mask)
+    stack = [(y, x) for y in (0, h - 1) for x in range(w) if not mask[y, x]]
+    stack += [(y, x) for x in (0, w - 1) for y in range(h) if not mask[y, x]]
+    for y, x in stack:
+        outside[y, x] = True
+    while stack:
+        y, x = stack.pop()
+        for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            ny, nx = y + dy, x + dx
+            if 0 <= ny < h and 0 <= nx < w and not mask[ny, nx] and not outside[ny, nx]:
+                outside[ny, nx] = True
+                stack.append((ny, nx))
+    return ~outside
 
 
 def mask_from_bg(a, bg, tol=40):
@@ -193,6 +235,7 @@ def fit_head(body, head_img, collar_row, dy=3):
 
     filler = body.copy()
     filler[: collar_row - 7] = 0
+    filler[luminance(filler) < 80] = 0  # skin only: the old neck's dark outline would peek out beside tilted jaws
     out = np.zeros_like(body)
     blend(out, filler, 0, 0)
     blend(out, head, ox, oy)
