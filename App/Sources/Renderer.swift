@@ -3,12 +3,13 @@ import CoreText
 
 /// Draws a PetEngine into any CGContext whose user space is screen points (y up) offset by `origin`.
 /// The character is drawn smoothly; speech bubbles and effects are pixel art drawn with
-/// nearest-neighbour scaling, all at the same pixel size.
+/// nearest-neighbour scaling, all at the same pixel size. Code chips are drawn smoothly.
 final class Renderer {
     let effects: [String: Frame]
     private let ts: CGFloat
     private let font: NSFont
     private var bubbleCache: (text: String, image: CGImage)?
+    private var codeCache: [Int: CGImage] = [:]
 
     private static let ink: (UInt8, UInt8, UInt8) = (46, 30, 50)
     private static let paper: (UInt8, UInt8, UInt8) = (255, 252, 250)
@@ -29,7 +30,7 @@ final class Renderer {
         ctx.interpolationQuality = .high
         drawPet(e, ctx, pixel: pixel)
         drawStars(e, ctx, px: px, front: true)
-        drawParticles(e, ctx, px: px)
+        drawParticles(e, ctx, px: px, screen: screen)
         if let b = e.bubble { drawBubble(b, e, ctx, screen, px: px) }
         ctx.restoreGState()
     }
@@ -82,12 +83,68 @@ final class Renderer {
         }
     }
 
-    private func drawParticles(_ e: PetEngine, _ ctx: CGContext, px: CGFloat) {
+    private func drawParticles(_ e: PetEngine, _ ctx: CGContext, px: CGFloat, screen: CGRect) {
         for p in e.particles {
             let a = min(1, p.age / 0.12) * min(1, (p.life - p.age) / 0.4)
+            if p.sprite.hasPrefix("code#"), let i = Int(p.sprite.dropFirst(5)) {
+                drawCode(i, at: p.pos, age: p.age, alpha: CGFloat(max(0, a)), screen: screen, e, ctx)
+                continue
+            }
             let size = max(px, (px * p.size / px).rounded() * px)
             sprite(p.sprite, at: p.pos, px: size, alpha: CGFloat(max(0, a)), ctx)
         }
+    }
+
+    // MARK: - code chips
+
+    /// A line of code floating up from the laptop, drawn at the character's own resolution.
+    /// `p` is the chip's left end, so it grows away from his face.
+    private func drawCode(_ i: Int, at p: CGPoint, age: Double, alpha: CGFloat, screen: CGRect, _ e: PetEngine, _ ctx: CGContext) {
+        guard let img = codeImage(i) else { return }
+        let px = e.scale * ts
+        let pop = CGFloat(age < 0.2 ? 0.7 + 0.3 * (age / 0.2) : 1)
+        let w = CGFloat(img.width) * px * pop, h = CGFloat(img.height) * px * pop
+        ctx.saveGState()
+        ctx.interpolationQuality = .high
+        ctx.setAlpha(alpha)
+        ctx.draw(img, in: CGRect(x: min(p.x, screen.maxX - w - 6), y: p.y - h / 2, width: w, height: h))
+        ctx.restoreGState()
+    }
+
+    private func codeImage(_ i: Int) -> CGImage? {
+        if let c = codeCache[i] { return c }
+        let parts = CodeSnippets.all[i % CodeSnippets.all.count]
+        let font = NSFont.monospacedSystemFont(ofSize: 16, weight: .semibold)
+        let line = NSMutableAttributedString()
+        for (text, rgb) in parts {
+            line.append(NSAttributedString(string: text, attributes: [
+                .font: font,
+                .foregroundColor: NSColor(srgbRed: CGFloat(rgb >> 16) / 255, green: CGFloat(rgb >> 8 & 0xFF) / 255,
+                                          blue: CGFloat(rgb & 0xFF) / 255, alpha: 1),
+            ]))
+        }
+        let ct = CTLineCreateWithAttributedString(line)
+        let tb = CTLineGetBoundsWithOptions(ct, .useOpticalBounds)
+        let padX: CGFloat = 10, padY: CGFloat = 6
+        let w = Int(ceil(tb.width + 2 * padX)), h = Int(ceil(font.ascender - font.descender + 2 * padY))
+        guard let ctx = CGContext(data: nil, width: w, height: h, bitsPerComponent: 8, bytesPerRow: w * 4,
+                                  space: CGColorSpace(name: CGColorSpace.sRGB)!,
+                                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return nil }
+        let box = CGRect(x: 1, y: 1, width: CGFloat(w) - 2, height: CGFloat(h) - 2)
+        let path = CGPath(roundedRect: box, cornerWidth: 9, cornerHeight: 9, transform: nil)
+        ctx.addPath(path)
+        ctx.setFillColor(CGColor(srgbRed: 0.11, green: 0.11, blue: 0.16, alpha: 0.9))
+        ctx.fillPath()
+        ctx.addPath(path)
+        ctx.setStrokeColor(CGColor(srgbRed: 1, green: 1, blue: 1, alpha: 0.16))
+        ctx.setLineWidth(1.5)
+        ctx.strokePath()
+        ctx.textMatrix = .identity
+        ctx.textPosition = CGPoint(x: padX - tb.minX, y: padY - font.descender)
+        CTLineDraw(ct, ctx)
+        let img = ctx.makeImage()
+        codeCache[i] = img
+        return img
     }
 
     // MARK: - pixel speech bubble
@@ -177,4 +234,28 @@ final class Renderer {
         bubbleCache = (text, img)
         return img
     }
+}
+
+/// Web and AI code that floats up while he types: (text, 0xRRGGBB) pieces, coloured like an editor.
+enum CodeSnippets {
+    private static let kw = 0xFF79C6, fn = 0x8BE9FD, str = 0xF1FA8C, tag = 0xFFB86C, txt = 0xF8F8F2, num = 0xBD93F9, ok = 0x50FA7B
+
+    static let all: [[(String, Int)]] = [
+        [("<", txt), ("div", tag), (" className", ok), ("=", txt), ("\"app\"", str), (">", txt)],
+        [("const", kw), (" [user] = ", txt), ("useState", fn), ("()", txt)],
+        [("await", kw), (" ", txt), ("fetch", fn), ("(", txt), ("'/api/chat'", str), (")", txt)],
+        [("npm", fn), (" run dev", txt)],
+        [("export default", kw), (" ", txt), ("App", fn)],
+        [("<", txt), ("Button", tag), (" onClick", ok), ("={send}", txt), (" />", txt)],
+        [("import", kw), (" torch", txt)],
+        [("model", txt), (".", txt), ("fit", fn), ("(X, y, epochs=", txt), ("10", num), (")", txt)],
+        [("const", kw), (" reply = ", txt), ("await", kw), (" llm.", txt), ("chat", fn), ("(prompt)", txt)],
+        [("prompt", txt), (" = ", txt), ("\"You are a helpful AI\"", str)],
+        [("loss", txt), (": ", txt), ("0.0231", num), (" ✓", ok)],
+        [("git", fn), (" commit -m ", txt), ("\"ship it\"", str)],
+        [("display", ok), (": ", txt), ("flex", str), (";", txt)],
+        [("def", kw), (" ", txt), ("train", fn), ("(data):", txt)],
+        [("tokens", txt), (" += ", kw), ("1", num)],
+        [("✓", ok), (" build passed", txt)],
+    ]
 }

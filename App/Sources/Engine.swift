@@ -17,6 +17,7 @@ final class Rand {
 enum PetState {
     case idle, walking, tickled, held, falling, landing, dizzy, talking
     case yawning, rubbing, sittingDown, sleeping, waking
+    case working, deskSleeping
 }
 
 enum TalkPose { case wave, waveShy, love, shy, alert }
@@ -46,6 +47,18 @@ final class PetEngine {
     var sleepAfter: Double = 180
     var walkingEnabled = true
     var chatEvery: ClosedRange<Double> = 1200...2400
+    /// Bedtime: only then does he go to bed (or nod off at the desk); the rest of the day he works.
+    var isNight: () -> Bool = {
+        let h = Calendar.current.component(.hour, from: Date())
+        return h >= 22 || h < 6
+    }
+    /// Seconds of work before he gets up for a walk, and how long that break lasts.
+    var workSession: ClosedRange<Double> = 3300...3900
+    var breakLength: ClosedRange<Double> = 120...300
+    /// How often he turns round from the laptop to cheer her on.
+    var cheerEvery: ClosedRange<Double> = 300...600
+    /// Seconds of working late before he falls asleep at the desk.
+    var nodOffAfter: ClosedRange<Double> = 90...240
     let screenBounds: (CGPoint) -> CGRect
     let messages: (String) -> [String]
     let rng: Rand
@@ -86,6 +99,13 @@ final class PetEngine {
     private var afterTalk: PetState = .idle
     private var pendingTalk: [(String, TalkPose)] = []
     private var lastSaid: [String: String] = [:]
+    private var deskPose = "type"
+    private var poseUntil = 0.0
+    private var workUntil = 0.0
+    private var breakUntil = 0.0
+    private var nodOffAt = 0.0
+    private var nextCheer = 0.0
+    private var lastCode = -1
 
     // pointer
     private(set) var pressed = false
@@ -153,7 +173,7 @@ final class PetEngine {
         switch state {
         case _ where gliding: return 60
         case .held, .falling, .landing, .tickled: return 60
-        case .sleeping: return particles.isEmpty && bubble == nil ? 8 : 20
+        case .sleeping, .deskSleeping: return particles.isEmpty && bubble == nil ? 8 : 20
         case .idle: return particles.isEmpty && bubble == nil ? 15 : 30
         default: return 30
         }
@@ -206,11 +226,12 @@ final class PetEngine {
     func wakeUp() {
         lastInteraction = clock
         if [.sleeping, .sittingDown, .rubbing, .yawning].contains(state) { go(.waking) }
+        if state == .deskSleeping { wakeAtDesk() }
         if state == .talking && afterTalk == .rubbing { talkQueue.removeAll(); bubble = nil; go(.idle) }
     }
 
     func sayRandom() {
-        guard !isBusy, state != .sleeping else { return }
+        guard !isBusy, state != .sleeping, state != .deskSleeping else { return }
         lastInteraction = clock
         startTalk([(pick("random") ?? "คิดถึงน้า", rng.chance(0.5) ? .love : .wave)], then: .idle)
     }
@@ -239,7 +260,7 @@ final class PetEngine {
 
     /// Too many things on one day: tell her to rest.
     func sayRest() {
-        guard !isBusy, state != .sleeping, !(state == .talking && talkPose == .alert) else { return }
+        guard !isBusy, state != .sleeping, state != .deskSleeping, !(state == .talking && talkPose == .alert) else { return }
         lastInteraction = clock
         startTalk([(pick("rest") ?? "พักด้วยน้า", .love)], then: .idle)
     }
@@ -311,6 +332,14 @@ final class PetEngine {
         switch state {
         case .sleeping, .sittingDown:
             go(.waking); return
+        case .deskSleeping:
+            wakeAtDesk(); return
+        case .working:
+            // a poke at work: he turns round to look, says something, then carries on
+            setDeskPose(rng.chance(0.5) ? "surprised" : "turn", for: 2.6)
+            nodOffAt = max(nodOffAt, clock + 20)
+            if bubble == nil || rng.chance(0.5) { say("work") }
+            return
         case .waking, .held, .falling, .landing:
             return
         default:
@@ -354,6 +383,8 @@ final class PetEngine {
         case .landing: landing()
         case .dizzy: dizzy()
         case .talking: talking()
+        case .working: working()
+        case .deskSleeping: deskSleeping()
         case .yawning:
             snap()
             frameKey = "yawn.\(Int(t * 2.4) % 4)"
@@ -427,8 +458,10 @@ final class PetEngine {
         snap()
         frameKey = "stand.\(eyes).\(breath)"
         guard t > idleFor else { return }
-        if clock - lastInteraction > sleepAfter {
+        if clock - lastInteraction > sleepAfter && isNight() {
             go(.yawning)
+        } else if clock - lastInteraction > sleepAfter && clock > breakUntil {
+            startWork()
         } else if clock > nextChat {
             nextChat = clock + rng.range(chatEvery.lowerBound, chatEvery.upperBound)
             startTalk([(pick("random") ?? "คิดถึงน้า", rng.chance(0.5) ? .love : .wave)], then: .idle)
@@ -622,6 +655,135 @@ final class PetEngine {
             nextSpark = clock + 0.55
         }
         if bubble == nil { nextLine() }
+    }
+
+    // MARK: - desk
+
+    /// Pull up the desk where he stands and get to work.
+    func startWork() {
+        guard !isBusy else { return }
+        let b = screenBounds(pivot)
+        talkQueue.removeAll()
+        sx = 1; sy = 1; rotation = 0
+        pivot.x = min(max(pivot.x, b.minX + 80 * scale), b.maxX - 90 * scale)
+        // sit and think it through first, then write for a long stretch
+        setDeskPose("think", for: rng.range(4, 7))
+        nextCheer = clock + rng.range(cheerEvery.lowerBound, cheerEvery.upperBound)
+        workUntil = clock + rng.range(workSession.lowerBound, workSession.upperBound)
+        nodOffAt = clock + rng.range(nodOffAfter.lowerBound, nodOffAfter.upperBound)
+        go(.working)
+        frameKey = "desk.think"
+        poof()
+    }
+
+    func setDeskPose(_ pose: String, for seconds: Double) {
+        deskPose = pose
+        poseUntil = clock + seconds
+    }
+
+    private func poof() {
+        let f = feet
+        for k in -2...2 {
+            spawn("puff", at: CGPoint(x: f.x + CGFloat(k) * 28 * scale, y: f.y + 8 * scale),
+                  vel: CGVector(dx: Double(k) * 30, dy: 30), life: 0.5)
+        }
+    }
+
+    private func working() {
+        snap()
+        if deskPose == "type" && clock > nextCheer && !isNight() {
+            cheer()
+        } else if clock > poseUntil {
+            if deskPose == "type" {
+                deskBreather()
+            } else {
+                setDeskPose("type", for: rng.range(40, 120))
+            }
+        }
+        if deskPose == "type" {
+            // long runs of typing with a brief pause now and then to read what he wrote
+            let typing = sin(t * 0.7) > -0.92
+            frameKey = typing && Int(t * 6) % 2 == 0 ? "desk.type2" : "desk.type1"
+            if typing && clock > nextSpark {
+                let screenTop = toScreen(CGPoint(x: frame.anchor.x + 40, y: 90))
+                var code = Int(rng.range(0, Double(CodeSnippets.all.count)))
+                if code == lastCode { code = (code + 1) % CodeSnippets.all.count }
+                lastCode = code
+                spawn("code#\(code)",
+                      at: CGPoint(x: screenTop.x + CGFloat(rng.range(-6, 6)) * scale, y: screenTop.y),
+                      vel: CGVector(dx: rng.range(4, 14), dy: rng.range(26, 36)), life: 2.2)
+                nextSpark = clock + rng.range(0.9, 1.5)
+            }
+        } else {
+            frameKey = "desk.\(deskPose)"
+        }
+        if deskPose == "type" && isNight() && clock > nodOffAt {
+            bubble = nil
+            go(.deskSleeping)
+        } else if deskPose == "type" && clock > workUntil && !isNight() {
+            takeBreak()
+        }
+    }
+
+    /// A short pause between long runs of typing: think, look up, sip a drink,
+    /// stretch, grin at code that works or frown at a bug.
+    private func deskBreather() {
+        let next = rng.pick(["think", "think", "think", "lookup", "lookup", "happy", "angry", "drink", "drink", "stretch"]) ?? "think"
+        switch next {
+        case "think": setDeskPose(next, for: rng.range(3, 6))
+        case "drink": setDeskPose(next, for: rng.range(3, 5))
+        case "stretch": setDeskPose(next, for: 2.4)
+        case "happy":
+            setDeskPose(next, for: 2.2)
+            spawn("sparkle", at: headPoint + CGVector(dx: 24 * scale, dy: 0), vel: CGVector(dx: 8, dy: 24), life: 0.9)
+        case "angry":
+            setDeskPose(next, for: 2.2)
+            spawn("bang", at: headPoint + CGVector(dx: 24 * scale, dy: 4 * scale), vel: CGVector(dx: 0, dy: 20), life: 0.8)
+        default: setDeskPose(next, for: rng.range(1.6, 2.6))
+        }
+    }
+
+    /// Turn round to her, say something encouraging, send a few hearts, then back to work.
+    private func cheer() {
+        nextCheer = clock + rng.range(cheerEvery.lowerBound, cheerEvery.upperBound)
+        setDeskPose("turn", for: 3.4)
+        say("cheer")
+        let h = headPoint
+        for k in 0..<4 {
+            spawn(k % 2 == 0 ? "heart" : "heart_s", at: CGPoint(x: h.x + CGFloat(rng.range(-26, 26)) * scale, y: h.y + CGFloat(k) * 6 * scale),
+                  vel: CGVector(dx: rng.range(-12, 12), dy: rng.range(24, 36)), life: 1.6, wobble: 1)
+        }
+    }
+
+    private func takeBreak() {
+        breakUntil = clock + rng.range(breakLength.lowerBound, breakLength.upperBound)
+        poof()
+        let b = screenBounds(pivot)
+        let m = 45 * scale
+        var x = pivot.x + CGFloat(rng.range(160, 420)) * (rng.chance(0.5) ? 1 : -1)
+        if x < b.minX + m || x > b.maxX - m { x = pivot.x - (x - pivot.x) }
+        walkTarget = min(max(x, b.minX + m), b.maxX - m)
+        facing = walkTarget >= pivot.x ? 1 : -1
+        startTalk([(pick("break") ?? "พักแป๊บ", .wave)], then: .walking)
+    }
+
+    private func deskSleeping() {
+        snap()
+        frameKey = "desk.sleep"
+        if clock > nextSpark {
+            let big = Int(clock / 1.5) % 2 == 0
+            spawn(big ? "z_l" : "z_s", at: headPoint + CGVector(dx: 22 * scale, dy: 6 * scale),
+                  vel: CGVector(dx: 12 * scale, dy: 22 * scale), life: 2.6, wobble: 1)
+            nextSpark = clock + 1.5
+        }
+    }
+
+    private func wakeAtDesk() {
+        lastInteraction = clock
+        nodOffAt = clock + rng.range(nodOffAfter.lowerBound, nodOffAfter.upperBound)
+        go(.working)
+        setDeskPose("lookup", for: 2.4)
+        say("wake")
     }
 
     // MARK: - helpers

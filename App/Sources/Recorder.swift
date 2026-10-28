@@ -82,6 +82,19 @@ enum Recorder {
                 .act { $0.remind("⏰ 15:00  ส่งงาน\nรายงานบทที่ 3") }, .wait(6),
                 .move(chest, 0.7), .click, .wait(2.5),
             ]),
+            Clip(name: "13_work", caption: "กลางวัน → นั่งคิดก่อน แล้วเขียนโค้ดยาวๆ · แวะหันมาให้กำลังใจ · ครบชั่วโมงลุกไปเดิน", steps: [
+                .act { $0.isNight = { false }; $0.workSession = 24...24; $0.cheerEvery = 14...14 }, .move(away, 0), .wait(0.8),
+                .act { $0.startWork() }, .wait(28),
+            ]),
+            Clip(name: "15_desk_poses", caption: "ท่าระหว่างทำงาน: พิมพ์ · คิด · เงยหน้า · หันมอง · ยิ้ม · ตกใจ · หงุดหงิด · ดื่มน้ำ · บิดขี้เกียจ", steps: [
+                .act { $0.isNight = { false }; $0.cheerEvery = 1e9...1e9 }, .move(away, 0), .act { $0.startWork() }, .wait(1.5),
+            ] + ["type", "think", "lookup", "turn", "happy", "surprised", "angry", "drink", "stretch"].flatMap { pose in
+                [Step.act { $0.setDeskPose(pose, for: 99) }, .wait(1.8)]
+            }),
+            Clip(name: "14_desk_sleep", caption: "หลัง 4 ทุ่ม ทำงานดึกๆ → ฟุบหลับคาโต๊ะ Zzz · จิ้มแล้วตื่นมาทำต่อ", steps: [
+                .act { $0.isNight = { true }; $0.nodOffAfter = 4...4 }, .move(away, 0), .act { $0.startWork() }, .wait(9),
+                .move(at(640, 120), 0.8), .click, .wait(4),
+            ]),
             Clip(name: "10_wake", caption: "จิ้มตอนกำลังหลับ → ตื่นงัวเงีย", steps: [
                 .act { $0.goToSleep(immediately: true) }, .move(away, 0), .wait(3),
                 .move(at(560, 30), 0.8), .wait(0.3), .click, .wait(4.5),

@@ -383,7 +383,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         for minutes in [1, 3, 5, 10, 30] {
             add("\(minutes) นาที", #selector(setSleep(_:)), tag: minutes, on: Int(Settings.sleepMinutes) == minutes, to: sleep)
         }
-        let li = NSMenuItem(title: "ง่วงนอนเมื่อไม่มีใครเล่นด้วย", action: nil, keyEquivalent: "")
+        let li = NSMenuItem(title: "ไปทำงาน (หรือนอนหลัง 4 ทุ่ม) เมื่อไม่มีใครเล่นด้วย", action: nil, keyEquivalent: "")
         li.submenu = sleep
         m.addItem(li)
         add("เดินเล่นไปมา", #selector(toggleWalking), on: Settings.walking)

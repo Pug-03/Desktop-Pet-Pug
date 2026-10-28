@@ -5,6 +5,7 @@ cd "$(dirname "$0")"
 
 python3 tools/extract.py
 python3 tools/outfits.py
+python3 tools/desk.py
 python3 tools/build_sprites.py
 python3 tools/make_icon.py
 

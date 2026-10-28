@@ -166,4 +166,21 @@ def build(outfit=0):
     for face in ("sleep", "sleepy", "normal", "blink"):
         for b in (0, 1):
             F[f"sit.{face}.{b}"] = p.lying(face, breath=b)
+    F.update(desk_frames())
+    return F
+
+
+def desk_frames():
+    """At the desk with the MacBook (see desk.py). Only drawn in the black suit, for every outfit."""
+    F, ax = {}, None
+    for pose in ("type1", "type2", "think", "lookup", "turn", "sleep",
+                 "happy", "surprised", "angry", "drink", "stretch"):
+        img = load(f"desk_{pose}")
+        h = img.shape[0]
+        a = img[..., 3] > 128
+        top = np.where(a.any(1))[0].min()
+        head = np.where(a[top:top + int(h * 0.1)].any(0))[0]
+        hx = int(round((head.min() + head.max()) / 2))
+        ax = hx if ax is None else ax  # the poses share one canvas, so they share the feet point too
+        F[f"desk.{pose}"] = (img, {"anchor": [ax, h - 1], "head": [hx, int(top)], "face": [hx + 4, int(top) + 22]})
     return F
