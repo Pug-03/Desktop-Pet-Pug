@@ -6,6 +6,10 @@ if let i = args.firstIndex(of: "--record") {
     exit(Recorder.run(outDir: URL(fileURLWithPath: out), only: args.count > i + 2 ? args[i + 2] : nil))
 }
 
+if let i = args.firstIndex(of: "--schedule-preview"), i + 1 < args.count {
+    exit(SchedulePreview.run(args[i + 1]))
+}
+
 let app = NSApplication.shared
 let controller = AppController()
 app.delegate = controller

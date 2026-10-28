@@ -19,7 +19,7 @@ enum PetState {
     case yawning, rubbing, sittingDown, sleeping, waking
 }
 
-enum TalkPose { case wave, waveShy, love, shy }
+enum TalkPose { case wave, waveShy, love, shy, alert }
 
 struct Particle {
     var sprite: String
@@ -81,6 +81,7 @@ final class PetEngine {
     private var talkQueue: [(String, TalkPose)] = []
     private var talkPose = TalkPose.wave
     private var afterTalk: PetState = .idle
+    private var pendingTalk: [(String, TalkPose)] = []
     private var lastSaid: [String: String] = [:]
 
     // pointer
@@ -212,6 +213,33 @@ final class PetEngine {
 
     func noteInteraction() { lastInteraction = clock }
 
+    /// A reminder from the schedule: hop up (waking if asleep), then wave with the message.
+    func remind(_ text: String) {
+        lastInteraction = clock
+        if state == .talking && talkPose == .alert {
+            talkQueue.append((text, .alert))
+            return
+        }
+        pendingTalk.append((text, .alert))
+        if isBusy || state == .falling || state == .landing { return }
+        talkQueue.removeAll()
+        bubble = nil
+        grabArt = nil
+        rotation = 0; sx = 1; sy = 1
+        vel = CGVector(dx: 0, dy: 640)
+        fallTop = feet.y
+        spawn("bang", at: headPoint + CGVector(dx: 26 * scale, dy: 6 * scale), vel: CGVector(dx: 0, dy: 30), life: 0.8)
+        frameKey = "fall.0"
+        go(.falling)
+    }
+
+    /// Too many things on one day: tell her to rest.
+    func sayRest() {
+        guard !isBusy, state != .sleeping, !(state == .talking && talkPose == .alert) else { return }
+        lastInteraction = clock
+        startTalk([(pick("rest") ?? "พักด้วยน้า", .love)], then: .idle)
+    }
+
     /// A little sparkle and a line after changing clothes.
     func newOutfit() {
         lastInteraction = clock
@@ -283,6 +311,11 @@ final class PetEngine {
             return
         default:
             break
+        }
+        if state == .talking && talkPose == .alert {
+            // a poke acknowledges the reminder
+            talkQueue.removeAll { $0.1 == .alert }
+            bubble = nil
         }
         talkQueue.removeAll()
         pokes.append(clock)
@@ -511,6 +544,10 @@ final class PetEngine {
             dizzyAfterLanding = false
             if rng.chance(0.7) { say("dizzy") }
             startDizzy()
+        } else if !pendingTalk.isEmpty {
+            let lines = pendingTalk
+            pendingTalk.removeAll()
+            startTalk(lines, then: .idle)
         } else if greetAfterLanding {
             greetAfterLanding = false
             startTalk([(pick("hello") ?? "สวัสดี", .wave)], then: .idle)
@@ -548,7 +585,8 @@ final class PetEngine {
         }
         let (text, pose) = talkQueue.removeFirst()
         talkPose = pose
-        bubble = Bubble(text: text, life: min(6, max(3, 2.2 + 0.07 * Double(text.count))))
+        let life = pose == .alert ? 12 : min(6, max(3, 2.2 + 0.07 * Double(text.count)))
+        bubble = Bubble(text: text, life: life)
         t = 0
     }
 
@@ -559,6 +597,12 @@ final class PetEngine {
         case .waveShy: frameKey = t < 1.6 ? "wave.shy.\(Int(t * 3) % 2)" : "shy.\(breath)"
         case .love: frameKey = "love.\(breath)"
         case .shy: frameKey = "shy.\(breath)"
+        case .alert:
+            frameKey = "wave.\(Int(t * 3) % 2)"
+            if clock > nextSpark {
+                spawn("bang", at: headPoint + CGVector(dx: 26 * scale, dy: 6 * scale), vel: CGVector(dx: 0, dy: 18), life: 0.9)
+                nextSpark = clock + 1.2
+            }
         }
         if (talkPose == .love || talkPose == .waveShy) && clock > nextSpark {
             let h = headPoint

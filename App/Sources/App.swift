@@ -92,6 +92,10 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var messages: Messages!
     private var hidden = false
     private var winSize = CGSize(width: 300, height: 360)
+    private let schedule = ScheduleStore()
+    private var scheduleWindow: ScheduleWindow?
+    private var reminderTimer: Timer?
+    private var recentAdds: [Date] = []
 
     // MARK: - setup
 
@@ -133,7 +137,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         panel.isOpaque = false
         panel.backgroundColor = .clear
         panel.hasShadow = false
-        panel.level = .floating
+        panel.level = .statusBar  // above the Dock, which slides up under the pet when hidden
         panel.collectionBehavior = [.canJoinAllSpaces, .stationary, .fullScreenAuxiliary, .ignoresCycle]
         panel.isMovable = false
         panel.hidesOnDeactivate = false
@@ -146,6 +150,8 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         panel.orderFrontRegardless()
 
         setupStatusItem()
+        setupEditMenu()
+        startReminders()
 
         if !Settings.firstRunDone {
             Settings.firstRunDone = true
@@ -177,12 +183,41 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func bounds(near p: CGPoint) -> CGRect {
         let screens = NSScreen.screens
-        if let s = screens.first(where: { $0.frame.insetBy(dx: -1, dy: -1).contains(p) }) { return s.visibleFrame }
+        if let s = screens.first(where: { $0.frame.insetBy(dx: -1, dy: -1).contains(p) }) { return walkArea(s) }
         // nearest screen horizontally (the pet walks along the bottom)
         let best = screens.min { a, b in
             abs(a.frame.midX - p.x) + abs(a.frame.midY - p.y) < abs(b.frame.midX - p.x) + abs(b.frame.midY - p.y)
         }
-        return best?.visibleFrame ?? CGRect(x: 0, y: 0, width: 1440, height: 900)
+        return best.map(walkArea) ?? CGRect(x: 0, y: 0, width: 1440, height: 900)
+    }
+
+    /// Stand on top of the Dock when it is showing; when it is hidden (auto-hide, or a
+    /// full-screen app in front) stand on the real bottom edge of the screen instead.
+    func walkArea(_ s: NSScreen) -> CGRect {
+        let v = s.visibleFrame
+        let dockShown = v.minY - s.frame.minY > 10 && !fullScreenFrames().contains(s.frame)
+        let floor = dockShown ? v.minY : s.frame.minY
+        return CGRect(x: v.minX, y: floor, width: v.width, height: v.maxY - floor)
+    }
+
+    private var fullScreenCache: (time: CFTimeInterval, frames: [CGRect]) = (0, [])
+
+    /// Screen frames currently covered by a full-screen app window (refreshed at most twice a second).
+    private func fullScreenFrames() -> [CGRect] {
+        let now = CACurrentMediaTime()
+        if now - fullScreenCache.time < 0.5 { return fullScreenCache.frames }
+        let primaryH = NSScreen.screens.first?.frame.height ?? 0
+        let list = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID)
+            as? [[String: Any]] ?? []
+        var frames: [CGRect] = []
+        for w in list where (w[kCGWindowLayer as String] as? Int) == 0 {
+            guard let d = w[kCGWindowBounds as String] as? NSDictionary,
+                  let r = CGRect(dictionaryRepresentation: d) else { continue }
+            let flipped = CGRect(x: r.minX, y: primaryH - r.maxY, width: r.width, height: r.height)
+            if let s = NSScreen.screens.first(where: { $0.frame == flipped }) { frames.append(s.frame) }
+        }
+        fullScreenCache = (now, frames)
+        return frames
     }
 
     // MARK: - loop
@@ -265,6 +300,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         add(hidden ? "แสดงตัว" : "ซ่อนตัว", #selector(toggleHidden))
         add("เรียกมาหา", #selector(summon))
         add("พูดอะไรหน่อย", #selector(talk))
+        add("ตาราง / แจ้งเตือน…", #selector(openSchedule))
         if engine.state == .sleeping { add("ปลุก", #selector(wake)) } else { add("ให้นอนเลย", #selector(sleepNow)) }
         m.addItem(.separator())
 
@@ -315,6 +351,79 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     @objc private func talk() { engine.sayRandom(); kick() }
+
+    // MARK: - schedule & reminders
+
+    @objc private func openSchedule() {
+        let portrait = ScheduleWindow.portrait(from: engine.frames["stand.normal.0"])
+        if scheduleWindow == nil {
+            let w = ScheduleWindow(store: schedule, avatar: portrait)
+            w.onAdded = { [weak self] date in self?.eventAdded(on: date) }
+            scheduleWindow = w
+        }
+        scheduleWindow?.show(avatar: portrait)
+    }
+
+    /// Lots of plans on one day, or many added in a row: the pet asks her to rest.
+    private func eventAdded(on date: String) {
+        let now = Date()
+        recentAdds.append(now)
+        recentAdds.removeAll { now.timeIntervalSince($0) > 600 }
+        if schedule.count(on: date) >= 4 || recentAdds.count >= 5 {
+            recentAdds.removeAll()
+            engine.sayRest()
+            kick()
+        }
+    }
+
+    private func startReminders() {
+        // anything that was due while the Mac was off and is older than an hour is skipped quietly
+        for e in schedule.due(at: Date()) where Date().timeIntervalSince(e.due ?? Date()) > 3600 {
+            schedule.markNotified(e.id)
+        }
+        let t = Timer(timeInterval: 10, repeats: true) { [weak self] _ in self?.checkReminders() }
+        t.tolerance = 2
+        RunLoop.main.add(t, forMode: .common)
+        reminderTimer = t
+        checkReminders()
+    }
+
+    private func checkReminders() {
+        let due = schedule.due(at: Date())
+        guard !due.isEmpty else { return }
+        if hidden { toggleHidden() }
+        for e in due {
+            schedule.markNotified(e.id)
+            var text = "⏰ \(e.time)  \(e.title)"
+            if !e.detail.isEmpty { text += "\n\(e.detail)" }
+            engine.remind(text)
+        }
+        NSSound(named: "Glass")?.play()
+        scheduleWindow?.push()
+        kick()
+    }
+
+    /// Accessory apps have no menu bar, so give text fields the usual edit shortcuts.
+    private func setupEditMenu() {
+        let main = NSMenu()
+        let appItem = NSMenuItem()
+        main.addItem(appItem)
+        let appMenu = NSMenu()
+        appMenu.addItem(withTitle: "ปิดหน้าต่าง", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w")
+        appItem.submenu = appMenu
+        let editItem = NSMenuItem()
+        main.addItem(editItem)
+        let edit = NSMenu(title: "Edit")
+        edit.addItem(withTitle: "Undo", action: Selector(("undo:")), keyEquivalent: "z")
+        edit.addItem(withTitle: "Redo", action: Selector(("redo:")), keyEquivalent: "Z")
+        edit.addItem(.separator())
+        edit.addItem(withTitle: "Cut", action: #selector(NSText.cut(_:)), keyEquivalent: "x")
+        edit.addItem(withTitle: "Copy", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
+        edit.addItem(withTitle: "Paste", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
+        edit.addItem(withTitle: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
+        editItem.submenu = edit
+        NSApp.mainMenu = main
+    }
     @objc private func wake() { engine.wakeUp(); kick() }
     @objc private func sleepNow() { engine.goToSleep(); kick() }
 

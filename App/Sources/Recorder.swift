@@ -77,6 +77,11 @@ enum Recorder {
                 .wait(1.2), .outfit(2), .wait(2.4), .outfit(5), .wait(2.4), .outfit(8), .wait(2.4),
                 .outfit(12), .wait(2.4), .outfit(14), .wait(2.4), .outfit(16), .wait(2.4), .outfit(0), .wait(2.4),
             ]),
+            Clip(name: "12_reminder", caption: "ถึงเวลาที่ตั้งไว้ในตาราง → ลุกขึ้นมาเตือน (จิ้มเพื่อรับทราบ)", steps: [
+                .act { $0.goToSleep(immediately: true) }, .move(away, 0), .wait(2),
+                .act { $0.remind("⏰ 15:00  ส่งงาน\nรายงานบทที่ 3") }, .wait(6),
+                .move(chest, 0.7), .click, .wait(2.5),
+            ]),
             Clip(name: "10_wake", caption: "จิ้มตอนกำลังหลับ → ตื่นงัวเงีย", steps: [
                 .act { $0.goToSleep(immediately: true) }, .move(away, 0), .wait(3),
                 .move(at(560, 30), 0.8), .wait(0.3), .click, .wait(4.5),

@@ -10,15 +10,19 @@
 		</data>
 		<key>Resources/messages.json</key>
 		<data>
-		br1MO9FXVod+2hEnyDAH8x5P4pY=
+		rRRSJP8iN0/AqLGAh4Thy3h9ZQA=
+		</data>
+		<key>Resources/schedule.html</key>
+		<data>
+		nHTtgfaDlVowD/gNLEowVDw7rgs=
 		</data>
 		<key>Resources/sprites/effects.json</key>
 		<data>
-		UjBInxSEK9NzAWf/PAmmJgLOVxc=
+		YTyA4vB18O9YFv8XmGnpvlpQU3Q=
 		</data>
 		<key>Resources/sprites/effects.png</key>
 		<data>
-		Xkt5OY1AthNRJBZYwLQYHxyx/Gc=
+		w3zfgxkXJUF+C5yoH2yJAnIP5os=
 		</data>
 		<key>Resources/sprites/outfits.json</key>
 		<data>
@@ -26,139 +30,139 @@
 		</data>
 		<key>Resources/sprites/pet.json</key>
 		<data>
-		jWyFtiMCcA2RUr69hLy/UqTo0mg=
+		vOo+cwVmoU8SKf0uSLHFGn/1FMk=
 		</data>
 		<key>Resources/sprites/pet.png</key>
 		<data>
-		uMwknXts3EIi8Zver90GRFmaCyw=
+		3jp0MvAuVT1fln6K9XijFJcVMZM=
 		</data>
 		<key>Resources/sprites/pet_o1.json</key>
 		<data>
-		q/AWxMj0hJpc7nBy8ar5oGea++0=
+		DWpfqN/Gky16EfMlY61X8VP+RjA=
 		</data>
 		<key>Resources/sprites/pet_o1.png</key>
 		<data>
-		9pkf56Zla6+EqwWDLh9twar+KY4=
+		YnjbEcGCs7KhhYIlWaHE/lLC7SQ=
 		</data>
 		<key>Resources/sprites/pet_o10.json</key>
 		<data>
-		q/AWxMj0hJpc7nBy8ar5oGea++0=
+		DWpfqN/Gky16EfMlY61X8VP+RjA=
 		</data>
 		<key>Resources/sprites/pet_o10.png</key>
 		<data>
-		wtx85MmnbjBIETQJ4gib4lKbQm0=
+		xZdWGXDPVLuCDawP3GHD1JjAjm4=
 		</data>
 		<key>Resources/sprites/pet_o11.json</key>
 		<data>
-		q/AWxMj0hJpc7nBy8ar5oGea++0=
+		DWpfqN/Gky16EfMlY61X8VP+RjA=
 		</data>
 		<key>Resources/sprites/pet_o11.png</key>
 		<data>
-		g+qjBgupj8S0kKziYJN5jfqTEok=
+		jUaIfelbUxMfHPbmjHuEzR7edtU=
 		</data>
 		<key>Resources/sprites/pet_o12.json</key>
 		<data>
-		q/AWxMj0hJpc7nBy8ar5oGea++0=
+		DWpfqN/Gky16EfMlY61X8VP+RjA=
 		</data>
 		<key>Resources/sprites/pet_o12.png</key>
 		<data>
-		ay4aMg9KV2LacJGoUq/Wn1S3LVo=
+		05BY0KLX5Sac3t6eU+oPDG0qP3w=
 		</data>
 		<key>Resources/sprites/pet_o13.json</key>
 		<data>
-		q/AWxMj0hJpc7nBy8ar5oGea++0=
+		DWpfqN/Gky16EfMlY61X8VP+RjA=
 		</data>
 		<key>Resources/sprites/pet_o13.png</key>
 		<data>
-		iP55NQ+1G2wR1fVKckmgSK98UrY=
+		3V2O/jPX10jVaLFQUV96YoyMy3Y=
 		</data>
 		<key>Resources/sprites/pet_o14.json</key>
 		<data>
-		q/AWxMj0hJpc7nBy8ar5oGea++0=
+		DWpfqN/Gky16EfMlY61X8VP+RjA=
 		</data>
 		<key>Resources/sprites/pet_o14.png</key>
 		<data>
-		EAt+W7/5uy1XN+FzLmxcs159P3Q=
+		CiOQvwfHY71PjBuYgDFoQYfz9XQ=
 		</data>
 		<key>Resources/sprites/pet_o15.json</key>
 		<data>
-		q/AWxMj0hJpc7nBy8ar5oGea++0=
+		DWpfqN/Gky16EfMlY61X8VP+RjA=
 		</data>
 		<key>Resources/sprites/pet_o15.png</key>
 		<data>
-		cuAcOz1BjErAlxkkhfd0o/IkFoI=
+		biqbJBuWoZk8VffplhY8t0Ij/QE=
 		</data>
 		<key>Resources/sprites/pet_o16.json</key>
 		<data>
-		q/AWxMj0hJpc7nBy8ar5oGea++0=
+		DWpfqN/Gky16EfMlY61X8VP+RjA=
 		</data>
 		<key>Resources/sprites/pet_o16.png</key>
 		<data>
-		uooXEg/VVVZlt/KA1joyQv3KdYs=
+		Ft5OmHNPsdXGJR7L5gdI9Wyg9Hc=
 		</data>
 		<key>Resources/sprites/pet_o2.json</key>
 		<data>
-		q/AWxMj0hJpc7nBy8ar5oGea++0=
+		DWpfqN/Gky16EfMlY61X8VP+RjA=
 		</data>
 		<key>Resources/sprites/pet_o2.png</key>
 		<data>
-		MIdeT4CN/8Phtlam8Z9vqFBDl5g=
+		Zh6+7slL5vZ8MvCxYNIpt4bi8Bk=
 		</data>
 		<key>Resources/sprites/pet_o3.json</key>
 		<data>
-		q/AWxMj0hJpc7nBy8ar5oGea++0=
+		DWpfqN/Gky16EfMlY61X8VP+RjA=
 		</data>
 		<key>Resources/sprites/pet_o3.png</key>
 		<data>
-		FTWpT4p7EJjsHFfuUWbVhNFQ18w=
+		y537ld+swnuyzPCdV9fv2SMQa4U=
 		</data>
 		<key>Resources/sprites/pet_o4.json</key>
 		<data>
-		q/AWxMj0hJpc7nBy8ar5oGea++0=
+		DWpfqN/Gky16EfMlY61X8VP+RjA=
 		</data>
 		<key>Resources/sprites/pet_o4.png</key>
 		<data>
-		1N08viwThLnmPR6u+8ddAf9Ty1A=
+		gNAsO7uoWmV9exGyZJIsvRYnxgo=
 		</data>
 		<key>Resources/sprites/pet_o5.json</key>
 		<data>
-		q/AWxMj0hJpc7nBy8ar5oGea++0=
+		DWpfqN/Gky16EfMlY61X8VP+RjA=
 		</data>
 		<key>Resources/sprites/pet_o5.png</key>
 		<data>
-		aFoXqX6f5rHK/c8Wrs8bIme3K6k=
+		Ejz49VHf3nnnqBbuAp8VNhtPgBs=
 		</data>
 		<key>Resources/sprites/pet_o6.json</key>
 		<data>
-		q/AWxMj0hJpc7nBy8ar5oGea++0=
+		DWpfqN/Gky16EfMlY61X8VP+RjA=
 		</data>
 		<key>Resources/sprites/pet_o6.png</key>
 		<data>
-		tF9E1rzPZeFU2Bz0bZTuhzrVZcI=
+		6BQ/U/TehZA/8LzCrPYvpQn+CNA=
 		</data>
 		<key>Resources/sprites/pet_o7.json</key>
 		<data>
-		q/AWxMj0hJpc7nBy8ar5oGea++0=
+		DWpfqN/Gky16EfMlY61X8VP+RjA=
 		</data>
 		<key>Resources/sprites/pet_o7.png</key>
 		<data>
-		J0xU/eyb8UyCmrkY+zptRM1/wwY=
+		7CLcG2PKF4JR0PFJC7AyP9tvwqA=
 		</data>
 		<key>Resources/sprites/pet_o8.json</key>
 		<data>
-		q/AWxMj0hJpc7nBy8ar5oGea++0=
+		DWpfqN/Gky16EfMlY61X8VP+RjA=
 		</data>
 		<key>Resources/sprites/pet_o8.png</key>
 		<data>
-		oTLHzlQybJRPXdRT4G+zI3XKRrY=
+		LRsP/z/GtTCXE6NGX95sVcPB1sE=
 		</data>
 		<key>Resources/sprites/pet_o9.json</key>
 		<data>
-		q/AWxMj0hJpc7nBy8ar5oGea++0=
+		DWpfqN/Gky16EfMlY61X8VP+RjA=
 		</data>
 		<key>Resources/sprites/pet_o9.png</key>
 		<data>
-		ZxXmAdgogtFvrAVhnlKqE6QlD6c=
+		Y8hLFzPf/bxW6I6/wpJ6Ktkxb2I=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -174,21 +178,28 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			MEHSRAPonSegnxRjX/e7Uw8FFmHzxWGB78laVKEdxRM=
+			H1GK6GQn23STl39CIXFCMHViher7VLB+YflTIjb4am4=
+			</data>
+		</dict>
+		<key>Resources/schedule.html</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			/OAxAz0u+JhpUW/6/t8rc9DTcgP30J/BnllfXEiBguM=
 			</data>
 		</dict>
 		<key>Resources/sprites/effects.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			mKW0VycYdCCuTWPECL0UP+AZ7w6nlR07meqKHAyBmEI=
+			2e7jkaBzsSuAQQqy1FdXn6PJ2WDj4yzQ3RNx5cunNJ0=
 			</data>
 		</dict>
 		<key>Resources/sprites/effects.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			pIR3vN0tyQE/uiDIyUCPCwoQzvhDK2+tqLA8grDffhk=
+			laa6jcr9XMFMt1B8o4a9BwuhJcInn+dnp/N8WWv6j/Q=
 			</data>
 		</dict>
 		<key>Resources/sprites/outfits.json</key>
@@ -202,238 +213,238 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			jdGiN750bWkd+QTqm2wh8hlijZL0xF1u0HgDyqMHWpg=
+			QBdlpEPU+kV35t34cQpiY67FH8EFW+LZomPJJxxBtgY=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			t9wlBfMTaraxRqv3yVX3lcKQgHj/lMvax77ni6FfYog=
+			5NAp6FLU3zBQfyGlaI5jfnJX+X/Jj+VnCU2/DY+VdZY=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o1.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			PQAMGXBz2T1HWC2AHh/kR//b3kFMQ739kq7zjnr+VQk=
+			J2mhQ1YE0U9CNPiCgG3SlqFmKztMJDa2ydltJv7xlTk=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o1.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			QJpQGNJOokp14hY4nL81zGg0Pv4Nc9VgKBMn8RxD08w=
+			MBuCjDF/VvPgNJ5hPrbAnORAYgpFOv/M6D9zTygUXq4=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o10.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			PQAMGXBz2T1HWC2AHh/kR//b3kFMQ739kq7zjnr+VQk=
+			J2mhQ1YE0U9CNPiCgG3SlqFmKztMJDa2ydltJv7xlTk=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o10.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			whfRx3TdUSCS3IGI4vqyJH1CP8NTu5zWg7uqjjl6RJM=
+			RQc5/U61Y2tLXY6FsRugeVEuHOZ0M6GZ5nD50mOxS5c=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o11.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			PQAMGXBz2T1HWC2AHh/kR//b3kFMQ739kq7zjnr+VQk=
+			J2mhQ1YE0U9CNPiCgG3SlqFmKztMJDa2ydltJv7xlTk=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o11.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Sy2bCQeqgSnTVkE6YAwseiGFymKlxuiWcPirz/jspVM=
+			A4ynq7Hc82ZBbcQAHfVSR917RHN8Ggbb6ys6+EuIjv4=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o12.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			PQAMGXBz2T1HWC2AHh/kR//b3kFMQ739kq7zjnr+VQk=
+			J2mhQ1YE0U9CNPiCgG3SlqFmKztMJDa2ydltJv7xlTk=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o12.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			XrzOjpxh6QTvLRqsMJ/pqtS0CP3QboImTQfNd+53A/c=
+			vUEsLiWpsnC0t2hbUl/TP9eDX+EaFgY4oCptwdoIAmU=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o13.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			PQAMGXBz2T1HWC2AHh/kR//b3kFMQ739kq7zjnr+VQk=
+			J2mhQ1YE0U9CNPiCgG3SlqFmKztMJDa2ydltJv7xlTk=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o13.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			5D31vmgDLWwlzP2tPZAeyT8dnOrDXDsGm8myS7TjbPc=
+			G0j/oktCrMfoLEYh0myntpcBb0Yk5xYW4xyXt0UNwhQ=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o14.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			PQAMGXBz2T1HWC2AHh/kR//b3kFMQ739kq7zjnr+VQk=
+			J2mhQ1YE0U9CNPiCgG3SlqFmKztMJDa2ydltJv7xlTk=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o14.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			5/IlsGSFa7rhMsFdWuQVmAznqwXlQan4puynGiJYzJo=
+			yFeq3bhjnnvhEn6/l7zQpLgHxzZ0WxfHXn0f4QqMEAs=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o15.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			PQAMGXBz2T1HWC2AHh/kR//b3kFMQ739kq7zjnr+VQk=
+			J2mhQ1YE0U9CNPiCgG3SlqFmKztMJDa2ydltJv7xlTk=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o15.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			uW+VHZXNi7rO5WUtC9zCFOr5z8El/QtD7rPa4nwqluI=
+			IbC0jcgwwmQIk1OnrrlkK0E7F2uvVTtWhD/BSyty1hg=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o16.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			PQAMGXBz2T1HWC2AHh/kR//b3kFMQ739kq7zjnr+VQk=
+			J2mhQ1YE0U9CNPiCgG3SlqFmKztMJDa2ydltJv7xlTk=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o16.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			hnU683AxBwpp8VZRFrhTpqgFFNLAaooQOm7R2hRzW7Q=
+			I9QquR2SaYJg3hZADFSJSdOHzRJuAeagyk+MTkOubIU=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o2.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			PQAMGXBz2T1HWC2AHh/kR//b3kFMQ739kq7zjnr+VQk=
+			J2mhQ1YE0U9CNPiCgG3SlqFmKztMJDa2ydltJv7xlTk=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o2.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			CUk78pKxIMW6A9rywCumXFq6IeqH/SIAJ5MG12xt1is=
+			n+/UFSwNvT9xq1L0ZauZhPeDhwWOEP6YNarj6mHdZSk=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o3.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			PQAMGXBz2T1HWC2AHh/kR//b3kFMQ739kq7zjnr+VQk=
+			J2mhQ1YE0U9CNPiCgG3SlqFmKztMJDa2ydltJv7xlTk=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o3.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			EeKqjnB52+Fz4ZLFQgxiK9B25P5V3Xqcgmb8wZnBKPY=
+			y3/SqeStEpjTtkCLzaNtYdD8mAhaKSPk0Wixk6SWNL4=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o4.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			PQAMGXBz2T1HWC2AHh/kR//b3kFMQ739kq7zjnr+VQk=
+			J2mhQ1YE0U9CNPiCgG3SlqFmKztMJDa2ydltJv7xlTk=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o4.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			UUAN+gTlLi9hHBQlpx307G8Ndu5cafiy8Pyi6uZO55k=
+			5rHDKS0GciRxjfIj20VEsIBpMb3SRi6RQcO0KriulR4=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o5.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			PQAMGXBz2T1HWC2AHh/kR//b3kFMQ739kq7zjnr+VQk=
+			J2mhQ1YE0U9CNPiCgG3SlqFmKztMJDa2ydltJv7xlTk=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o5.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			ODxhP3VJ4DkbkSrc/Et7wMEONfKBiPHbFYcb9S08qRI=
+			dqcSQ/GUCKC/RYXlQf5E4evRjEotQgRZqNQTbVUZ5kY=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o6.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			PQAMGXBz2T1HWC2AHh/kR//b3kFMQ739kq7zjnr+VQk=
+			J2mhQ1YE0U9CNPiCgG3SlqFmKztMJDa2ydltJv7xlTk=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o6.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			ERK1K5RSLv/FuzzCe3O287pq/Xw8MgKML3uZ0vkB4gU=
+			u9hjXpqNGpx/52+QmZeNG0iIMhNAX2SMuhbzJHgUDZU=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o7.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			PQAMGXBz2T1HWC2AHh/kR//b3kFMQ739kq7zjnr+VQk=
+			J2mhQ1YE0U9CNPiCgG3SlqFmKztMJDa2ydltJv7xlTk=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o7.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			HDh4UHurP8WiSuY/F+zatcS2iPba3U5frzKf/G9QcGI=
+			hHAE4zv9SOi9DZIb3uHL8Pyr25ZtQJLMH5XL8T9AgSo=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o8.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			PQAMGXBz2T1HWC2AHh/kR//b3kFMQ739kq7zjnr+VQk=
+			J2mhQ1YE0U9CNPiCgG3SlqFmKztMJDa2ydltJv7xlTk=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o8.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Gbcf261FujYyHnrbiCYYwWzm9pLyPwSnyagGFM0PMHg=
+			2cjV1xKs7IpO39cPTLNvpa5qZ8JdOf3c3czLW4vEXTM=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o9.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			PQAMGXBz2T1HWC2AHh/kR//b3kFMQ739kq7zjnr+VQk=
+			J2mhQ1YE0U9CNPiCgG3SlqFmKztMJDa2ydltJv7xlTk=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet_o9.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			+IKVrtJiVn+y3ToP8v467rA3TBMxTrzlwM/4TuE06a8=
+			qtSIsz1xQoNmiibkUsxIouOKHrNVN0UUIups8vimk3s=
 			</data>
 		</dict>
 	</dict>
