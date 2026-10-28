@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Letter</title>
+<style>
+  :root {
+    --ink: #3a2132;
+    --paper: #fffaf6;
+    --bg: #ffe3ec;
+    --pink: #ff7aa2;
+    --pink-soft: #ffd2df;
+    --muted: #8a6a7c;
+    --line: 4px;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 17px/1.6 "Silom", "Thonburi", system-ui, sans-serif;
+    -webkit-font-smoothing: none;
+    user-select: none;
+    background-image:
+      linear-gradient(45deg, rgba(255,255,255,.4) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.4) 75%),
+      linear-gradient(45deg, rgba(255,255,255,.4) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.4) 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 8px 8px;
+    display: grid;
+    place-items: center;
+  }
+  .px {
+    position: relative;
+    background: var(--paper);
+    margin: var(--line);
+    box-shadow:
+      0 calc(-1 * var(--line)) 0 0 var(--ink),
+      0 var(--line) 0 0 var(--ink),
+      calc(-1 * var(--line)) 0 0 0 var(--ink),
+      var(--line) 0 0 0 var(--ink),
+      var(--line) calc(2 * var(--line)) 0 0 rgba(58, 33, 50, .2),
+      calc(2 * var(--line)) var(--line) 0 0 rgba(58, 33, 50, .2);
+  }
+  .card { width: min(480px, calc(100vw - 48px)); min-height: 440px; padding: 26px 30px 22px; display: flex; flex-direction: column; }
+  h1 { margin: 0 0 4px; font-size: 26px; text-align: center; letter-spacing: 1px; }
+  .hearts { display: flex; justify-content: center; gap: 8px; margin-bottom: 18px; }
+  .hearts svg { width: 22px; height: 20px; animation: beat 1.4s steps(2) infinite; }
+  .hearts svg:nth-child(2) { animation-delay: .2s; }
+  .hearts svg:nth-child(3) { animation-delay: .4s; }
+  @keyframes beat { 50% { transform: translateY(-3px); } }
+  .page { flex: 1; white-space: pre-wrap; }
+  .sign { text-align: right; color: var(--muted); margin-top: 10px; }
+  .gift { display: block; width: 120px; height: 120px; margin: 18px auto 6px; image-rendering: pixelated; cursor: pointer;
+          animation: wiggle 1.2s steps(4) infinite; }
+  @keyframes wiggle { 0%, 60%, 100% { transform: rotate(0); } 70% { transform: rotate(-6deg); } 80% { transform: rotate(6deg); } 90% { transform: rotate(-3deg); } }
+  .bar { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; }
+  .dots { display: flex; gap: 8px; }
+  .dots i { width: 10px; height: 10px; background: var(--pink-soft); box-shadow: 0 0 0 2px var(--ink); }
+  .dots i.on { background: var(--pink); }
+  button {
+    font: inherit; color: var(--ink); cursor: pointer; border: 0;
+    background: var(--pink-soft); padding: 6px 16px;
+  }
+  button.px:active { transform: translate(2px, 2px); }
+  button.primary { background: #d23a6f; color: #fff; }
+  button[hidden] { display: none; }
+  .open { display: block; margin: 8px auto 0; font-size: 19px; padding: 8px 22px; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="heart" viewBox="0 0 11 10" shape-rendering="crispEdges">
+      <path fill="#3a2132" d="M1 0h3v1h1v1h1V1h1V0h3v1h1v4h-1v1h-1v1h-1v1h-1v1h-1v1H5V9H4V8H3V7H2V6H1V5H0V1h1z"/>
+      <path fill="#ff7aa2" d="M1 1h3v1h1v1h1V2h1V1h3v4H9v1H8v1H7v1H6v1H5V8H4V7H3V6H2V5H1z"/>
+      <path fill="#fff" d="M2 2h1v1H2z"/>
+    </symbol>
+    <symbol id="box" viewBox="0 0 16 16" shape-rendering="crispEdges">
+      <path fill="#3a2132" d="M1 5h14v4h-1v7H2V9H1z"/>
+      <path fill="#ff7aa2" d="M2 6h12v2H2zM3 9h10v6H3z"/>
+      <path fill="#ffd36b" d="M7 6h2v9H7z"/>
+      <path fill="#3a2132" d="M3 1h3v1h1v1h2V2h1V1h3v1h1v2h-1v1H3V4H2V2h1z"/>
+      <path fill="#ffd36b" d="M3 2h3v1h1v1H3zM10 2h3v2H9V3h1z"/>
+      <path fill="#fff" d="M3 6h2v1H3zM4 10h1v2H4z"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="card px">
+  <h1 id="title"></h1>
+  <div class="hearts"><svg><use href="#heart"/></svg><svg><use href="#heart"/></svg><svg><use href="#heart"/></svg></div>
+  <div class="page" id="page"></div>
+  <div id="giftArea" hidden>
+    <svg class="gift" id="gift"><use href="#box"/></svg>
+    <button class="px primary open" id="open"></button>
+  </div>
+  <div class="sign" id="sign"></div>
+  <div class="bar">
+    <button class="px" id="back">◀ ก่อนหน้า</button>
+    <div class="dots" id="dots"></div>
+    <button class="px primary" id="next">ถัดไป ▶</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  let letter = { title: "", pages: [""], button: "เปิดของขวัญ", signature: "" };
+  let at = 0;
+
+  function render() {
+    const last = at === letter.pages.length - 1;
+    $("title").textContent = letter.title;
+    $("page").textContent = letter.pages[at];
+    $("giftArea").hidden = !last;
+    $("open").textContent = letter.button;
+    $("sign").textContent = last ? letter.signature : "";
+    $("back").style.visibility = at === 0 ? "hidden" : "visible";
+    $("next").style.visibility = last ? "hidden" : "visible";
+    $("dots").textContent = "";
+    letter.pages.forEach((_, i) => {
+      const d = document.createElement("i");
+      if (i === at) d.className = "on";
+      $("dots").appendChild(d);
+    });
+  }
+  function openGift() {
+    try { window.webkit.messageHandlers.letter.postMessage({ op: "open" }); } catch (_) {}
+  }
+
+  $("back").onclick = () => { if (at > 0) { at--; render(); } };
+  $("next").onclick = () => { if (at < letter.pages.length - 1) { at++; render(); } };
+  $("open").onclick = openGift;
+  $("gift").onclick = openGift;
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight") $("next").click();
+    if (e.key === "ArrowLeft") $("back").click();
+  });
+
+  window.LETTER = {
+    load(l) {
+      letter = Object.assign(letter, l);
+      if (!letter.pages || !letter.pages.length) letter.pages = [""];
+      at = 0;
+      render();
+    },
+  };
+  render();
+})();
+</script>
+</body>
+</html>

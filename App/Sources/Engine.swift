@@ -205,6 +205,20 @@ final class PetEngine {
         go(.falling)
     }
 
+    /// The gift is opened: drop in and say the lines from the letter, with hearts.
+    func arrive(atX x: CGFloat, saying lines: [String]) {
+        dropIn(atX: x)
+        greetAfterLanding = false
+        pendingTalk = lines.enumerated().map { ($0.element, $0.offset % 2 == 0 ? TalkPose.wave : .love) }
+    }
+
+    /// Say these lines in turn (the letter's closing words, when it is read again).
+    func sayLines(_ lines: [String]) {
+        guard !isBusy, !lines.isEmpty else { return }
+        lastInteraction = clock
+        startTalk(lines.map { ($0, TalkPose.love) }, then: .idle)
+    }
+
     func walk(toX x: CGFloat) {
         guard grabArt == nil else { return }
         walkTarget = x
@@ -274,7 +288,7 @@ final class PetEngine {
             spawn(k % 2 == 0 ? "sparkle" : "star", at: CGPoint(x: c.x + CGFloat(cos(a)) * 60 * scale, y: c.y + CGFloat(sin(a)) * 90 * scale),
                   vel: CGVector(dx: cos(a) * 20, dy: sin(a) * 20 + 15), life: 0.9)
         }
-        startTalk([(pick("outfit") ?? "ชุดใหม่ ✨", .wave)], then: .idle)
+        startTalk([(pick("outfit") ?? "ชุดใหม่", .wave)], then: .idle)
     }
 
     // MARK: - pointer

@@ -20,6 +20,10 @@ struct Settings {
         get { d.object(forKey: "outfit") as? Int ?? 0 }
         set { d.set(newValue, forKey: "outfit") }
     }
+    static var letterShown: Bool {
+        get { d.bool(forKey: "letterShown") }
+        set { d.set(newValue, forKey: "letterShown") }
+    }
     static var firstRunDone: Bool {
         get { d.bool(forKey: "firstRunDone") }
         set { d.set(newValue, forKey: "firstRunDone") }
@@ -96,6 +100,8 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var scheduleWindow: ScheduleWindow?
     private var reminderTimer: Timer?
     private var recentAdds: [Date] = []
+    private var letterWindow: LetterWindow?
+    private var guideWindow: GuideWindow?
 
     // MARK: - setup
 
@@ -166,7 +172,14 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
                                                           name: NSWorkspace.activeSpaceDidChangeNotification, object: nil)
         NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(didWake),
                                                           name: NSWorkspace.didWakeNotification, object: nil)
-        engine.dropIn(atX: main.midX + CGFloat.random(in: -200...200))
+        if Settings.letterShown {
+            engine.dropIn(atX: main.midX + CGFloat.random(in: -200...200))
+        } else {
+            // first time on her Mac: the letter comes first, the pet is the gift inside it
+            hidden = true
+            panel.orderOut(nil)
+            openLetter()
+        }
         kick()
     }
 
@@ -330,7 +343,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             let img = NSImage(cgImage: head, size: NSSize(width: 18, height: 18))
             statusItem.button?.image = img
         } else {
-            statusItem.button?.title = "🐶"
+            statusItem.button?.title = "Pug"
         }
         let menu = NSMenu()
         menu.delegate = self
@@ -358,6 +371,8 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         add("เรียกมาหา", #selector(summon))
         add("พูดอะไรหน่อย", #selector(talk))
         add("ตาราง / แจ้งเตือน…", #selector(openSchedule))
+        add("จดหมายวันครบรอบ…", #selector(openLetter))
+        add("วิธีเล่น…", #selector(openGuide))
         if engine.state == .sleeping { add("ปลุก", #selector(wake)) } else { add("ให้นอนเลย", #selector(sleepNow)) }
         m.addItem(.separator())
 
@@ -409,6 +424,41 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     @objc private func talk() { engine.sayRandom(); kick() }
 
+    // MARK: - letter
+
+    @objc private func openLetter() {
+        if letterWindow == nil {
+            let w = LetterWindow()
+            w.onOpen = { [weak self] in self?.giftOpened() }
+            // closed before opening the gift the first time: still bring the pet out
+            w.onClose = { [weak self] in if self?.hidden == true && !Settings.letterShown { self?.giftOpened() } }
+            letterWindow = w
+        }
+        letterWindow?.show()
+    }
+
+    private func giftOpened() {
+        let lines = LetterWindow.load().after
+        if !Settings.letterShown || hidden {
+            Settings.letterShown = true
+            hidden = false
+            panel.orderFrontRegardless()
+            let b = bounds(near: NSEvent.mouseLocation)
+            engine.arrive(atX: b.midX, saying: lines)
+            // once he has said hello, show her what she can do with him
+            let wait = 4 + Double(lines.count) * 4.5
+            DispatchQueue.main.asyncAfter(deadline: .now() + wait) { [weak self] in self?.openGuide() }
+        } else {
+            engine.sayLines(lines)
+        }
+        kick()
+    }
+
+    @objc private func openGuide() {
+        if guideWindow == nil { guideWindow = GuideWindow() }
+        guideWindow?.show()
+    }
+
     // MARK: - schedule & reminders
 
     @objc private func openSchedule() {
@@ -451,7 +501,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if hidden { toggleHidden() }
         for e in due {
             schedule.markNotified(e.id)
-            var text = "⏰ \(e.time)  \(e.title)"
+            var text = "\(e.time)  \(e.title)"
             if !e.detail.isEmpty { text += "\n\(e.detail)" }
             engine.remind(text)
         }

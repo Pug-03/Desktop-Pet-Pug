@@ -79,7 +79,7 @@ enum Recorder {
             ]),
             Clip(name: "12_reminder", caption: "ถึงเวลาที่ตั้งไว้ในตาราง → ลุกขึ้นมาเตือน (จิ้มเพื่อรับทราบ)", steps: [
                 .act { $0.goToSleep(immediately: true) }, .move(away, 0), .wait(2),
-                .act { $0.remind("⏰ 15:00  ส่งงาน\nรายงานบทที่ 3") }, .wait(6),
+                .act { $0.remind("15:00  ส่งงาน\nรายงานบทที่ 3") }, .wait(6),
                 .move(chest, 0.7), .click, .wait(2.5),
             ]),
             Clip(name: "13_work", caption: "กลางวัน → นั่งคิดก่อน แล้วเขียนโค้ดยาวๆ · แวะหันมาให้กำลังใจ · ครบชั่วโมงลุกไปเดิน", steps: [
@@ -94,6 +94,9 @@ enum Recorder {
             Clip(name: "14_desk_sleep", caption: "หลัง 4 ทุ่ม ทำงานดึกๆ → ฟุบหลับคาโต๊ะ Zzz · จิ้มแล้วตื่นมาทำต่อ", steps: [
                 .act { $0.isNight = { true }; $0.nodOffAfter = 4...4 }, .move(away, 0), .act { $0.startWork() }, .wait(9),
                 .move(at(640, 120), 0.8), .click, .wait(4),
+            ]),
+            Clip(name: "16_gift", caption: "เปิดของขวัญในจดหมายวันครบรอบ → น้องตกลงมาบนจอ แล้วพูดตามที่เขียนไว้", steps: [
+                .move(away, 0), .wait(0.6), .act { $0.arrive(atX: 640, saying: LetterWindow.load().after) }, .wait(15),
             ]),
             Clip(name: "10_wake", caption: "จิ้มตอนกำลังหลับ → ตื่นงัวเงีย", steps: [
                 .act { $0.goToSleep(immediately: true) }, .move(away, 0), .wait(3),
