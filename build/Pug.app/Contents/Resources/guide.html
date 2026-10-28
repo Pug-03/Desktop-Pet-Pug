@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How to play with Pug</title>
+<style>
+  :root {
+    --ink: #3a2132;
+    --paper: #fffaf6;
+    --bg: #ffe3ec;
+    --pink: #ff7aa2;
+    --pink-soft: #ffd2df;
+    --sky: #dcecfa;
+    --muted: #6e4f62;
+    --line: 4px;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 "Silom", "Thonburi", system-ui, sans-serif;
+    -webkit-font-smoothing: none;
+    user-select: none;
+    background-image:
+      linear-gradient(45deg, rgba(255,255,255,.4) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.4) 75%),
+      linear-gradient(45deg, rgba(255,255,255,.4) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.4) 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 8px 8px;
+  }
+  .px {
+    position: relative;
+    background: var(--paper);
+    margin: var(--line);
+    box-shadow:
+      0 calc(-1 * var(--line)) 0 0 var(--ink),
+      0 var(--line) 0 0 var(--ink),
+      calc(-1 * var(--line)) 0 0 0 var(--ink),
+      var(--line) 0 0 0 var(--ink),
+      var(--line) calc(2 * var(--line)) 0 0 rgba(58, 33, 50, .2),
+      calc(2 * var(--line)) var(--line) 0 0 rgba(58, 33, 50, .2);
+  }
+  .wrap { height: 100%; max-width: 760px; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+  header { padding: 12px 20px; display: flex; align-items: baseline; gap: 14px; }
+  .step { background: var(--pink-soft); padding: 0 8px; font-size: 14px; white-space: nowrap; }
+  h1 { margin: 0; font-size: 22px; }
+  .intro { margin: 0 6px; color: var(--muted); }
+  .items { flex: 1; display: grid; gap: 18px; overflow-y: auto; padding: 4px 8px 8px 4px; min-height: 0; align-content: start; }
+  .items.two { grid-template-columns: 1fr 1fr; }
+  .card { display: flex; flex-direction: column; gap: 10px; padding: 12px; }
+  .items.one .card { display: grid; grid-template-columns: 340px 1fr; gap: 18px; align-items: center; }
+  .card video { display: block; width: 100%; aspect-ratio: 26 / 25; object-fit: cover; background: var(--sky); }
+  .items.one .card video { width: 340px; }
+  .items.two .card video { aspect-ratio: 26 / 20; }
+  .tag { display: inline-block; background: var(--pink-soft); padding: 0 8px; margin-bottom: 4px; font-size: 14px; }
+  .card b { display: block; font-size: 18px; margin-bottom: 2px; }
+  .card span, .card li { color: var(--muted); }
+  .card ol { margin: 4px 0 0; padding-left: 20px; }
+  .menu { padding: 10px 16px; }
+  .menu table { width: 100%; border-collapse: collapse; }
+  .menu td { padding: 5px 4px; vertical-align: top; border-bottom: 2px dashed var(--pink-soft); }
+  .menu tr:last-child td { border-bottom: 0; }
+  .menu td:first-child { white-space: nowrap; font-weight: bold; padding-right: 16px; }
+  .tips { padding: 10px 18px; }
+  .tips ul { margin: 6px 0; padding-left: 20px; }
+  .bar { display: flex; align-items: center; justify-content: space-between; }
+  .dots { display: flex; gap: 8px; }
+  .dots i { width: 10px; height: 10px; background: var(--pink-soft); box-shadow: 0 0 0 2px var(--ink); cursor: pointer; }
+  .dots i.on { background: var(--pink); }
+  button { font: inherit; color: var(--ink); cursor: pointer; border: 0; background: var(--pink-soft); padding: 6px 16px; }
+  button.px:active { transform: translate(2px, 2px); }
+  button.primary { background: #d23a6f; color: #fff; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="px">
+    <span class="step" id="step"></span>
+    <h1 id="title"></h1>
+  </header>
+  <p class="intro" id="intro"></p>
+  <div class="items" id="items"></div>
+  <div class="bar">
+    <button class="px" id="back">Back</button>
+    <div class="dots" id="dots"></div>
+    <button class="px primary" id="next">Next</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  const LESSONS = [
+    {
+      title: "Poke him",
+      intro: "Pug always stands at the bottom of your screen. Click on him.",
+      items: [
+        { clip: "03_poke_tickle", tag: "Click once", title: "Tickle", text: "He giggles and little hearts float up." },
+        { clip: "04_poke_dizzy", tag: "Click 6 times fast", title: "Dizzy", text: "Swirly eyes and stars spinning round his head." },
+      ],
+    },
+    {
+      title: "Pick him up",
+      intro: "Hold the mouse button down on him and drag.",
+      items: [
+        { clip: "05_hold_lift", tag: "Hold and drag", title: "Dangle", text: "He swings along with the mouse. Let go and he drops to the floor, squashes and bounces." },
+        { clip: "07_shake_dizzy", tag: "Pick up and shake hard", title: "Panic", text: "He sweats, then lands dizzy." },
+      ],
+    },
+    {
+      title: "Throw him",
+      intro: "Pick him up, flick the mouse in any direction, and let go.",
+      items: [
+        { clip: "08_throw", tag: "Drag, flick, let go", title: "Fly into the edge", text: "He flies across, hits the side of the screen and bounces back." },
+      ],
+    },
+    {
+      title: "Daytime: he works",
+      intro: "Leave him alone for 3 minutes and he pulls up his desk and writes code.",
+      items: [
+        { clip: "13_work", tag: "Daytime", title: "Coding at his desk", list: [
+          "Thinks first, then types for a long time with code floating up",
+          "Takes little breaks: thinks, smiles, frowns, drinks, stretches",
+          "Every 5-10 minutes he turns round to cheer you on",
+          "After about an hour he gets up for a walk, then goes back",
+          "Click him while he works and he turns to look at you",
+        ] },
+      ],
+    },
+    {
+      title: "Night: he goes to bed",
+      intro: "He only sleeps after 10 pm. Click him to wake him up.",
+      items: [
+        { clip: "09_goodnight", tag: "After 10 pm", title: "Good night", text: "He yawns, says good night and sleeps under a blanket." },
+        { clip: "14_desk_sleep", tag: "Working late", title: "Asleep at the desk", text: "Click him and he wakes up and carries on." },
+      ],
+    },
+    {
+      title: "Schedule and reminders",
+      intro: "Let him remember your plans and tell you when it's time.",
+      items: [
+        { clip: "12_reminder", tag: "Right-click him, then Schedule", title: "He reminds you on time", list: [
+          "Click a day on the calendar (drag or Shift-click for several days)",
+          "Fill in the time, title and details, then Add to schedule",
+          "When it's time he jumps up to tell you; click him to say OK",
+          "Scroll over the calendar to change month",
+        ] },
+      ],
+    },
+    {
+      title: "Dress him up",
+      intro: "There are 17 tops to choose from.",
+      items: [
+        { clip: "11_outfits", tag: "Right-click him, then Outfit", title: "Pick one, or a random one", text: "Only the top changes; the trousers and sneakers stay the same." },
+      ],
+    },
+    {
+      title: "The menu",
+      intro: "Right-click him, or click Pug's face in the menu bar at the top of the screen.",
+      menu: [
+        ["Hide / Show", "Hide him for a while"],
+        ["Call him", "Can't find him? He drops in where the mouse is"],
+        ["Say something", "He says one random line"],
+        ["Schedule / reminders", "The calendar for your plans"],
+        ["Anniversary letter", "Read the letter again"],
+        ["How to play", "Opens this page"],
+        ["Sleep now / Wake up", "Send him to bed, or wake him"],
+        ["Outfit · Size", "Dress him up; small, medium or large"],
+        ["Walk around", "Turn his walking on or off"],
+        ["Edit lines", "Change the things he says"],
+      ],
+    },
+    {
+      title: "Little things",
+      intro: "Things he does on his own.",
+      tips: [
+        "With the Dock at the bottom he stands on it; past its end he hops down to the screen edge",
+        "On a day with 4 or more plans, he tells you to take a break",
+        "Now and then he says something sweet by himself",
+        "He starts by himself every time you turn on your Mac",
+      ],
+    },
+  ];
+
+  const $ = (id) => document.getElementById(id);
+  let at = 0;
+  function el(tag, cls, text) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+
+  function render() {
+    const l = LESSONS[at];
+    $("step").textContent = `${at + 1} / ${LESSONS.length}`;
+    $("title").textContent = l.title;
+    $("intro").textContent = l.intro;
+    const items = $("items");
+    items.textContent = "";
+    items.scrollTop = 0;
+    items.className = "items " + ((l.items || []).length === 2 ? "two" : "one");
+    (l.items || []).forEach((it) => {
+      const card = el("div", "card px");
+      const v = el("video");
+      v.src = `guide/${it.clip}.mp4`;
+      v.autoplay = v.loop = v.muted = v.playsInline = true;
+      card.appendChild(v);
+      const text = el("div");
+      text.appendChild(el("span", "tag", it.tag));
+      text.appendChild(el("b", "", it.title));
+      if (it.text) text.appendChild(el("span", "", it.text));
+      if (it.list) {
+        const ol = el("ol");
+        it.list.forEach((li) => ol.appendChild(el("li", "", li)));
+        text.appendChild(ol);
+      }
+      card.appendChild(text);
+      items.appendChild(card);
+    });
+    if (l.menu) {
+      const box = el("div", "menu px");
+      const t = el("table");
+      l.menu.forEach(([a, b]) => {
+        const tr = el("tr");
+        tr.appendChild(el("td", "", a));
+        tr.appendChild(el("td", "", b));
+        t.appendChild(tr);
+      });
+      box.appendChild(t);
+      items.appendChild(box);
+    }
+    if (l.tips) {
+      const box = el("div", "tips px");
+      const ul = el("ul");
+      l.tips.forEach((x) => ul.appendChild(el("li", "", x)));
+      box.appendChild(ul);
+      items.appendChild(box);
+    }
+    $("back").style.visibility = at === 0 ? "hidden" : "visible";
+    $("next").style.visibility = at === LESSONS.length - 1 ? "hidden" : "visible";
+    $("dots").textContent = "";
+    LESSONS.forEach((_, i) => {
+      const d = el("i", i === at ? "on" : "");
+      d.title = LESSONS[i].title;
+      d.onclick = () => { at = i; render(); };
+      $("dots").appendChild(d);
+    });
+  }
+
+  $("back").onclick = () => { if (at > 0) { at--; render(); } };
+  $("next").onclick = () => { if (at < LESSONS.length - 1) { at++; render(); } };
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight") $("next").click();
+    if (e.key === "ArrowLeft") $("back").click();
+  });
+  window.GUIDE = { go(i) { at = Math.max(0, Math.min(LESSONS.length - 1, i)); render(); } };
+  render();
+})();
+</script>
+</body>
+</html>
