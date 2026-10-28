@@ -443,6 +443,12 @@ final class PetEngine {
         frameKey = "walk.\(eyes).\(Int(t * 5) % 8)"
         pivot.x += facing * 140 * scale * CGFloat(dt)
         let b = screenBounds(pivot)
+        if pivot.y > b.minY + 4 * scale {  // walked off the end of the Dock: hop down
+            vel = CGVector(dx: facing * 140 * scale, dy: 120)
+            fallTop = pivot.y
+            go(.falling)
+            return
+        }
         let m = 32 * scale
         let arrived = facing > 0 ? pivot.x >= walkTarget : pivot.x <= walkTarget
         if arrived || pivot.x < b.minX + m || pivot.x > b.maxX - m { toIdle() }

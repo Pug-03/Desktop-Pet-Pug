@@ -108,7 +108,7 @@ def figures():
             for _ in range(2):
                 n8 = sum(np.roll(np.roll(m, j, 0), i, 1) for j in (-1, 0, 1) for i in (-1, 0, 1)) - m
                 m &= n8 > 2
-            fig = cut(sub, m)
+            fig = cut(sub, m, rim=True)
             out.append((fig, tuple(int(v) for v in bg)))
     return out
 

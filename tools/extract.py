@@ -92,10 +92,40 @@ def erode(m):
     return out
 
 
-def cut(rgb, mask):
+def white_rim(rgb, mask, top=0.15):
+    """The sheets draw a thin white sticker outline round the figure. Outside it is trimmed by
+    erode(), but where the outline runs into a narrow enclosed gap (between arm and body, inside
+    a curled fist) it was kept, with a sliver of blue-grey sheet background inside it, and both
+    showed as light slivers on a dark desktop. Those are thin, upright patches of light grey or
+    light blue-grey; wide patches (white sneakers, a white or light-blue shirt) and flat ones
+    (a white stripe at a sleeve hem) and specks shorter than 5 px (the soft edges of navy
+    stripes) are kept. Rows above `top` (the face) are left alone."""
+    c = rgb.astype(int)
+    lum, sat = luminance(rgb), c.max(2) - c.min(2)
+    body = mask.copy()
+    body[: int(top * mask.shape[0])] = False
+    bluish = body & (lum > 110) & (c[..., 2] - c[..., 0] >= 8) & (sat < 45)
+    grey = body & (lum > 140) & (sat < 25)
+    out = np.zeros_like(mask)
+    for light in (bluish, grey & ~bluish):  # background first, so the rim beside a white shirt separates
+        core = erode(erode(light))  # survives only where a patch is wider than 4 px
+        for comp in components(light & ~out, 1):
+            ys, xs = np.where(comp)
+            h, w = np.ptp(ys) + 1, np.ptp(xs) + 1
+            if not (comp & core).any() and h >= 5 and h >= 0.8 * w:
+                out |= comp
+    return out
+
+
+def cut(rgb, mask, rim=False):
+    """Crop the figure. With `rim`, the sheet's white outline is also cleared inside enclosed
+    gaps (see white_rim), so it never shows as light slivers on a dark desktop."""
     ys, xs = np.where(mask)
     y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
-    m = erode(fill_holes(mask[y0:y1, x0:x1]))  # drop the background-tinted fringe
+    m = fill_holes(mask[y0:y1, x0:x1])
+    if rim:
+        m &= ~white_rim(rgb[y0:y1, x0:x1], m)
+    m = erode(m)  # drop the background-tinted fringe (also round the cleared gaps)
     rgba = np.zeros((y1 - y0, x1 - x0, 4), np.uint8)
     rgba[..., :3] = rgb[y0:y1, x0:x1]
     rgba[..., 3] = m * 255
@@ -253,7 +283,7 @@ def main():
         m = np.zeros(sub.shape[:2], bool)
         for c in components(mask_from_bg(sub, bg, 34), 400):
             m |= c
-        figs[name] = cut(sub, m)
+        figs[name] = cut(sub, m, rim=True)
     scale = WORK_H / figs["front"].shape[0]
     work = {k: resize(v, scale) for k, v in figs.items()}
 
@@ -267,7 +297,7 @@ def main():
             frames[-1] = (frames[-1][0], frames[-1][1] | c)
         else:
             frames.append((cx, c))
-    walk = [cut(sub, c) for _, c in frames]
+    walk = [cut(sub, c, rim=True) for _, c in frames]
     ws = WORK_H / max(f.shape[0] for f in walk)
     for i, f in enumerate(walk):
         work[f"walk{i}"] = resize(f, ws)

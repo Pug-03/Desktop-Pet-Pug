@@ -183,21 +183,52 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func bounds(near p: CGPoint) -> CGRect {
         let screens = NSScreen.screens
-        if let s = screens.first(where: { $0.frame.insetBy(dx: -1, dy: -1).contains(p) }) { return walkArea(s) }
+        if let s = screens.first(where: { $0.frame.insetBy(dx: -1, dy: -1).contains(p) }) { return walkArea(s, x: p.x) }
         // nearest screen horizontally (the pet walks along the bottom)
         let best = screens.min { a, b in
             abs(a.frame.midX - p.x) + abs(a.frame.midY - p.y) < abs(b.frame.midX - p.x) + abs(b.frame.midY - p.y)
         }
-        return best.map(walkArea) ?? CGRect(x: 0, y: 0, width: 1440, height: 900)
+        return best.map { walkArea($0, x: p.x) } ?? CGRect(x: 0, y: 0, width: 1440, height: 900)
     }
 
-    /// Stand on top of the Dock when it is showing; when it is hidden (auto-hide, or a
-    /// full-screen app in front) stand on the real bottom edge of the screen instead.
-    func walkArea(_ s: NSScreen) -> CGRect {
+    /// Stand on top of the Dock when it is showing and `x` is above it; past either end of
+    /// the Dock, or when it is hidden (auto-hide, or a full-screen app in front), stand on the
+    /// real bottom edge of the screen instead.
+    func walkArea(_ s: NSScreen, x: CGFloat) -> CGRect {
         let v = s.visibleFrame
+        let half = min(dockWidth(), s.frame.width) / 2
         let dockShown = v.minY - s.frame.minY > 10 && !fullScreenFrames().contains(s.frame)
+            && abs(x - s.frame.midX) < half
         let floor = dockShown ? v.minY : s.frame.minY
         return CGRect(x: v.minX, y: floor, width: v.width, height: v.maxY - floor)
+    }
+
+    private var dockCache: (time: CFTimeInterval, width: CGFloat) = (-10, 0)
+
+    /// The Dock window covers the whole screen, so its bar width is estimated from the Dock's
+    /// own settings: Finder + kept apps + recent/running apps + folders + Trash, plus separators.
+    private func dockWidth() -> CGFloat {
+        let now = CACurrentMediaTime()
+        if now - dockCache.time < 2 { return dockCache.width }
+        let d = UserDefaults(suiteName: "com.apple.dock")
+        func ids(_ k: String) -> [String] {
+            (d?.array(forKey: k) as? [[String: Any]] ?? []).compactMap {
+                ($0["tile-data"] as? [String: Any])?["bundle-identifier"] as? String
+            }
+        }
+        let kept = ids("persistent-apps")
+        let showRecents = d?.object(forKey: "show-recents") as? Bool ?? true
+        var middle = Set(showRecents ? ids("recent-apps") : [])
+        for a in NSWorkspace.shared.runningApplications where a.activationPolicy == .regular {
+            if let id = a.bundleIdentifier, id != "com.apple.finder", !kept.contains(id) { middle.insert(id) }
+        }
+        let others = d?.array(forKey: "persistent-others")?.count ?? 0
+        let tiles = CGFloat(1 + kept.count + middle.count + others + 1)
+        let separators: CGFloat = middle.isEmpty ? 1 : 2
+        let tile = CGFloat(d?.object(forKey: "tilesize") as? Double ?? 48)
+        let width = (tiles + 0.5 * separators) * tile * 1.06 + 8
+        dockCache = (now, width)
+        return width
     }
 
     private var fullScreenCache: (time: CFTimeInterval, frames: [CGRect]) = (0, [])
