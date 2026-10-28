@@ -144,21 +144,13 @@ final class ScheduleWindow: NSObject, WKScriptMessageHandler, WKNavigationDelega
         }
     }
 
-    /// Small pixelated portrait of the pet for the page header, as a data URI.
+    /// Portrait of the pet for the page header (head and shoulders, at full detail), as a data URI.
     static func portrait(from frame: Frame?) -> String {
         guard let f = frame else { return "" }
-        let side = 64
-        let crop = CGRect(x: max(0, f.head.x - CGFloat(side) / 2), y: max(0, f.head.y - 2), width: CGFloat(side), height: CGFloat(side))
+        let side: CGFloat = 84
+        let crop = CGRect(x: max(0, f.head.x - side / 2), y: max(0, f.head.y - 4), width: side, height: side)
         guard let img = f.image.cropping(to: crop) else { return "" }
-        // shrink to 24px so it reads as pixel art once the page scales it up
-        let px = 24
-        guard let ctx = CGContext(data: nil, width: px, height: px, bitsPerComponent: 8, bytesPerRow: px * 4,
-                                  space: CGColorSpace(name: CGColorSpace.sRGB)!,
-                                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return "" }
-        ctx.interpolationQuality = .medium
-        ctx.draw(img, in: CGRect(x: 0, y: 0, width: px, height: px))
-        guard let small = ctx.makeImage() else { return "" }
-        let rep = NSBitmapImageRep(cgImage: small)
+        let rep = NSBitmapImageRep(cgImage: img)
         guard let png = rep.representation(using: .png, properties: [:]) else { return "" }
         return "data:image/png;base64," + png.base64EncodedString()
     }
