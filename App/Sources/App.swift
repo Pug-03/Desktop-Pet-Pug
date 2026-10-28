@@ -336,11 +336,28 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     // MARK: - menu
 
+    /// Black-and-white copy of an image (the menu bar face), keeping its transparency.
+    static func grayscale(_ img: CGImage) -> CGImage? {
+        let w = img.width, h = img.height
+        guard let ctx = CGContext(data: nil, width: w, height: h, bitsPerComponent: 8, bytesPerRow: w * 4,
+                                  space: CGColorSpace(name: CGColorSpace.sRGB)!,
+                                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue),
+              let data = ctx.data else { return nil }
+        ctx.draw(img, in: CGRect(x: 0, y: 0, width: w, height: h))
+        let px = data.bindMemory(to: UInt8.self, capacity: w * h * 4)
+        for i in stride(from: 0, to: w * h * 4, by: 4) {
+            let y = UInt8(min(255, 0.3 * Double(px[i]) + 0.59 * Double(px[i + 1]) + 0.11 * Double(px[i + 2])))
+            px[i] = y; px[i + 1] = y; px[i + 2] = y
+        }
+        return ctx.makeImage()
+    }
+
     private func setupStatusItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         if let f = engine.frames["stand.normal.0"],
-           let head = f.image.cropping(to: CGRect(x: f.head.x - 30, y: f.head.y, width: 60, height: 60)) {
-            let img = NSImage(cgImage: head, size: NSSize(width: 18, height: 18))
+           let head = f.image.cropping(to: CGRect(x: f.head.x - 30, y: f.head.y, width: 60, height: 60)),
+           let mono = Self.grayscale(head) {
+            let img = NSImage(cgImage: mono, size: NSSize(width: 18, height: 18))
             statusItem.button?.image = img
         } else {
             statusItem.button?.title = "Pug"
