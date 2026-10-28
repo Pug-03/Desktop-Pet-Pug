@@ -8,7 +8,7 @@ import os
 import numpy as np
 from PIL import Image
 
-from extract import blend, components, cut, luminance, resize
+from extract import blend, components, cut, fill_holes, luminance, resize
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "reference", "outfits.png")
@@ -84,11 +84,14 @@ def _fill_from_neighbours(img, bad):
     return bad & ~fix
 
 
+OUTLINED = {7}  # the light blue shirt: almost the sheet's own colour, so cut it by its drawn outline
+
+
 def figures():
     rgb = np.asarray(Image.open(SRC).convert("RGB"))
     out = []
-    for y0, y1 in ROWS:
-        for x0, x1 in COLS:
+    for row, (y0, y1) in enumerate(ROWS):
+        for col, (x0, x1) in enumerate(COLS):
             sub = rgb[y0:y1, x0 - 6:x1 + 6]
             bg = np.median(np.concatenate([sub[:, :3].reshape(-1, 3), sub[:, -3:].reshape(-1, 3)]), axis=0)
             a = sub.astype(int)
@@ -101,9 +104,16 @@ def figures():
             for c in components(diff, 300):
                 m |= c
             m = shrink(grow(m, 1), 1)  # close 1-px bites along the outline
-            # slivers of sheet background (e.g. between arm and body) must stay see-through
-            tint = (a[..., 2] - a[..., 0]) - (bg[2] - bg[0])
-            m &= ~((np.abs(a - bg).sum(2) < 75) & (np.abs(tint) < 10) & (sat <= bsat + 4))
+            if row * len(COLS) + col in OUTLINED:
+                # everything the background can't reach from the edges: only the drawn dark outline
+                # (or skin, which is far more saturated) stops it, not the white sticker rim
+                lum = luminance(sub)
+                inside = fill_holes((lum < lum[:, :3].mean() - 35) | (sat - bsat > 25))
+                m = (m | inside) & inside
+            else:
+                # slivers of sheet background (e.g. between arm and body) must stay see-through
+                tint = (a[..., 2] - a[..., 0]) - (bg[2] - bg[0])
+                m &= ~((np.abs(a - bg).sum(2) < 75) & (np.abs(tint) < 10) & (sat <= bsat + 4))
             # shave 1-px spikes so the silhouette stays smooth
             for _ in range(2):
                 n8 = sum(np.roll(np.roll(m, j, 0), i, 1) for j in (-1, 0, 1) for i in (-1, 0, 1)) - m
