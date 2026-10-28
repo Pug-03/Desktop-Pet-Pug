@@ -1,18 +1,19 @@
 <!doctype html>
-<html lang="th">
+<html lang="en">
 <head>
 <meta charset="utf-8">
-<title>ตารางของ Pug</title>
+<title>Pug's Schedule</title>
 <style>
   :root {
-    --ink: #2e1e32;
-    --paper: #fff8f3;
-    --bg: #f3e6f0;
+    --ink: #1f2d40;
+    --paper: #f8fcff;
+    --bg: #dcecfa;
+    --accent: #4fa3e3;
+    --accent-soft: #d3e9fb;
+    --sel: #b9dcfb;
     --pink: #ff7aa2;
-    --pink-soft: #ffd5e1;
-    --blue-soft: #d8e6ff;
     --mint: #d4f3e1;
-    --muted: #6a5a6e;
+    --muted: #5c6f84;
     --line: 4px;
   }
   * { box-sizing: border-box; }
@@ -42,8 +43,8 @@
       0 var(--line) 0 0 var(--ink),
       calc(-1 * var(--line)) 0 0 0 var(--ink),
       var(--line) 0 0 0 var(--ink),
-      var(--line) calc(2 * var(--line)) 0 0 rgba(46, 30, 50, .22),
-      calc(2 * var(--line)) var(--line) 0 0 rgba(46, 30, 50, .22);
+      var(--line) calc(2 * var(--line)) 0 0 rgba(31, 45, 64, .2),
+      calc(2 * var(--line)) var(--line) 0 0 rgba(31, 45, 64, .2);
   }
   .px.flat { box-shadow:
       0 calc(-1 * var(--line)) 0 0 var(--ink), 0 var(--line) 0 0 var(--ink),
@@ -52,7 +53,7 @@
   .app { display: grid; grid-template-rows: auto 1fr; gap: 14px; height: 100%; padding: 16px 18px 18px; }
 
   header { display: flex; align-items: center; gap: 14px; padding: 10px 14px; }
-  .avatar { width: 72px; height: 72px; image-rendering: pixelated; background: var(--pink-soft); }
+  .avatar { width: 72px; height: 72px; image-rendering: pixelated; background: var(--accent-soft); }
   .title h1 { margin: 0; font-size: 22px; letter-spacing: .5px; }
   .title p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
   .nav { margin-left: auto; display: flex; align-items: center; gap: 10px; }
@@ -60,28 +61,29 @@
 
   button {
     font: inherit; color: var(--ink); cursor: pointer; border: 0;
-    background: var(--pink-soft); padding: 6px 12px;
+    background: var(--accent-soft); padding: 6px 12px;
   }
   button.px:active { transform: translate(2px, 2px); }
-  button.primary { background: var(--pink); color: #fff; }
+  button.primary { background: var(--accent); color: #fff; }
   button.icon { padding: 4px 10px; font-size: 16px; }
 
   main { display: grid; grid-template-columns: 1fr 300px; gap: 18px; min-height: 0; }
 
   .cal { display: grid; grid-template-rows: auto 1fr; padding: 10px; min-height: 0; }
   .week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; padding: 0 4px 8px; color: var(--muted); text-align: center; }
-  .week span:first-child { color: var(--pink); }
+  .week span:first-child { color: var(--accent); }
   .days { display: grid; grid-template-columns: repeat(7, 1fr); grid-auto-rows: 1fr; gap: 8px; padding: 4px; min-height: 0; }
   .day { margin: 2px; padding: 4px 5px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; gap: 3px; min-height: 0; }
   .day.other { opacity: .38; }
-  .day.today .num { background: var(--pink); color: #fff; }
-  .day.sel { background: var(--blue-soft); }
+  .day.today .num { background: var(--accent); color: #fff; }
+  .day.sel { background: var(--sel); }
   .day:hover { background: #fff; }
-  .day.sel:hover { background: var(--blue-soft); }
+  .day.sel:hover { background: var(--sel); }
   .num { flex: none; align-self: flex-start; padding: 0 5px; font-size: 14px; }
   .chip { flex: none; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-          background: var(--pink-soft); padding: 0 4px; border-left: 4px solid var(--pink); }
-  .chip.done { background: #eee6ee; border-left-color: var(--muted); color: var(--muted); }
+          background: var(--accent-soft); padding: 0 4px; border-left: 4px solid var(--accent); }
+  .chip.span { border-left-color: #8fc6f0; }
+  .chip.done { background: #e7edf3; border-left-color: var(--muted); color: var(--muted); }
   .more { flex: none; font-size: 12px; color: var(--muted); }
   .busy { position: absolute; right: 4px; top: 4px; }
 
@@ -95,17 +97,21 @@
   .item small { color: var(--muted); font-size: 13px; }
   .item.done { opacity: .55; }
   .del { background: transparent; padding: 0 4px; color: var(--muted); }
-  .del:hover { color: var(--pink); }
+  .del:hover { color: var(--accent); }
   .empty { color: var(--muted); font-size: 14px; padding: 6px 2px; }
 
   form { display: flex; flex-direction: column; gap: 5px; }
   label { font-size: 13px; color: var(--muted); }
+  .dates { display: grid; grid-template-columns: 1fr 1fr; }
+  .dates div { display: flex; flex-direction: column; min-width: 0; }
+  .dates input { min-width: 0; font-size: 13px; }
+  .hint { font-size: 12px; color: var(--muted); margin: 2px 2px 0; }
   input {
     font: inherit; color: var(--ink); border: 0; outline: none; background: #fff;
     padding: 4px 8px; margin: 3px 4px; user-select: text;
     box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink);
   }
-  input:focus { background: #fffbe8; }
+  input:focus { background: #f0f8ff; }
   .rest { background: var(--mint); padding: 10px 12px; display: flex; gap: 10px; align-items: center; }
   .rest[hidden] { display: none; }
   .heart { width: 22px; height: 20px; flex: none; }
@@ -117,7 +123,7 @@
 <svg width="0" height="0" style="position:absolute">
   <defs>
     <symbol id="heart" viewBox="0 0 11 10" shape-rendering="crispEdges">
-      <path fill="#2e1e32" d="M1 0h3v1h1v1h1V1h1V0h3v1h1v4h-1v1h-1v1h-1v1h-1v1h-1v1H5V9H4V8H3V7H2V6H1V5H0V1h1z"/>
+      <path fill="#1f2d40" d="M1 0h3v1h1v1h1V1h1V0h3v1h1v4h-1v1h-1v1h-1v1h-1v1h-1v1H5V9H4V8H3V7H2V6H1V5H0V1h1z"/>
       <path fill="#ff7aa2" d="M1 1h3v1h1v1h1V2h1V1h3v4H9v1H8v1H7v1H6v1H5V8H4V7H3V6H2V5H1z"/>
       <path fill="#fff" d="M2 2h1v1H2z"/>
     </symbol>
@@ -128,20 +134,20 @@
   <header class="px">
     <img class="avatar px flat" id="avatar" alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
     <div class="title">
-      <h1>ตารางของ Pug</h1>
-      <p id="subtitle">ใส่งานไว้ เดี๋ยวน้องเตือนให้เอง</p>
+      <h1>Pug's Schedule</h1>
+      <p id="subtitle">Add your plans and Pug will remind you.</p>
     </div>
     <div class="nav">
-      <button class="px icon" id="prev" title="เดือนก่อน">◀</button>
+      <button class="px icon" id="prev" title="Previous month">◀</button>
       <div class="month" id="month"></div>
-      <button class="px icon" id="next" title="เดือนถัดไป">▶</button>
-      <button class="px" id="today">วันนี้</button>
+      <button class="px icon" id="next" title="Next month">▶</button>
+      <button class="px" id="today">Today</button>
     </div>
   </header>
 
   <main>
     <section class="cal px">
-      <div class="week"><span>อา</span><span>จ</span><span>อ</span><span>พ</span><span>พฤ</span><span>ศ</span><span>ส</span></div>
+      <div class="week"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
       <div class="days" id="days"></div>
     </section>
 
@@ -153,19 +159,24 @@
 
       <div class="rest px" id="rest" hidden>
         <svg class="heart"><use href="#heart"/></svg>
-        <div>วันนี้งานเยอะจัง<br><b>พักด้วยน้า</b></div>
+        <div>That's a lot for one day.<br><b>Take a break too!</b></div>
       </div>
 
       <div class="panel px">
-        <h2>เพิ่มงาน</h2>
+        <h2>New plan</h2>
         <form id="form" autocomplete="off">
-          <label for="time">เวลา</label>
+          <div class="dates">
+            <div><label for="from">From</label><input id="from" type="date" required></div>
+            <div><label for="to">To</label><input id="to" type="date" required></div>
+          </div>
+          <p class="hint">Drag across days, or Shift-click, to pick several days.</p>
+          <label for="time">Time</label>
           <input id="time" type="time" value="09:00" required>
-          <label for="t">หัวข้องาน</label>
-          <input id="t" placeholder="เช่น ประชุม, สอบ, นัดกินข้าว" required maxlength="60">
-          <label for="d">หัวข้อย่อย</label>
-          <input id="d" placeholder="รายละเอียด (ไม่ใส่ก็ได้)" maxlength="80">
-          <button class="px primary" type="submit">+ เพิ่มในตาราง</button>
+          <label for="t">Title</label>
+          <input id="t" placeholder="e.g. Meeting, exam, dinner" required maxlength="60">
+          <label for="d">Details</label>
+          <input id="d" placeholder="Optional" maxlength="80">
+          <button class="px primary" type="submit">+ Add to schedule</button>
         </form>
       </div>
     </aside>
@@ -175,29 +186,42 @@
 
 <script>
 (() => {
-  const MONTHS = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
-                  "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-  const WEEKDAYS = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
+  const MONTHS = ["January", "February", "March", "April", "May", "June",
+                  "July", "August", "September", "October", "November", "December"];
+  const SHORT = MONTHS.map((m) => m.slice(0, 3));
+  const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const BUSY = 4;
 
   let events = [];
   let today = iso(new Date());
-  let selected = today;
+  let selected = { from: today, to: today };  // the picked days, from <= to
+  let anchor = today;                          // where a drag or Shift-click starts
+  let dragging = false;
   let view = { y: +today.slice(0, 4), m: +today.slice(5, 7) - 1 };
 
   const $ = (id) => document.getElementById(id);
   function iso(d) {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   }
+  function parse(key) {
+    const [y, m, d] = key.split("-").map(Number);
+    return new Date(y, m - 1, d);
+  }
+  function short(key) { const d = parse(key); return `${SHORT[d.getMonth()]} ${d.getDate()}`; }
   function el(tag, cls, text) {
     const e = document.createElement(tag);
     if (cls) e.className = cls;
     if (text !== undefined) e.textContent = text;
     return e;
   }
-  function onDay(date) {
-    return events.filter((e) => e.date === date).sort((a, b) => a.time.localeCompare(b.time));
+  const endOf = (e) => e.end || e.date;
+  // events that touch any day from a to b
+  function between(a, b) {
+    return events.filter((e) => e.date <= b && endOf(e) >= a)
+                 .sort((x, y) => (x.date + x.time).localeCompare(y.date + y.time));
   }
+  function onDay(key) { return between(key, key); }
+  function span(e) { return e.end && e.end !== e.date ? `${short(e.date)} – ${short(e.end)}` : ""; }
   function save() {
     try { window.webkit.messageHandlers.pug.postMessage({ op: "save", events }); } catch (_) {}
   }
@@ -208,9 +232,14 @@
     clearTimeout(toast.timer);
     toast.timer = setTimeout(() => (t.hidden = true), 2200);
   }
+  function pick(a, b) {
+    selected = a <= b ? { from: a, to: b } : { from: b, to: a };
+    $("from").value = selected.from;
+    $("to").value = selected.to;
+  }
 
   function renderMonth() {
-    $("month").textContent = `${MONTHS[view.m]} ${view.y + 543}`;
+    $("month").textContent = `${MONTHS[view.m]} ${view.y}`;
     const days = $("days");
     days.textContent = "";
     const first = new Date(view.y, view.m, 1);
@@ -221,15 +250,15 @@
       const cell = el("div", "day px flat");
       if (d.getMonth() !== view.m) cell.classList.add("other");
       if (key === today) cell.classList.add("today");
-      if (key === selected) cell.classList.add("sel");
+      if (key >= selected.from && key <= selected.to) cell.classList.add("sel");
       cell.appendChild(el("span", "num", d.getDate()));
       const list = onDay(key);
       list.slice(0, 2).forEach((e) => {
-        const c = el("div", "chip" + (e.notified ? " done" : ""), e.title);
-        c.title = `${e.time} ${e.title}`;
+        const c = el("div", "chip" + (e.end && e.end !== e.date ? " span" : "") + (e.notified ? " done" : ""), e.title);
+        c.title = `${e.time} ${e.title}${span(e) ? " (" + span(e) + ")" : ""}`;
         cell.appendChild(c);
       });
-      if (list.length > 2) cell.appendChild(el("div", "more", `+${list.length - 2} งาน`));
+      if (list.length > 2) cell.appendChild(el("div", "more", `+${list.length - 2} more`));
       if (list.length >= BUSY) {
         const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         s.setAttribute("class", "heart busy");
@@ -239,29 +268,41 @@
         s.appendChild(u);
         cell.appendChild(s);
       }
-      cell.addEventListener("click", () => { selected = key; render(); $("t").focus(); });
+      cell.addEventListener("mousedown", (ev) => {
+        if (!ev.shiftKey) anchor = key;
+        dragging = true;
+        pick(anchor, key);
+        render();
+      });
+      cell.addEventListener("mouseenter", () => {
+        if (!dragging) return;
+        pick(anchor, key);
+        render();
+      });
       days.appendChild(cell);
     }
   }
 
   function renderDay() {
-    const [y, m, d] = selected.split("-").map(Number);
-    const date = new Date(y, m - 1, d);
-    $("dayTitle").textContent = `วัน${WEEKDAYS[date.getDay()]}ที่ ${d} ${MONTHS[m - 1]}`;
+    const one = selected.from === selected.to;
+    const d = parse(selected.from);
+    $("dayTitle").textContent = one
+      ? `${WEEKDAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}`
+      : `${short(selected.from)} – ${short(selected.to)}`;
     const list = $("list");
     list.textContent = "";
-    const items = onDay(selected);
-    if (!items.length) list.appendChild(el("div", "empty", "ยังไม่มีงาน ว่างทั้งวันเลย"));
+    const items = between(selected.from, selected.to);
+    if (!items.length) list.appendChild(el("div", "empty", one ? "Nothing planned. A free day!" : "Nothing planned on these days."));
     items.forEach((e) => {
       const row = el("div", "item px flat" + (e.notified ? " done" : ""));
       row.appendChild(el("span", "time", e.time));
       const text = el("div");
       text.appendChild(el("b", "", e.title));
-      if (e.detail) text.appendChild(el("small", "", e.detail));
-      if (e.notified) text.appendChild(el("small", "", (e.detail ? " · " : "") + "เตือนแล้ว ✓"));
+      const notes = [span(e) || (one ? "" : short(e.date)), e.detail, e.notified ? "Reminded ✓" : ""].filter(Boolean);
+      if (notes.length) text.appendChild(el("small", "", notes.join(" · ")));
       row.appendChild(text);
       const del = el("button", "del", "✕");
-      del.title = "ลบ";
+      del.title = "Delete";
       del.addEventListener("click", () => {
         events = events.filter((x) => x.id !== e.id);
         save();
@@ -270,40 +311,63 @@
       row.appendChild(del);
       list.appendChild(row);
     });
-    $("rest").hidden = items.length < BUSY;
-    const n = onDay(today).filter((e) => !e.notified).length;
-    $("subtitle").textContent = n ? `วันนี้เหลืออีก ${n} งาน เดี๋ยวน้องเตือนให้นะ` : "ใส่งานไว้ เดี๋ยวน้องเตือนให้เอง";
+    $("rest").hidden = !one || items.length < BUSY;
+    const n = onDay(today).filter((e) => !e.notified && e.date === today).length;
+    $("subtitle").textContent = n ? `${n} more ${n === 1 ? "plan" : "plans"} today. Pug will remind you.`
+                                  : "Add your plans and Pug will remind you.";
   }
 
   function render() { renderMonth(); renderDay(); }
 
+  document.addEventListener("mouseup", () => {
+    if (!dragging) return;
+    dragging = false;
+    $("t").focus();
+  });
   $("prev").onclick = () => { view.m--; if (view.m < 0) { view.m = 11; view.y--; } renderMonth(); };
   $("next").onclick = () => { view.m++; if (view.m > 11) { view.m = 0; view.y++; } renderMonth(); };
-  $("today").onclick = () => { selected = today; view = { y: +today.slice(0, 4), m: +today.slice(5, 7) - 1 }; render(); };
+  $("today").onclick = () => { anchor = today; pick(today, today); view = { y: +today.slice(0, 4), m: +today.slice(5, 7) - 1 }; render(); };
+  for (const id of ["from", "to"]) {
+    $(id).addEventListener("change", () => {
+      const a = $("from").value || selected.from, b = $("to").value || a;
+      anchor = a <= b ? a : b;
+      pick(a, b);
+      const v = parse(selected.from);
+      view = { y: v.getFullYear(), m: v.getMonth() };
+      render();
+    });
+  }
 
   $("form").addEventListener("submit", (ev) => {
     ev.preventDefault();
     const title = $("t").value.trim();
     if (!title) return;
     const time = $("time").value || "09:00";
-    events.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
-                  date: selected, time, title, detail: $("d").value.trim(), notified: false });
+    const e = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+                date: selected.from, time, title, detail: $("d").value.trim(), notified: false };
+    if (selected.to !== selected.from) e.end = selected.to;
+    events.push(e);
     save();
-    try { window.webkit.messageHandlers.pug.postMessage({ op: "added", date: selected }); } catch (_) {}
+    try { window.webkit.messageHandlers.pug.postMessage({ op: "added", date: selected.from }); } catch (_) {}
     $("t").value = "";
     $("d").value = "";
     render();
-    toast(`เพิ่ม "${title}" เวลา ${time} แล้ว`);
+    toast(`Added "${title}" at ${time}${span(e) ? ", " + span(e) : ""}`);
   });
 
   window.PUG = {
     load(list, avatar, todayISO) {
       events = Array.isArray(list) ? list : [];
       if (avatar) $("avatar").src = avatar;
-      if (todayISO && todayISO !== today) { today = todayISO; selected = todayISO; view = { y: +today.slice(0, 4), m: +today.slice(5, 7) - 1 }; }
+      if (todayISO && todayISO !== today) {
+        today = todayISO; anchor = today;
+        view = { y: +today.slice(0, 4), m: +today.slice(5, 7) - 1 };
+        pick(today, today);
+      }
       render();
     },
   };
+  pick(today, today);
   render();
 })();
 </script>

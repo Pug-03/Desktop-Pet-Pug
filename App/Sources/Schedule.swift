@@ -4,7 +4,8 @@ import WebKit
 /// One entry in the monthly schedule.
 struct ScheduleEvent: Codable {
     var id: String
-    var date: String      // yyyy-MM-dd
+    var date: String      // yyyy-MM-dd, the first day (the reminder goes off on it)
+    var end: String?      // last day, for plans over several days
     var time: String      // HH:mm
     var title: String
     var detail: String
@@ -46,7 +47,7 @@ final class ScheduleStore {
         save()
     }
 
-    func count(on date: String) -> Int { events.filter { $0.date == date }.count }
+    func count(on date: String) -> Int { events.filter { $0.date <= date && ($0.end ?? $0.date) >= date }.count }
 
     func save() {
         try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
@@ -92,7 +93,7 @@ final class ScheduleWindow: NSObject, WKScriptMessageHandler, WKNavigationDelega
         config.userContentController.add(WeakHandler(self), name: "pug")
         web.navigationDelegate = self
         web.setValue(false, forKey: "drawsBackground")
-        window.title = "ตารางของ Pug"
+        window.title = "Pug's Schedule"
         window.contentView = web
         window.minSize = CGSize(width: 760, height: 560)
         window.isReleasedWhenClosed = false
@@ -176,12 +177,12 @@ enum SchedulePreview {
         f.dateFormat = "yyyy-MM-dd"
         func day(_ d: Int) -> String { f.string(from: cal.date(byAdding: .day, value: d, to: Date())!) }
         store.replace([
-            ScheduleEvent(id: "1", date: day(0), time: "09:00", title: "ประชุมทีม", detail: "เตรียมสไลด์", notified: true),
-            ScheduleEvent(id: "2", date: day(0), time: "12:30", title: "กินข้าวด้วยกัน", detail: "ร้านเดิม", notified: false),
-            ScheduleEvent(id: "3", date: day(0), time: "15:00", title: "ส่งงาน", detail: "รายงานบทที่ 3", notified: false),
-            ScheduleEvent(id: "4", date: day(0), time: "20:00", title: "โทรหากัน", detail: "", notified: false),
-            ScheduleEvent(id: "5", date: day(2), time: "10:00", title: "สอบ", detail: "วิชาสถิติ", notified: false),
-            ScheduleEvent(id: "6", date: day(5), time: "18:00", title: "วันครบรอบ", detail: "จองร้านแล้ว", notified: false),
+            ScheduleEvent(id: "1", date: day(0), time: "09:00", title: "Team meeting", detail: "Bring the slides", notified: true),
+            ScheduleEvent(id: "2", date: day(0), time: "12:30", title: "Lunch together", detail: "Usual place", notified: false),
+            ScheduleEvent(id: "3", date: day(0), time: "15:00", title: "Hand in report", detail: "Chapter 3", notified: false),
+            ScheduleEvent(id: "4", date: day(0), time: "20:00", title: "Call", detail: "", notified: false),
+            ScheduleEvent(id: "5", date: day(2), time: "10:00", title: "Exam", detail: "Statistics", notified: false),
+            ScheduleEvent(id: "6", date: day(5), end: day(8), time: "08:00", title: "Trip to Chiang Mai", detail: "Anniversary", notified: false),
         ])
         let frames = AppController.outfitFrames(0)
         let w = ScheduleWindow(store: store, avatar: ScheduleWindow.portrait(from: frames?["stand.normal.0"]))
