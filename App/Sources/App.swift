@@ -162,6 +162,8 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         NotificationCenter.default.addObserver(self, selector: #selector(screensChanged),
                                                name: NSApplication.didChangeScreenParametersNotification, object: nil)
+        NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(spaceChanged),
+                                                          name: NSWorkspace.activeSpaceDidChangeNotification, object: nil)
         NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(didWake),
                                                           name: NSWorkspace.didWakeNotification, object: nil)
         engine.dropIn(atX: main.midX + CGFloat.random(in: -200...200))
@@ -231,12 +233,12 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         return width
     }
 
-    private var fullScreenCache: (time: CFTimeInterval, frames: [CGRect]) = (0, [])
+    private var fullScreenCache: [CGRect]?
 
-    /// Screen frames currently covered by a full-screen app window (refreshed at most twice a second).
+    /// Screen frames currently covered by a full-screen app window. Re-read only after a Space
+    /// switch settles (see `spaceChanged`), so a half-finished swipe never moves the floor.
     private func fullScreenFrames() -> [CGRect] {
-        let now = CACurrentMediaTime()
-        if now - fullScreenCache.time < 0.5 { return fullScreenCache.frames }
+        if let f = fullScreenCache { return f }
         let primaryH = NSScreen.screens.first?.frame.height ?? 0
         let list = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID)
             as? [[String: Any]] ?? []
@@ -245,9 +247,14 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             guard let d = w[kCGWindowBounds as String] as? NSDictionary,
                   let r = CGRect(dictionaryRepresentation: d) else { continue }
             let flipped = CGRect(x: r.minX, y: primaryH - r.maxY, width: r.width, height: r.height)
-            if let s = NSScreen.screens.first(where: { $0.frame == flipped }) { frames.append(s.frame) }
+            // full-screen windows on notched Macs stop below the notch, so only the width
+            // and the bottom edge must match (a zoomed window stops above the Dock instead)
+            if let s = NSScreen.screens.first(where: {
+                abs(flipped.minX - $0.frame.minX) < 1 && abs(flipped.width - $0.frame.width) < 1
+                    && abs(flipped.minY - $0.frame.minY) < 1 && flipped.height > $0.frame.height * 0.8
+            }) { frames.append(s.frame) }
         }
-        fullScreenCache = (now, frames)
+        fullScreenCache = frames
         return frames
     }
 
@@ -288,7 +295,26 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if panel.frame.origin != origin { panel.setFrameOrigin(origin) }
     }
 
-    @objc private func screensChanged() { engine.noteInteraction() }
+    @objc private func screensChanged() {
+        fullScreenCache = nil
+        engine.noteInteraction()
+    }
+
+    /// After a Space switch the pet is simply already standing on the new floor, no easing.
+    @objc private func spaceChanged() {
+        fullScreenCache = nil
+        engine.settleOnFloor()
+        // the window list can lag the notification a little
+        for delay in [0.15, 0.4] {
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+                self?.fullScreenCache = nil
+                self?.engine.settleOnFloor()
+                self?.view.needsDisplay = true
+            }
+        }
+        layoutWindow()
+        view.needsDisplay = true
+    }
 
     @objc private func didWake() {
         lastTick = CACurrentMediaTime()

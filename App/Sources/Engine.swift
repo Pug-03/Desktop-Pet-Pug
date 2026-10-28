@@ -54,6 +54,9 @@ final class PetEngine {
     private(set) var state: PetState = .idle
     private(set) var t: Double = 0
     private(set) var clock: Double = 0
+    private var lastDt: Double = 0
+    /// The floor moved under the pet (Dock shown or hidden): ease to it instead of jumping.
+    private var gliding = false
     private(set) var pivot: CGPoint
     private(set) var grabArt: CGPoint?
     private(set) var rotation: CGFloat = 0
@@ -148,6 +151,7 @@ final class PetEngine {
 
     var preferredFPS: Double {
         switch state {
+        case _ where gliding: return 60
         case .held, .falling, .landing, .tickled: return 60
         case .sleeping: return particles.isEmpty && bubble == nil ? 8 : 20
         case .idle: return particles.isEmpty && bubble == nil ? 15 : 30
@@ -336,6 +340,7 @@ final class PetEngine {
 
     func tick(_ rawDt: Double) {
         let dt = min(max(rawDt, 0), 1.0 / 15)
+        lastDt = dt
         clock += dt
         t += dt
         if pressed && state != .held && clock - pressAt > 0.3 { beginHold() }
@@ -621,11 +626,20 @@ final class PetEngine {
 
     // MARK: - helpers
 
+    /// Put a standing pet straight onto the current floor (used after a Space switch).
+    func settleOnFloor() {
+        guard grabArt == nil, state != .held, state != .falling else { return }
+        pivot.y = screenBounds(pivot).minY
+        gliding = false
+    }
+
     private func snap() {
         guard grabArt == nil else { return }
         let b = screenBounds(pivot)
         let m = 18 * scale
-        pivot.y = b.minY
+        let gap = b.minY - pivot.y
+        gliding = abs(gap) > 0.5
+        pivot.y = gliding ? pivot.y + gap * CGFloat(min(1, 9 * lastDt)) : b.minY
         pivot.x = min(max(pivot.x, b.minX + m), b.maxX - m)
     }
 
