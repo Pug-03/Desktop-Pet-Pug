@@ -169,7 +169,7 @@
             <div><label for="from">From</label><input id="from" type="date" required></div>
             <div><label for="to">To</label><input id="to" type="date" required></div>
           </div>
-          <p class="hint">Drag across days, or Shift-click, to pick several days.</p>
+          <p class="hint">Drag across days, or Shift-click, to pick several days. Scroll the calendar to change month.</p>
           <label for="time">Time</label>
           <input id="time" type="time" value="09:00" required>
           <label for="t">Title</label>
@@ -251,7 +251,8 @@
       if (d.getMonth() !== view.m) cell.classList.add("other");
       if (key === today) cell.classList.add("today");
       if (key >= selected.from && key <= selected.to) cell.classList.add("sel");
-      cell.appendChild(el("span", "num", d.getDate()));
+      // the 1st shows its month, like "Nov 1", so the turn of the month is easy to see
+      cell.appendChild(el("span", "num", d.getDate() === 1 ? `${SHORT[d.getMonth()]} 1` : d.getDate()));
       const list = onDay(key);
       list.slice(0, 2).forEach((e) => {
         const c = el("div", "chip" + (e.end && e.end !== e.date ? " span" : "") + (e.notified ? " done" : ""), e.title);
@@ -324,8 +325,26 @@
     dragging = false;
     $("t").focus();
   });
-  $("prev").onclick = () => { view.m--; if (view.m < 0) { view.m = 11; view.y--; } renderMonth(); };
-  $("next").onclick = () => { view.m++; if (view.m > 11) { view.m = 0; view.y++; } renderMonth(); };
+  function shiftMonth(n) {
+    view.m += n;
+    if (view.m < 0) { view.m = 11; view.y--; }
+    if (view.m > 11) { view.m = 0; view.y++; }
+    renderMonth();
+  }
+  $("prev").onclick = () => shiftMonth(-1);
+  $("next").onclick = () => shiftMonth(1);
+  // scroll (mouse wheel or two-finger swipe, up/down or sideways) over the calendar to change month
+  let wheel = 0, wheelLock = 0;
+  document.querySelector(".cal").addEventListener("wheel", (ev) => {
+    ev.preventDefault();
+    const now = Date.now();
+    if (now < wheelLock) return;
+    wheel += Math.abs(ev.deltaX) > Math.abs(ev.deltaY) ? ev.deltaX : ev.deltaY;
+    if (Math.abs(wheel) < 60) return;
+    shiftMonth(wheel > 0 ? 1 : -1);
+    wheel = 0;
+    wheelLock = now + 450;
+  }, { passive: false });
   $("today").onclick = () => { anchor = today; pick(today, today); view = { y: +today.slice(0, 4), m: +today.slice(5, 7) - 1 }; render(); };
   for (const id of ["from", "to"]) {
     $(id).addEventListener("change", () => {
