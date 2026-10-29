@@ -77,6 +77,8 @@
   .day.other { opacity: .38; }
   .day.today .num { background: var(--accent); color: #fff; }
   .day.sel { background: var(--sel); }
+  body.dragging, body.dragging * { cursor: col-resize !important; }
+  .days { user-select: none; -webkit-user-select: none; -webkit-user-drag: none; }
   .day:hover { background: #fff; }
   .day.sel:hover { background: var(--sel); }
   .num { flex: none; align-self: flex-start; padding: 0 5px; font-size: 14px; }
@@ -169,7 +171,7 @@
             <div><label for="from">From</label><input id="from" type="date" required></div>
             <div><label for="to">To</label><input id="to" type="date" required></div>
           </div>
-          <p class="hint">Drag across days, or Shift-click, to pick several days. Scroll the calendar to change month.</p>
+          <p class="hint">Hold on a day, then drag, or Shift-click, to pick several days. Scroll the calendar to change month.</p>
           <label for="time">Time</label>
           <input id="time" type="time" value="09:00" required>
           <label for="t">Title</label>
@@ -196,7 +198,11 @@
   let today = iso(new Date());
   let selected = { from: today, to: today };  // the picked days, from <= to
   let anchor = today;                          // where a drag or Shift-click starts
-  let dragging = false;
+  let dragging = false;                        // only after holding the mouse on a day for HOLD ms
+  let holdTimer = 0;
+  let downAt = null;                           // where the button went down, while it is held
+  let pendingLoad = false;                     // plans that came in from Pug during a drag
+  const HOLD = 350;
   let view = { y: +today.slice(0, 4), m: +today.slice(5, 7) - 1 };
 
   const $ = (id) => document.getElementById(id);
@@ -248,6 +254,7 @@
       const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
       const key = iso(d);
       const cell = el("div", "day px flat");
+      cell.dataset.key = key;
       if (d.getMonth() !== view.m) cell.classList.add("other");
       if (key === today) cell.classList.add("today");
       if (key >= selected.from && key <= selected.to) cell.classList.add("sel");
@@ -269,17 +276,6 @@
         s.appendChild(u);
         cell.appendChild(s);
       }
-      cell.addEventListener("mousedown", (ev) => {
-        if (!ev.shiftKey) anchor = key;
-        dragging = true;
-        pick(anchor, key);
-        render();
-      });
-      cell.addEventListener("mouseenter", () => {
-        if (!dragging) return;
-        pick(anchor, key);
-        render();
-      });
       days.appendChild(cell);
     }
   }
@@ -320,11 +316,58 @@
 
   function render() { renderMonth(); renderDay(); }
 
-  document.addEventListener("mouseup", () => {
-    if (!dragging) return;
+  // Picking days. A click picks one day. Holding the button on a day for HOLD ms starts a drag,
+  // and moving over other days stretches the pick. During a drag the cells are only re-coloured,
+  // never rebuilt: rebuilding them makes WebKit send fake mouse moves that read as "button up".
+  const cellAt = (x, y) => document.elementFromPoint(x, y)?.closest(".day");
+  function paintSel() {
+    for (const c of $("days").children) c.classList.toggle("sel", c.dataset.key >= selected.from && c.dataset.key <= selected.to);
+    renderDay();
+  }
+  function stopDrag() {
+    clearTimeout(holdTimer);
+    if (!dragging) return false;
     dragging = false;
-    $("t").focus();
+    document.body.classList.remove("dragging");
+    return true;
+  }
+  $("days").addEventListener("pointerdown", (ev) => {
+    const cell = ev.target.closest(".day");
+    if (ev.button !== 0 || ev.ctrlKey || !cell) return;  // Ctrl-click is a right-click on a Mac
+    ev.preventDefault();  // no text selection, so the browser never starts dragging the day's number
+    $("days").setPointerCapture(ev.pointerId);  // keep getting moves and the release, even outside the window
+    if (!ev.shiftKey) anchor = cell.dataset.key;
+    pick(anchor, cell.dataset.key);
+    paintSel();
+    clearTimeout(holdTimer);
+    downAt = { x: ev.clientX, y: ev.clientY };
+    holdTimer = setTimeout(() => {
+      dragging = true;
+      document.body.classList.add("dragging");
+    }, HOLD);
   });
+  $("days").addEventListener("pointermove", (ev) => {
+    if (!dragging) {
+      // moved more than a jitter before the hold: it stays a click
+      if (downAt && Math.hypot(ev.clientX - downAt.x, ev.clientY - downAt.y) > 4) clearTimeout(holdTimer);
+      return;
+    }
+    const key = cellAt(ev.clientX, ev.clientY)?.dataset.key;
+    if (!key) return;
+    if (selected.from === (anchor <= key ? anchor : key) && selected.to === (anchor <= key ? key : anchor)) return;
+    pick(anchor, key);
+    paintSel();
+  });
+  const release = () => {
+    downAt = null;
+    if (stopDrag()) $("t").focus();
+    if (pendingLoad) { pendingLoad = false; render(); }
+  };
+  $("days").addEventListener("pointerup", release);
+  $("days").addEventListener("pointercancel", release);
+  window.addEventListener("blur", release);
+  $("days").addEventListener("dragstart", (ev) => ev.preventDefault());
+  $("days").addEventListener("webkitmouseforcewillbegin", (ev) => ev.preventDefault());  // a firm trackpad press would start Look Up
   function shiftMonth(n) {
     view.m += n;
     if (view.m < 0) { view.m = 11; view.y--; }
@@ -379,11 +422,15 @@
       events = Array.isArray(list) ? list : [];
       if (avatar) $("avatar").src = avatar;
       if (todayISO && todayISO !== today) {
-        today = todayISO; anchor = today;
-        view = { y: +today.slice(0, 4), m: +today.slice(5, 7) - 1 };
-        pick(today, today);
+        today = todayISO;
+        if (!downAt) {
+          anchor = today;
+          view = { y: +today.slice(0, 4), m: +today.slice(5, 7) - 1 };
+          pick(today, today);
+        }
       }
-      render();
+      // rebuilding the cells mid-press would cut a drag short; draw once the button is up
+      if (downAt) pendingLoad = true; else render();
     },
   };
   pick(today, today);
