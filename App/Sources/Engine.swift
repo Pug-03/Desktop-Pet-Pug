@@ -569,7 +569,8 @@ final class PetEngine {
         vel = .zero
         landingImpact = impact
         dropScreen = nil
-        dizzyAfterLanding = shaken || impact > 2300
+        // a drop-in from the top of a tall screen lands hard too, but then he says hello instead
+        dizzyAfterLanding = shaken || (impact > 2300 && !greetAfterLanding)
         shaken = false
         frameKey = "stand.surprised.0"
         if impact > 500 {
@@ -590,14 +591,17 @@ final class PetEngine {
         frameKey = t < 0.35 ? "stand.surprised.0" : "stand.normal.0"
         guard t > 0.6 else { return }
         sx = 1; sy = 1
-        if dizzyAfterLanding {
+        if !pendingTalk.isEmpty {
+            // reminders and the letter's lines come first, even after a hard landing
             dizzyAfterLanding = false
-            if rng.chance(0.7) { say("dizzy") }
-            startDizzy()
-        } else if !pendingTalk.isEmpty {
+            greetAfterLanding = false
             let lines = pendingTalk
             pendingTalk.removeAll()
             startTalk(lines, then: .idle)
+        } else if dizzyAfterLanding {
+            dizzyAfterLanding = false
+            if rng.chance(0.7) { say("dizzy") }
+            startDizzy()
         } else if greetAfterLanding {
             greetAfterLanding = false
             startTalk([(pick("hello") ?? "Hi!", .wave)], then: .idle)
