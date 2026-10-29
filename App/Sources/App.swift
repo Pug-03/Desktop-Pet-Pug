@@ -39,7 +39,8 @@ enum LoginItem {
 
     static func set(_ on: Bool) {
         if on {
-            guard let exe = Bundle.main.executablePath else { return }
+            // a copy run straight from Downloads lives in a temporary folder that is gone after a restart
+            guard let exe = Bundle.main.executablePath, !exe.contains("/AppTranslocation/") else { return }
             let plist: [String: Any] = ["Label": label, "ProgramArguments": [exe], "RunAtLoad": true,
                                         "ProcessType": "Interactive"]
             try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
