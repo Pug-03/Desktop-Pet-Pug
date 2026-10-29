@@ -24,6 +24,10 @@ struct Settings {
         get { d.bool(forKey: "firstRunDone") }
         set { d.set(newValue, forKey: "firstRunDone") }
     }
+    static var announcedBuild: Int {  // the newest update he has already told her about
+        get { d.integer(forKey: "announcedBuild") }
+        set { d.set(newValue, forKey: "announcedBuild") }
+    }
 
     static func scale(_ size: Int) -> CGFloat { [0.4, 0.5, 0.65][max(0, min(2, size))] }
 }
@@ -98,6 +102,8 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var reminderTimer: Timer?
     private var recentAdds: [Date] = []
     private var letterWindow: LetterWindow?
+    private var update: Updater.Latest?  // a newer Pug that is ready to install
+    private var updateTimer: Timer?
     private var guideWindow: GuideWindow?
 
     // MARK: - setup
@@ -149,6 +155,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         setupStatusItem()
         setupEditMenu()
         startReminders()
+        startUpdateChecks()
 
         if !Settings.firstRunDone {
             Settings.firstRunDone = true
@@ -408,6 +415,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         m.addItem(.separator())
         add("Edit lines…", #selector(editMessages))
         add("Open at login", #selector(toggleLogin), on: LoginItem.enabled)
+        add(update.map { "Update Pug to \($0.version)…" } ?? "Check for updates…", #selector(checkForUpdates))
         m.addItem(.separator())
         add("Quit", #selector(quit))
         return m
@@ -569,5 +577,64 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     @objc private func toggleLogin() { LoginItem.set(!LoginItem.enabled) }
+
+    // MARK: - updates
+
+    /// Look for a new version a minute after launch, then every 6 hours; he says so once per version.
+    private func startUpdateChecks() {
+        let t = Timer(timeInterval: 6 * 3600, repeats: true) { [weak self] _ in self?.autoCheck() }
+        t.tolerance = 600
+        RunLoop.main.add(t, forMode: .common)
+        updateTimer = t
+        DispatchQueue.main.asyncAfter(deadline: .now() + 60) { [weak self] in self?.autoCheck() }
+    }
+
+    private func autoCheck() {
+        Updater.fetchLatest { [weak self] latest in
+            guard let self, let latest, latest.build > Updater.build else { return }
+            self.update = latest
+            let asleep: [PetState] = [.sleeping, .deskSleeping, .yawning, .rubbing, .sittingDown]
+            guard latest.build > Settings.announcedBuild, !self.hidden, !self.engine.isBusy,
+                  !asleep.contains(self.engine.state) else { return }
+            Settings.announcedBuild = latest.build
+            let line = self.messages.lines("update").randomElement() ?? "There's a new version of me! Right-click me and choose Update Pug"
+            self.engine.sayLines([line])
+            self.kick()
+        }
+    }
+
+    @objc private func checkForUpdates() {
+        Updater.fetchLatest { [weak self] latest in
+            guard let self else { return }
+            guard let latest else {
+                self.alert("Couldn't check for updates", "Check that you're online, then try again.")
+                return
+            }
+            guard latest.build > Updater.build else {
+                self.update = nil
+                self.alert("You have the newest Pug", "Version \(Updater.version).")
+                return
+            }
+            self.update = latest
+            let ok = self.alert("Pug \(latest.version) is ready",
+                                "You have \(Updater.version). Pug closes for a moment, updates, and comes right back. Your plans and settings stay as they are.",
+                                buttons: ["Update", "Later"])
+            guard ok else { return }
+            Updater.install(latest) { [weak self] message in
+                self?.alert("Pug couldn't update", message + "\n\nYou can also download Pug.zip from github.com/Pug-03/Desktop-Pet-Pug and drag Pug into Applications.")
+            }
+        }
+    }
+
+    /// A small dialog; true when she picks the first button.
+    @discardableResult
+    private func alert(_ title: String, _ text: String, buttons: [String] = ["OK"]) -> Bool {
+        let a = NSAlert()
+        a.messageText = title
+        a.informativeText = text
+        buttons.forEach { a.addButton(withTitle: $0) }
+        NSApp.activate(ignoringOtherApps: true)
+        return a.runModal() == .alertFirstButtonReturn
+    }
     @objc private func quit() { NSApp.terminate(nil) }
 }

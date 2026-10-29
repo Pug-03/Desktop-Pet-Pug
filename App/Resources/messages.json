@@ -1,6 +1,7 @@
 {
   "_how_to_edit": "Change the lines inside [ ]. Add as many as you like, separated by commas. Saved changes apply right away.",
 
+  "update": ["There's a new version of me! Right-click me and choose Update Pug", "Psst, I got an update. Right-click me and pick Update Pug"],
   "hello": ["I'm here!", "Did you miss me?", "Hi! How's your day going?"],
   "goodnight": ["Good night~", "Miss you already", "Call me if you can't sleep"],
   "random": ["Miss you", "Don't forget to drink water", "Rest your eyes for a bit", "Have you eaten yet?", "Love you"],
