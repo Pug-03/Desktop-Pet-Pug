@@ -58,6 +58,12 @@
   .card span, .card li { color: var(--muted); }
   .card ol { margin: 4px 0 0; padding-left: 20px; }
   .menu { padding: 10px 16px; }
+  .menu { overflow-x: auto; }
+  @media (max-width: 640px) {  /* a narrow window: one-clip lessons stack the clip over the text */
+    .items.one .card { grid-template-columns: 1fr; }
+    .items.one .card video { width: 100%; }
+    .items.two { grid-template-columns: 1fr; }
+  }
   .menu table { width: 100%; border-collapse: collapse; }
   .menu td { padding: 3px 4px; vertical-align: top; border-bottom: 2px dashed var(--pink-soft); }
   .menu tr:last-child td { border-bottom: 0; }
@@ -140,7 +146,7 @@
       intro: "Let him remember your plans and tell you when it's time.",
       items: [
         { clip: "12_reminder", tag: "Right-click him, then Schedule / reminders", title: "He reminds you on time", list: [
-          "Click a day on the calendar (drag or Shift-click for several days)",
+          "Click a day on the calendar (hold then drag, or Shift-click, for several days)",
           "Fill in the time, title and details, then Add to schedule",
           "When it's time he jumps up to tell you; click him to say OK",
           "Scroll over the calendar to change month",
