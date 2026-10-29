@@ -12,6 +12,7 @@ enum L {
         "Hide": "ซ่อนตัว",
         "Call him": "เรียกมาหา",
         "Say something": "พูดอะไรหน่อย",
+        "His last note…": "อ่านข้อความล่าสุดอีกครั้ง…",
         "Schedule / reminders…": "ตาราง / แจ้งเตือน…",
         "Anniversary letter…": "จดหมายวันครบรอบ…",
         "How to play…": "วิธีเล่น…",

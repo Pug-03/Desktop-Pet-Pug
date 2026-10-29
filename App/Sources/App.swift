@@ -28,6 +28,10 @@ struct Settings {
         get { d.string(forKey: "language") ?? "th" }
         set { d.set(newValue, forKey: "language") }
     }
+    static var seenNotes: [String] {  // notes from love.json he has already said
+        get { d.stringArray(forKey: "seenNotes") ?? [] }
+        set { d.set(newValue, forKey: "seenNotes") }
+    }
     static var announcedBuild: Int {  // the newest update he has already told her about
         get { d.integer(forKey: "announcedBuild") }
         set { d.set(newValue, forKey: "announcedBuild") }
@@ -107,6 +111,8 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var recentAdds: [Date] = []
     private var letterWindow: LetterWindow?
     private var cpuWindow: CPUWindow?
+    private let love = Love()
+    private var loveTimers: [Timer] = []
     private var update: Updater.Latest?  // a newer Pug that is ready to install
     private var updateTimer: Timer?
     private var guideWindow: GuideWindow?
@@ -161,6 +167,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         setupEditMenu()
         startReminders()
         startUpdateChecks()
+        startLove()
 
         if !Settings.firstRunDone {
             Settings.firstRunDone = true
@@ -394,6 +401,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         add(L.t(hidden ? "Show" : "Hide"), #selector(toggleHidden))
         add(L.t("Call him"), #selector(summon))
         add(L.t("Say something"), #selector(talk))
+        if love.latestNote() != nil { add(L.t("His last note…"), #selector(sayLastNote)) }
         add(L.t("Schedule / reminders…"), #selector(openSchedule))
         add(L.t("Anniversary letter…"), #selector(openLetter))
         add(L.t("How to play…"), #selector(openGuide))
@@ -614,6 +622,48 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     @objc private func toggleLogin() { LoginItem.set(!LoginItem.enabled) }
+
+    // MARK: - love notes
+
+    /// love.json comes in 20 seconds after launch and then every hour; every minute he looks for a
+    /// new note from him to say.
+    private func startLove() {
+        let fetch = Timer(timeInterval: 3600, repeats: true) { [weak self] _ in self?.love.refresh { self?.everyMinute() } }
+        let minute = Timer(timeInterval: 60, repeats: true) { [weak self] _ in self?.everyMinute() }
+        for t in [fetch, minute] {
+            t.tolerance = 5
+            RunLoop.main.add(t, forMode: .common)
+        }
+        loveTimers = [fetch, minute]
+        DispatchQueue.main.asyncAfter(deadline: .now() + 20) { [weak self] in self?.love.refresh { self?.everyMinute() } }
+    }
+
+    /// He only speaks up when she is at the Mac and he is awake, standing about and not mid-sentence.
+    private var canSpeak: Bool {
+        let away = CGEventSource.secondsSinceLastEventType(.combinedSessionState, eventType: CGEventType(rawValue: ~0)!)
+        let free: [PetState] = [.idle, .walking, .working]
+        return !hidden && !engine.isBusy && free.contains(engine.state) && away < 120 && letterWindow?.window.isVisible != true
+    }
+
+    private func everyMinute() {
+        let now = Date()
+        guard canSpeak else { return }
+        var seen = Settings.seenNotes
+        if let note = love.unseenNotes(seen: Set(seen), now: now).first {
+            seen.append(note.id)
+            Settings.seenNotes = seen
+            engine.sayLines(note.text.components(separatedBy: "\n\n"))
+            kick()
+            return
+        }
+
+    }
+
+    @objc private func sayLastNote() {
+        guard let note = love.latestNote() else { return }
+        engine.sayLines(note.text.components(separatedBy: "\n\n"))
+        kick()
+    }
 
     // MARK: - updates
 
