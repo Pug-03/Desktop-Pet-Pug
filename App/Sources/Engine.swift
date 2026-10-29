@@ -374,7 +374,7 @@ final class PetEngine {
     // MARK: - tick
 
     func tick(_ rawDt: Double) {
-        let dt = min(max(rawDt, 0), 1.0 / 15)
+        let dt = min(max(rawDt, 0), 0.15)  // covers the 8 fps of sleep, so his clock keeps real time
         lastDt = dt
         clock += dt
         t += dt
