@@ -24,8 +24,8 @@ struct Settings {
         get { d.bool(forKey: "firstRunDone") }
         set { d.set(newValue, forKey: "firstRunDone") }
     }
-    static var language: String {  // "en" or "th"
-        get { d.string(forKey: "language") ?? "en" }
+    static var language: String {  // "th" or "en"; Thai unless she picks English
+        get { d.string(forKey: "language") ?? "th" }
         set { d.set(newValue, forKey: "language") }
     }
     static var announcedBuild: Int {  // the newest update he has already told her about

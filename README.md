@@ -129,7 +129,7 @@ Right-click him, or click Pug's face in the menu bar at the top of the screen.
 | Size | Small · Medium · Large |
 | Work or sleep when left alone | After 1 · 3 · 5 · 10 · 30 min |
 | Walk around | Turn his walking on or off |
-| Language (ภาษา) | English or Thai: the menu, his lines, the letter, the calendar and the lessons |
+| Language (ภาษา) | Thai (the default) or English: the menu, his lines, the letter, the calendar and the lessons with their clips |
 | Edit lines… | Change the things he says |
 | Open at login | On / off |
 | CPU usage… | Live graphs of how hard the whole Mac and Pug himself are working, over the last 2 minutes |
@@ -189,7 +189,7 @@ build/Pug.app/Contents/MacOS/Pug --update-now        # install the newest build 
 | Pixel effects | `tools/effects.py` |
 | Atlas / icon | `tools/build_sprites.py` · `tools/make_icon.py` |
 | App (Swift) | `App/Sources/` — `Engine` behaviour/physics · `Renderer` drawing · `App` window/menu/reminders · `Schedule` calendar · `Messages` lines · `Letter` letter and guide · `Recorder` demo clips |
-| How to play | `App/Resources/guide.html` + mp4 clips in `App/Resources/guide/` · `Pug --guide-preview out.png [lesson]` |
+| How to play | `App/Resources/guide.html` + mp4 clips in `App/Resources/guide/` (Thai set in `guide/th/`: record with the language set to Thai, then `ffmpeg -i demo/X.mp4 -vf crop=500:480:390:196 guide/th/X.mp4`) · `Pug --guide-preview out.png [lesson]` |
 | Letter | `App/Resources/letter.json` (the letter and his lines after the gift) · `letter.html` · `Pug --letter-preview out.png [page]` · to see the first-launch letter again: `defaults delete com.pug.desktoppet letterShown` |
 | Schedule | `App/Resources/schedule.html` (data in `~/Library/Application Support/Pug/schedule.json`) · `Pug --schedule-preview out.png` |
 | Demo clips | `demo/` (one per behaviour, `00_all.mp4` has them all) |
