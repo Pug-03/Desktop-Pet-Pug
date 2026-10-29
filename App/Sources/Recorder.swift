@@ -74,7 +74,7 @@ enum Recorder {
             ]),
             Clip(name: "12_reminder", caption: "A plan in the schedule is due → he jumps up to remind you (click to say OK)", steps: [
                 .act { $0.goToSleep(immediately: true) }, .move(away, 0), .wait(2),
-                .act { $0.remind("15:00  Hand in report\nChapter 3") }, .wait(6),
+                .act { $0.remind(L.thai ? "15:00  ส่งงาน\nรายงานบทที่ 3" : "15:00  Hand in report\nChapter 3") }, .wait(6),
                 .move(chest, 0.7), .click, .wait(2.5),
             ]),
             Clip(name: "13_work", caption: "Daytime → he thinks, codes for a long stretch, cheers you on, then takes a walk", steps: [
@@ -104,7 +104,7 @@ enum Recorder {
         let res = Bundle.main.resourceURL!
         guard let fx = Atlas.load(png: res.appendingPathComponent("sprites/effects.png"), json: res.appendingPathComponent("sprites/effects.json"))
         else { print("missing sprites"); return 1 }
-        let msgs = Messages(fixed: Messages.parse(res.appendingPathComponent("messages.json")) ?? [:])
+        let msgs = Messages(fixed: Messages.parse(res.appendingPathComponent(L.thai ? "messages.th.json" : "messages.json")) ?? [:])
         let renderer = Renderer(effects: fx)
         try? FileManager.default.createDirectory(at: outDir, withIntermediateDirectories: true)
 
