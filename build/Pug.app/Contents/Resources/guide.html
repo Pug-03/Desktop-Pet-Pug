@@ -306,7 +306,7 @@
     (l.items || []).forEach((it) => {
       const card = el("div", "card px");
       const v = el("video");
-      v.src = `guide/${it.clip}.mp4`;
+      v.src = `guide/${window.LANG === "th" ? "th/" : ""}${it.clip}.mp4`;  // the Thai set has Thai speech bubbles
       v.autoplay = v.loop = v.muted = v.playsInline = true;
       card.appendChild(v);
       const text = el("div");

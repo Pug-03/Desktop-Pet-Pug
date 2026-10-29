@@ -8,9 +8,13 @@
 		<data>
 		+rouHKP+WS9yoaUfhVC4Uko0vaE=
 		</data>
+		<key>Resources/cpu.html</key>
+		<data>
+		Bt6O6CcqIMnsL9hc7+/qGyz0mio=
+		</data>
 		<key>Resources/guide.html</key>
 		<data>
-		4HdZzH1lm8SJJawt+E2wxQvPosU=
+		QAm+dHi6kC0MKGO3MnRnAhteVQE=
 		</data>
 		<key>Resources/guide/03_poke_tickle.mp4</key>
 		<data>
@@ -48,6 +52,42 @@
 		<data>
 		Wixmo77MY9rFaPGr2dZOcquF+LY=
 		</data>
+		<key>Resources/guide/th/03_poke_tickle.mp4</key>
+		<data>
+		Jc+OHC1ZeCa4MQmdjbm5giPdYt4=
+		</data>
+		<key>Resources/guide/th/04_poke_dizzy.mp4</key>
+		<data>
+		JqLsLnKpeGhW5zXq276j8Xyr+3M=
+		</data>
+		<key>Resources/guide/th/05_hold_lift.mp4</key>
+		<data>
+		AO0bpJwPTBH4B7y7MYbOBPzrVj0=
+		</data>
+		<key>Resources/guide/th/07_shake_dizzy.mp4</key>
+		<data>
+		a9XaoCvSONTwq3P/v2vvcsOO9e8=
+		</data>
+		<key>Resources/guide/th/08_throw.mp4</key>
+		<data>
+		m5Ax0E+5RfNhZSWATfG898QyqYQ=
+		</data>
+		<key>Resources/guide/th/09_goodnight.mp4</key>
+		<data>
+		aDsVmJZ5GNcwL7cWjfSqWvDL/To=
+		</data>
+		<key>Resources/guide/th/12_reminder.mp4</key>
+		<data>
+		H2n3j9cZpHLmX8kW3V44N+uPoPQ=
+		</data>
+		<key>Resources/guide/th/13_work.mp4</key>
+		<data>
+		CWNeyVhl5WaMngH057/CLP8+Fvw=
+		</data>
+		<key>Resources/guide/th/14_desk_sleep.mp4</key>
+		<data>
+		mXg3V8vLwRntSFh65CA10k/zd+M=
+		</data>
 		<key>Resources/letter.html</key>
 		<data>
 		psDaqw9C7Z06KqPnhPhyNSCyppQ=
@@ -74,19 +114,19 @@
 		</data>
 		<key>Resources/sprites/effects.json</key>
 		<data>
-		jQVBMUPDxCArTuCFKPcJ4zs6qmU=
+		Rm4eha7Nm5HhO+XIbzT+B0g9o4s=
 		</data>
 		<key>Resources/sprites/effects.png</key>
 		<data>
-		DQFUn7mZzcpo+Sg2Uf2+ruoUMnE=
+		GSy/mFTuREgxM+ewdNuKMtFF77E=
 		</data>
 		<key>Resources/sprites/pet.json</key>
 		<data>
-		ZtVxihYe06t341DdfRYrXyFUjWk=
+		DAj5yvBKWV6Pgq4h1RPiQXrAgaM=
 		</data>
 		<key>Resources/sprites/pet.png</key>
 		<data>
-		LvKnzCQmofLzG/Q/QvPqLqTNUi4=
+		sQwsbdbVaeV7oyq91jYboD+Xdxk=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -98,11 +138,18 @@
 			TegpNPW/yE5MYO+J7BmJXsWddaKnhxoqqOIJzt7oiJU=
 			</data>
 		</dict>
+		<key>Resources/cpu.html</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			+G0OgCFNdsBioixt67zJwPp1q79zfzO142Lx6WE5OWE=
+			</data>
+		</dict>
 		<key>Resources/guide.html</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			6dGN89SS+TqTNKh7JyL6unEWg8viQWqcg9y7amIaJ1s=
+			YcT85pZDrMEjfyHzxcitaRIYxh+UNtLQXIl1rOtyCyg=
 			</data>
 		</dict>
 		<key>Resources/guide/03_poke_tickle.mp4</key>
@@ -168,6 +215,69 @@
 			SoU/VImS5iQS8PeSf4ppoVA36FlGLtoS+hY1BdKiaQI=
 			</data>
 		</dict>
+		<key>Resources/guide/th/03_poke_tickle.mp4</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			XLqlxcnHiNuNjdzx6zI+gVRMFHvZf9HpsHx/m/vSt3M=
+			</data>
+		</dict>
+		<key>Resources/guide/th/04_poke_dizzy.mp4</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			xbo2zQBji1GqTIMiDiWVAlITwB4NshC9BTV7HrE35eo=
+			</data>
+		</dict>
+		<key>Resources/guide/th/05_hold_lift.mp4</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			dedLI68P7x3m+oTKyXAYzrYWozJp7vc1IUbTg6nZ0mU=
+			</data>
+		</dict>
+		<key>Resources/guide/th/07_shake_dizzy.mp4</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			cjw4HTvSSdSnRU/2nmKYDV9F0Q5UNUYmvUL4Ur0vNIM=
+			</data>
+		</dict>
+		<key>Resources/guide/th/08_throw.mp4</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			r2j2tP2c80N8EFU6AAg86MfbTzbnuZZyDlwkG4Qr4JI=
+			</data>
+		</dict>
+		<key>Resources/guide/th/09_goodnight.mp4</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			hUXShORP5c1QkuQKcaNyO08+Zk9wJatqK1Ekd/J44BA=
+			</data>
+		</dict>
+		<key>Resources/guide/th/12_reminder.mp4</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			8OsvJJl0RuXJVzA/ZenTYSrxW9J/fvt3QOQr2adFh0c=
+			</data>
+		</dict>
+		<key>Resources/guide/th/13_work.mp4</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			2aH8nYmHyZ7PYjPOHYKcKy41mxXrSyUoNYr9/xBkRYk=
+			</data>
+		</dict>
+		<key>Resources/guide/th/14_desk_sleep.mp4</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			tG4PJJhDaHrNYfBMn8T2Y5rlYymI1AAoEZYBW2Jxr2g=
+			</data>
+		</dict>
 		<key>Resources/letter.html</key>
 		<dict>
 			<key>hash2</key>
@@ -214,28 +324,28 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			LZHWECIf02TGOlaWLSYNzKcSsxJ9/HSj/vcFDkS4e7I=
+			VJi0WStD8kfThddF9v7jc2y89fFeEP3QiN7D9IW2JyI=
 			</data>
 		</dict>
 		<key>Resources/sprites/effects.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			PzHE1r7kF8zJiEjwZYEKqqAJHDbd4j9WmtQBXkOKXys=
+			2UaeNadcZngfz9esYcGxxBkQWbQIwACIZwPuXCmxdQQ=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			5gf9X/ZFPCAn1e1wZmpMdpbbiRSqQMBHEua1HYSXJsU=
+			wKpfd7ZdiSFgz9PXQx1sRhO16/9CnichuVp4VJL3ms8=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			cqmvXW9MzlwMzdPHQWA/Ny90NKY+v7qRpAVtrJ6/bMg=
+			uKLaB6Ypx1vN59290OPEgrn0aGBAO0oAILxBvZ1Ha9s=
 			</data>
 		</dict>
 	</dict>
