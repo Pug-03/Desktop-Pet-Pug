@@ -36,7 +36,7 @@ final class LetterWindow: NSObject, WKScriptMessageHandler, WKNavigationDelegate
         config.userContentController.add(WeakLetterHandler(self), name: "letter")
         web.navigationDelegate = self
         web.setValue(false, forKey: "drawsBackground")
-        window.title = "จดหมาย"
+        window.title = "A letter for you"
         window.contentView = web
         window.isReleasedWhenClosed = false
         window.center()

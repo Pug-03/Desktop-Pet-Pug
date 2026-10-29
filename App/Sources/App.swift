@@ -374,36 +374,36 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             i.state = on ? .on : .off
             (menu ?? m).addItem(i)
         }
-        add(hidden ? "แสดงตัว" : "ซ่อนตัว", #selector(toggleHidden))
-        add("เรียกมาหา", #selector(summon))
-        add("พูดอะไรหน่อย", #selector(talk))
-        add("ตาราง / แจ้งเตือน…", #selector(openSchedule))
-        add("จดหมายวันครบรอบ…", #selector(openLetter))
-        add("วิธีเล่น…", #selector(openGuide))
-        if engine.state == .sleeping { add("ปลุก", #selector(wake)) } else { add("ให้นอนเลย", #selector(sleepNow)) }
+        add(hidden ? "Show" : "Hide", #selector(toggleHidden))
+        add("Call him", #selector(summon))
+        add("Say something", #selector(talk))
+        add("Schedule / reminders…", #selector(openSchedule))
+        add("Anniversary letter…", #selector(openLetter))
+        add("How to play…", #selector(openGuide))
+        if engine.state == .sleeping { add("Wake up", #selector(wake)) } else { add("Sleep now", #selector(sleepNow)) }
         m.addItem(.separator())
 
         let size = NSMenu()
-        for (i, n) in ["เล็ก", "กลาง", "ใหญ่"].enumerated() {
+        for (i, n) in ["Small", "Medium", "Large"].enumerated() {
             add(n, #selector(setSize(_:)), tag: i, on: Settings.size == i, to: size)
         }
-        let zi = NSMenuItem(title: "ขนาด", action: nil, keyEquivalent: "")
+        let zi = NSMenuItem(title: "Size", action: nil, keyEquivalent: "")
         zi.submenu = size
         m.addItem(zi)
 
         let sleep = NSMenu()
         for minutes in [1, 3, 5, 10, 30] {
-            add("\(minutes) นาที", #selector(setSleep(_:)), tag: minutes, on: Int(Settings.sleepMinutes) == minutes, to: sleep)
+            add("\(minutes) min", #selector(setSleep(_:)), tag: minutes, on: Int(Settings.sleepMinutes) == minutes, to: sleep)
         }
-        let li = NSMenuItem(title: "ไปทำงาน (หรือนอนหลัง 4 ทุ่ม) เมื่อไม่มีใครเล่นด้วย", action: nil, keyEquivalent: "")
+        let li = NSMenuItem(title: "Work or sleep when left alone", action: nil, keyEquivalent: "")
         li.submenu = sleep
         m.addItem(li)
-        add("เดินเล่นไปมา", #selector(toggleWalking), on: Settings.walking)
+        add("Walk around", #selector(toggleWalking), on: Settings.walking)
         m.addItem(.separator())
-        add("แก้ไขข้อความ…", #selector(editMessages))
-        add("เปิดเองตอนเปิดเครื่อง", #selector(toggleLogin), on: LoginItem.enabled)
+        add("Edit lines…", #selector(editMessages))
+        add("Open at login", #selector(toggleLogin), on: LoginItem.enabled)
         m.addItem(.separator())
-        add("ออก", #selector(quit))
+        add("Quit", #selector(quit))
         return m
     }
 
@@ -513,7 +513,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let appItem = NSMenuItem()
         main.addItem(appItem)
         let appMenu = NSMenu()
-        appMenu.addItem(withTitle: "ปิดหน้าต่าง", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w")
+        appMenu.addItem(withTitle: "Close Window", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w")
         appItem.submenu = appMenu
         let editItem = NSMenuItem()
         main.addItem(editItem)

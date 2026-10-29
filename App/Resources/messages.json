@@ -1,15 +1,15 @@
 {
-  "_วิธีแก้": "แก้ข้อความในวงเล็บ [ ] ได้เลย ใส่กี่อันก็ได้ คั่นด้วยลูกน้ำ บันทึกแล้วมีผลทันที",
+  "_how_to_edit": "Change the lines inside [ ]. Add as many as you like, separated by commas. Saved changes apply right away.",
 
-  "hello": ["มาแล้วว", "คิดถึงไหมม", "หวัดดีครับ วันนี้เป็นไงบ้าง"],
-  "goodnight": ["ฝันดีน้าา", "คิดถึงนะ", "โทรมาหาได้น้าา"],
-  "random": ["คิดถึงจัง", "อย่าลืมดื่มน้ำน้า", "พักสายตาบ้างนะ", "กินข้าวยัง?", "รักนะ"],
-  "tickle": ["จั๊กจี้ๆ 555", "ฮ่าๆ พอแล้วว", "อย่าจิ้มดิ๊"],
-  "dizzy": ["มึนนน @_@", "หัวหมุนแล้ววว", "เบาๆ หน่อยน้า"],
-  "drop": ["โอ๊ย!", "เบาๆ สิ", "ตูดช้ำเลย"],
-  "rest": ["งานเยอะจัง พักด้วยน้า", "อย่าลืมพักนะ คนเก่ง", "วันนี้แน่นมาก พักบ้างน้า"],
-  "wake": ["งือ… ตื่นแล้วๆ", "ยังง่วงอยู่เลยย", "ปลุกทำไมม"],
-  "work": ["เขียนโค้ดอยู่น้า", "แป๊บนึงน้า ใกล้เสร็จแล้ว", "บั๊กอีกแล้วว", "คิดถึงระหว่างทำงานเลย"],
-  "cheer": ["สู้ๆ นะคนเก่ง", "เป็นกำลังใจให้น้า", "วันนี้เก่งมากเลย", "เหนื่อยก็พักได้นะ อยู่ตรงนี้เสมอ", "ทำได้อยู่แล้ว เชื่อใจเลย"],
-  "break": ["ขอลุกไปยืดเส้นแป๊บ", "นั่งนานแล้ว เดินเล่นหน่อย", "พักสายตาแป๊บนึงน้า"]
+  "hello": ["I'm here!", "Did you miss me?", "Hi! How's your day going?"],
+  "goodnight": ["Good night~", "Miss you already", "Call me if you can't sleep"],
+  "random": ["Miss you", "Don't forget to drink water", "Rest your eyes for a bit", "Have you eaten yet?", "Love you"],
+  "tickle": ["That tickles! Haha", "Hehe, stop it~", "No poking!"],
+  "dizzy": ["So dizzy @_@", "My head is spinning...", "Gently, please~"],
+  "drop": ["Ouch!", "Easy there!", "That hurt a little"],
+  "rest": ["So much to do. Take a break, okay?", "Don't forget to rest, superstar", "Busy day! Rest a little"],
+  "wake": ["Mmm... I'm up, I'm up", "Still sleepy...", "Why'd you wake me?"],
+  "work": ["Coding away~", "Almost done, one sec", "Another bug...", "Thinking of you while I work"],
+  "cheer": ["You've got this!", "Cheering for you!", "You did great today", "Tired? Rest. I'm always here", "I believe in you"],
+  "break": ["Time for a quick stretch", "Been sitting too long. Walk time", "Resting my eyes for a bit"]
 }

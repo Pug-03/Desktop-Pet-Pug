@@ -247,7 +247,7 @@ final class PetEngine {
     func sayRandom() {
         guard !isBusy, state != .sleeping, state != .deskSleeping else { return }
         lastInteraction = clock
-        startTalk([(pick("random") ?? "คิดถึงน้า", rng.chance(0.5) ? .love : .wave)], then: .idle)
+        startTalk([(pick("random") ?? "Miss you", rng.chance(0.5) ? .love : .wave)], then: .idle)
     }
 
     func noteInteraction() { lastInteraction = clock }
@@ -276,7 +276,7 @@ final class PetEngine {
     func sayRest() {
         guard !isBusy, state != .sleeping, state != .deskSleeping, !(state == .talking && talkPose == .alert) else { return }
         lastInteraction = clock
-        startTalk([(pick("rest") ?? "พักด้วยน้า", .love)], then: .idle)
+        startTalk([(pick("rest") ?? "Take a break, okay?", .love)], then: .idle)
     }
 
     // MARK: - pointer
@@ -466,7 +466,7 @@ final class PetEngine {
             startWork()
         } else if clock > nextChat {
             nextChat = clock + rng.range(chatEvery.lowerBound, chatEvery.upperBound)
-            startTalk([(pick("random") ?? "คิดถึงน้า", rng.chance(0.5) ? .love : .wave)], then: .idle)
+            startTalk([(pick("random") ?? "Miss you", rng.chance(0.5) ? .love : .wave)], then: .idle)
         } else if walkingEnabled && rng.chance(0.6) {
             let b = screenBounds(pivot)
             let m = 45 * scale
@@ -596,7 +596,7 @@ final class PetEngine {
             startTalk(lines, then: .idle)
         } else if greetAfterLanding {
             greetAfterLanding = false
-            startTalk([(pick("hello") ?? "สวัสดี", .wave)], then: .idle)
+            startTalk([(pick("hello") ?? "Hi!", .wave)], then: .idle)
         } else {
             if landingImpact > 1400 && rng.chance(0.6) { say("drop") }
             toIdle(rng.range(2, 4))
@@ -766,7 +766,7 @@ final class PetEngine {
         if x < b.minX + m || x > b.maxX - m { x = pivot.x - (x - pivot.x) }
         walkTarget = min(max(x, b.minX + m), b.maxX - m)
         facing = walkTarget >= pivot.x ? 1 : -1
-        startTalk([(pick("break") ?? "พักแป๊บ", .wave)], then: .walking)
+        startTalk([(pick("break") ?? "Quick break", .wave)], then: .walking)
     }
 
     private func deskSleeping() {

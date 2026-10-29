@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="th">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <title>Letter</title>
@@ -97,16 +97,16 @@
   </div>
   <div class="sign" id="sign"></div>
   <div class="bar">
-    <button class="px" id="back">◀ ก่อนหน้า</button>
+    <button class="px" id="back">◀ Back</button>
     <div class="dots" id="dots"></div>
-    <button class="px primary" id="next">ถัดไป ▶</button>
+    <button class="px primary" id="next">Next ▶</button>
   </div>
 </div>
 
 <script>
 (() => {
   const $ = (id) => document.getElementById(id);
-  let letter = { title: "", pages: [""], button: "เปิดของขวัญ", signature: "" };
+  let letter = { title: "", pages: [""], button: "Open your gift", signature: "" };
   let at = 0;
 
   function render() {

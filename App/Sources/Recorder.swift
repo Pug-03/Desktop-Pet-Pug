@@ -28,35 +28,35 @@ enum Recorder {
         func at(_ x: CGFloat, _ h: CGFloat) -> CGPoint { CGPoint(x: x, y: floor + h) }
         let chest = at(640, 220), head = at(640, 300), away = CGPoint(x: 1000, y: 560)
         return [
-            Clip(name: "01_hello", caption: "เปิดแอป → ตกลงมาจากข้างบน แล้วโบกมือทักทาย", steps: [
+            Clip(name: "01_hello", caption: "Open the app → he drops in from the top and waves hello", steps: [
                 .act { $0.dropIn(atX: 640) }, .wait(6.5),
             ]),
-            Clip(name: "02_idle_walk", caption: "ปล่อยไว้เฉยๆ → ยืนหายใจ กะพริบตา แล้วค่อยๆ เดินเล่นไปมา", startX: 380, walking: true, steps: [
+            Clip(name: "02_idle_walk", caption: "Leave him be → he breathes, blinks and strolls around", startX: 380, walking: true, steps: [
                 .wait(2.5), .act { $0.walk(toX: 900) }, .wait(9), .act { $0.walk(toX: 560) }, .wait(7),
             ]),
-            Clip(name: "03_poke_tickle", caption: "คลิก (จิ้ม) 1 ที → จั๊กจี้ หัวเราะคิกคัก", steps: [
+            Clip(name: "03_poke_tickle", caption: "Click once → it tickles and he giggles", steps: [
                 .move(away, 0), .wait(0.8), .move(chest, 0.8), .wait(0.3), .click, .wait(2.2),
                 .move(at(650, 200), 0.3), .click, .wait(2.5),
             ]),
-            Clip(name: "04_poke_dizzy", caption: "จิ้มรัวๆ หลายทีติดกัน → มึนหัว ตาเป็นกากบาท ดาววนหัว", steps: [
+            Clip(name: "04_poke_dizzy", caption: "Click fast many times → dizzy, swirly eyes, stars round his head", steps: [
                 .move(away, 0), .wait(0.5), .move(chest, 0.7),
                 .click, .wait(0.35), .click, .wait(0.35), .click, .wait(0.35), .click, .wait(0.35), .click, .wait(0.35), .click,
                 .wait(4.5),
             ]),
-            Clip(name: "05_hold_lift", caption: "กดค้างไว้ → ถูกยกขึ้น ขาห้อยแกว่งตามเมาส์ ลากไปไหนก็ได้", steps: [
+            Clip(name: "05_hold_lift", caption: "Hold the mouse → he's picked up and dangles along with it", steps: [
                 .move(away, 0), .wait(0.5), .move(head, 0.8), .down, .wait(0.6),
                 .move(at(640, 470), 1.0), .wait(0.6),
                 .move(at(900, 470), 1.1), .wait(1.0),
                 .move(at(400, 500), 1.4), .wait(2.8),
                 .move(at(400, 330), 0.6), .up, .wait(2.5),
             ]),
-            Clip(name: "06_drop", caption: "ยกขึ้นสูงๆ แล้วปล่อย → ตกลงพื้น ตัวยุบแล้วเด้ง (ตกแรงๆ จะมึน)", steps: [
+            Clip(name: "06_drop", caption: "Lift him high and let go → he lands, squashes and bounces (a hard fall makes him dizzy)", steps: [
                 .move(away, 0), .wait(0.4), .move(head, 0.7), .down, .wait(0.4),
                 .move(at(640, 420), 0.8), .wait(0.8), .up, .wait(2.2),
                 .move(head, 0.6), .down, .wait(0.3),
                 .move(at(640, 590), 0.9), .wait(0.6), .up, .wait(5),
             ]),
-            Clip(name: "07_shake_dizzy", caption: "ยกแล้วเขย่าแรงๆ → ตกใจ เหงื่อตก แล้วมึนหัวตอนลงพื้น", steps: [
+            Clip(name: "07_shake_dizzy", caption: "Pick him up and shake hard → he panics, sweats, and lands dizzy", steps: [
                 .move(away, 0), .wait(0.4), .move(head, 0.7), .down, .wait(0.3),
                 .move(at(640, 470), 0.6), .wait(0.3),
                 .move(at(840, 470), 0.12), .move(at(440, 470), 0.16),
@@ -64,36 +64,36 @@ enum Recorder {
                 .move(at(840, 470), 0.16), .move(at(440, 470), 0.16),
                 .move(at(640, 470), 0.12), .wait(1.2), .up, .wait(5),
             ]),
-            Clip(name: "08_throw", caption: "ลากแล้วเหวี่ยงปล่อย → ลอยไปชนขอบจอแล้วเด้งกลับ", startX: 400, steps: [
+            Clip(name: "08_throw", caption: "Drag, flick and let go → he flies into the edge and bounces back", startX: 400, steps: [
                 .move(away, 0), .wait(0.4), .move(at(400, 270), 0.7), .down, .wait(0.3),
                 .move(at(450, 400), 0.5), .wait(0.4), .move(at(780, 560), 0.22), .up,
                 .wait(4.5),
             ]),
-            Clip(name: "09_goodnight", caption: "ไม่มีใครเล่นด้วยสักพัก → หาว บอกฝันดี คิดถึง โทรมาได้ แล้วนอนหลับ Zzz", steps: [
+            Clip(name: "09_goodnight", caption: "After 10 pm, left alone → he yawns, says good night and sleeps", steps: [
                 .wait(1), .act { $0.goToSleep() }, .wait(20),
             ]),
-            Clip(name: "12_reminder", caption: "ถึงเวลาที่ตั้งไว้ในตาราง → ลุกขึ้นมาเตือน (จิ้มเพื่อรับทราบ)", steps: [
+            Clip(name: "12_reminder", caption: "A plan in the schedule is due → he jumps up to remind you (click to say OK)", steps: [
                 .act { $0.goToSleep(immediately: true) }, .move(away, 0), .wait(2),
-                .act { $0.remind("15:00  ส่งงาน\nรายงานบทที่ 3") }, .wait(6),
+                .act { $0.remind("15:00  Hand in report\nChapter 3") }, .wait(6),
                 .move(chest, 0.7), .click, .wait(2.5),
             ]),
-            Clip(name: "13_work", caption: "กลางวัน → นั่งคิดก่อน แล้วเขียนโค้ดยาวๆ · แวะหันมาให้กำลังใจ · ครบชั่วโมงลุกไปเดิน", steps: [
+            Clip(name: "13_work", caption: "Daytime → he thinks, codes for a long stretch, cheers you on, then takes a walk", steps: [
                 .act { $0.isNight = { false }; $0.workSession = 24...24; $0.cheerEvery = 14...14 }, .move(away, 0), .wait(0.8),
                 .act { $0.startWork() }, .wait(28),
             ]),
-            Clip(name: "15_desk_poses", caption: "ท่าระหว่างทำงาน: พิมพ์ · คิด · เงยหน้า · หันมอง · ยิ้ม · ตกใจ · หงุดหงิด · ดื่มน้ำ · บิดขี้เกียจ", steps: [
+            Clip(name: "15_desk_poses", caption: "At the desk: type · think · look up · turn · smile · surprised · frown · drink · stretch", steps: [
                 .act { $0.isNight = { false }; $0.cheerEvery = 1e9...1e9 }, .move(away, 0), .act { $0.startWork() }, .wait(1.5),
             ] + ["type", "think", "lookup", "turn", "happy", "surprised", "angry", "drink", "stretch"].flatMap { pose in
                 [Step.act { $0.setDeskPose(pose, for: 99) }, .wait(1.8)]
             }),
-            Clip(name: "14_desk_sleep", caption: "หลัง 4 ทุ่ม ทำงานดึกๆ → ฟุบหลับคาโต๊ะ Zzz · จิ้มแล้วตื่นมาทำต่อ", steps: [
+            Clip(name: "14_desk_sleep", caption: "Working after 10 pm → he nods off at the desk; click and he carries on", steps: [
                 .act { $0.isNight = { true }; $0.nodOffAfter = 4...4 }, .move(away, 0), .act { $0.startWork() }, .wait(9),
                 .move(at(640, 120), 0.8), .click, .wait(4),
             ]),
-            Clip(name: "16_gift", caption: "เปิดของขวัญในจดหมายวันครบรอบ → น้องตกลงมาบนจอ แล้วพูดตามที่เขียนไว้", steps: [
+            Clip(name: "16_gift", caption: "Open the gift in the letter → he drops onto the screen and says the closing lines", steps: [
                 .move(away, 0), .wait(0.6), .act { $0.arrive(atX: 640, saying: LetterWindow.load().after) }, .wait(15),
             ]),
-            Clip(name: "10_wake", caption: "จิ้มตอนกำลังหลับ → ตื่นงัวเงีย", steps: [
+            Clip(name: "10_wake", caption: "Click him while he sleeps → he wakes up groggy", steps: [
                 .act { $0.goToSleep(immediately: true) }, .move(away, 0), .wait(3),
                 .move(at(560, 30), 0.8), .wait(0.3), .click, .wait(4.5),
             ]),
