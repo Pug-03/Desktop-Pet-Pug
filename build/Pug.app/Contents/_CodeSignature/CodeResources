@@ -10,7 +10,7 @@
 		</data>
 		<key>Resources/guide.html</key>
 		<data>
-		civkte38TWtQXRsrhFkFcqwZUdM=
+		4HdZzH1lm8SJJawt+E2wxQvPosU=
 		</data>
 		<key>Resources/guide/03_poke_tickle.mp4</key>
 		<data>
@@ -50,35 +50,43 @@
 		</data>
 		<key>Resources/letter.html</key>
 		<data>
-		Da70KyUP0UmO1oBotqXY2Wzj/Ng=
+		psDaqw9C7Z06KqPnhPhyNSCyppQ=
 		</data>
 		<key>Resources/letter.json</key>
 		<data>
 		KzJlYVjYpeNGolFnKlXK+5sYyQc=
 		</data>
+		<key>Resources/letter.th.json</key>
+		<data>
+		iB0vWW/sMAgLSn1XYEVAqS/f9ys=
+		</data>
 		<key>Resources/messages.json</key>
 		<data>
 		oDAUHPjRZ1XBnKiqk+2CV+sGJ8Y=
 		</data>
+		<key>Resources/messages.th.json</key>
+		<data>
+		dGLrji88k2VAF6fdfcSmTM89H/0=
+		</data>
 		<key>Resources/schedule.html</key>
 		<data>
-		7lN8K/1dfKr5beqUDr5GlF4LZgw=
+		mp7P4qS1IKth7IAUPkUQk6yyBIk=
 		</data>
 		<key>Resources/sprites/effects.json</key>
 		<data>
-		6w80MWR4wHHIOV+AyI/UCLA3Gm8=
+		jQVBMUPDxCArTuCFKPcJ4zs6qmU=
 		</data>
 		<key>Resources/sprites/effects.png</key>
 		<data>
-		P8UR+UhxVX9YggqD3Ic0hY3gAgY=
+		DQFUn7mZzcpo+Sg2Uf2+ruoUMnE=
 		</data>
 		<key>Resources/sprites/pet.json</key>
 		<data>
-		cV7wqkgRSplqpXN4Av5siHmPMuY=
+		ZtVxihYe06t341DdfRYrXyFUjWk=
 		</data>
 		<key>Resources/sprites/pet.png</key>
 		<data>
-		FdnjPwtwviZvmX06Nh75AtT1j+o=
+		LvKnzCQmofLzG/Q/QvPqLqTNUi4=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -94,7 +102,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Y8goAmZmmvsR28intySoCJR5SeoOxeZuiR613woAjSc=
+			6dGN89SS+TqTNKh7JyL6unEWg8viQWqcg9y7amIaJ1s=
 			</data>
 		</dict>
 		<key>Resources/guide/03_poke_tickle.mp4</key>
@@ -164,7 +172,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			bABIqvFPhNGNjFgMvkolVvlYdxuXC9FRVPqpuTox8qQ=
+			hIihwF6pcf+FYjsSnDoVSHJGf9NTO/hfFH9UZ++ONmo=
 			</data>
 		</dict>
 		<key>Resources/letter.json</key>
@@ -174,6 +182,13 @@
 			mwf/Qw6fd/ZA5dIHheu3qTDHlYBLulDcaYUkLgTKa7s=
 			</data>
 		</dict>
+		<key>Resources/letter.th.json</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			mWIuh1kS0tYq25cr4y2O1P02CJCKlejJFZUkX+UZuC4=
+			</data>
+		</dict>
 		<key>Resources/messages.json</key>
 		<dict>
 			<key>hash2</key>
@@ -181,39 +196,46 @@
 			BHGjDW4BOdPY4yqI0JOrZflIc/UT+5NO22lmCFUrEHs=
 			</data>
 		</dict>
+		<key>Resources/messages.th.json</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			DHJH5BR51TrEgL8uJJNSlBCW1NjD5iTmxZ1T9evpeOI=
+			</data>
+		</dict>
 		<key>Resources/schedule.html</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			viyJDqj5k7Oxt9Ip+EY9pAlYWOcBuMaxXchInOmv4xs=
+			KSBp5Ph59dzK9Rb7cJtrU0IPaoA/aEugOMqk+S48fW8=
 			</data>
 		</dict>
 		<key>Resources/sprites/effects.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			/sQ3dwFj9DP7veUvLAkccedM1ewf8ficsSuv1rD3w2k=
+			LZHWECIf02TGOlaWLSYNzKcSsxJ9/HSj/vcFDkS4e7I=
 			</data>
 		</dict>
 		<key>Resources/sprites/effects.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			JrK1ikHhWj1C4hi4VpNpQ4Vx06zN/wufseV1y05Q+Kk=
+			PzHE1r7kF8zJiEjwZYEKqqAJHDbd4j9WmtQBXkOKXys=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			J43n4UXIl8aqX1973uEwnT/2rCNYCbmnu+1UnNSdhHg=
+			5gf9X/ZFPCAn1e1wZmpMdpbbiRSqQMBHEua1HYSXJsU=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Ez5gMP3ENfwhkWzwYnMSxb1sgnzlSn1mnx0p1O22XLE=
+			cqmvXW9MzlwMzdPHQWA/Ny90NKY+v7qRpAVtrJ6/bMg=
 			</data>
 		</dict>
 	</dict>
