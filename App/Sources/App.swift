@@ -163,7 +163,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(didWake),
                                                           name: NSWorkspace.didWakeNotification, object: nil)
         if Settings.letterShown {
-            engine.dropIn(atX: main.midX + CGFloat.random(in: -200...200))
+            engine.dropIn(atX: main.midX + CGFloat.random(in: -200...200), y: main.midY)
         } else {
             // first time on her Mac: the letter comes first, the pet is the gift inside it
             hidden = true
@@ -409,13 +409,15 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     @objc private func toggleHidden() {
         hidden.toggle()
-        if hidden { panel.orderOut(nil) } else { panel.orderFrontRegardless(); engine.dropIn(atX: NSEvent.mouseLocation.x) }
+        let m = NSEvent.mouseLocation
+        if hidden { panel.orderOut(nil) } else { panel.orderFrontRegardless(); engine.dropIn(atX: m.x, y: m.y) }
         kick()
     }
 
     @objc private func summon() {
         if hidden { toggleHidden(); return }
-        engine.dropIn(atX: NSEvent.mouseLocation.x)
+        let m = NSEvent.mouseLocation
+        engine.dropIn(atX: m.x, y: m.y)
         kick()
     }
 
@@ -441,7 +443,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             hidden = false
             panel.orderFrontRegardless()
             let b = bounds(near: NSEvent.mouseLocation)
-            engine.arrive(atX: b.midX, saying: lines)
+            engine.arrive(atX: b.midX, y: b.midY, saying: lines)
             // once he has said hello, show her what she can do with him
             let wait = 4 + Double(lines.count) * 4.5
             DispatchQueue.main.asyncAfter(deadline: .now() + wait) { [weak self] in self?.openGuide() }

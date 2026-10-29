@@ -46,6 +46,7 @@ final class PetEngine {
     private(set) var scale: CGFloat
     var sleepAfter: Double = 180
     var walkingEnabled = true
+    private var dropScreen: CGRect?     // the screen he is dropping onto, until he lands
     var chatEvery: ClosedRange<Double> = 1200...2400
     /// Bedtime: only then does he go to bed (or nod off at the desk); the rest of the day he works.
     var isNight: () -> Bool = {
@@ -193,8 +194,10 @@ final class PetEngine {
         go(.idle)
     }
 
-    func dropIn(atX x: CGFloat) {
-        let b = screenBounds(CGPoint(x: x, y: pivot.y))
+    /// Drop in from the top of the screen that holds (x, y); without y, the screen he is on.
+    func dropIn(atX x: CGFloat, y: CGFloat? = nil) {
+        let b = screenBounds(CGPoint(x: x, y: y ?? pivot.y))
+        dropScreen = b  // the start point is above this screen, maybe inside the one stacked over it
         grabArt = nil
         rotation = 0; sx = 1; sy = 1
         pivot = CGPoint(x: min(max(x, b.minX + 60), b.maxX - 60), y: b.maxY + 20)
@@ -206,8 +209,8 @@ final class PetEngine {
     }
 
     /// The gift is opened: drop in and say the lines from the letter, with hearts.
-    func arrive(atX x: CGFloat, saying lines: [String]) {
-        dropIn(atX: x)
+    func arrive(atX x: CGFloat, y: CGFloat? = nil, saying lines: [String]) {
+        dropIn(atX: x, y: y)
         greetAfterLanding = false
         pendingTalk = lines.enumerated().map { ($0.element, $0.offset % 2 == 0 ? TalkPose.wave : .love) }
     }
@@ -547,7 +550,7 @@ final class PetEngine {
         pivot.x += vel.dx * CGFloat(dt)
         pivot.y += vel.dy * CGFloat(dt)
         rotation *= CGFloat(exp(-7 * dt))
-        let b = screenBounds(feet)
+        let b = dropScreen ?? screenBounds(feet)
         let m = 20 * scale
         let f = feet
         if f.x < b.minX + m { pivot.x += b.minX + m - f.x; vel.dx = abs(vel.dx) * 0.55 }
@@ -565,6 +568,7 @@ final class PetEngine {
         pivot = CGPoint(x: f.x, y: b.minY)
         vel = .zero
         landingImpact = impact
+        dropScreen = nil
         dizzyAfterLanding = shaken || impact > 2300
         shaken = false
         frameKey = "stand.surprised.0"
@@ -812,7 +816,7 @@ final class PetEngine {
         let b = screenBounds(feet)
         // fell off every screen (display unplugged, etc.): drop back in
         if feet.y < b.minY - 200 || feet.x < b.minX - 200 || feet.x > b.maxX + 200 {
-            dropIn(atX: b.midX)
+            dropIn(atX: b.midX, y: b.midY)
         }
     }
 
