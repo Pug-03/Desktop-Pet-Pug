@@ -9,7 +9,6 @@ enum Recorder {
         case down, up
         case click
         case act((PetEngine) -> Void)
-        case outfit(Int)
     }
 
     struct Clip {
@@ -72,10 +71,6 @@ enum Recorder {
             ]),
             Clip(name: "09_goodnight", caption: "ไม่มีใครเล่นด้วยสักพัก → หาว บอกฝันดี คิดถึง โทรมาได้ แล้วนอนหลับ Zzz", steps: [
                 .wait(1), .act { $0.goToSleep() }, .wait(20),
-            ]),
-            Clip(name: "11_outfits", caption: "เมนู → เปลี่ยนชุด: เปลี่ยนแค่เสื้อ กางเกงกับรองเท้าเหมือนเดิม (17 แบบ)", steps: [
-                .wait(1.2), .outfit(2), .wait(2.4), .outfit(5), .wait(2.4), .outfit(8), .wait(2.4),
-                .outfit(12), .wait(2.4), .outfit(14), .wait(2.4), .outfit(16), .wait(2.4), .outfit(0), .wait(2.4),
             ]),
             Clip(name: "12_reminder", caption: "ถึงเวลาที่ตั้งไว้ในตาราง → ลุกขึ้นมาเตือน (จิ้มเพื่อรับทราบ)", steps: [
                 .act { $0.goToSleep(immediately: true) }, .move(away, 0), .wait(2),
@@ -180,16 +175,10 @@ enum Recorder {
                 if stepT >= 0.08 { e.pointerUp(cursor); down = false; advance = true }
             case .act(let f):
                 f(e); advance = true
-            case .outfit(let n):
-                if let f = AppController.outfitFrames(n) {
-                    e.setStyle(frames: f, scale: e.scale)
-                    e.newOutfit()
-                }
-                advance = true
             }
             if advance { steps = steps.dropFirst(); stepT = 0 }
             switch step {
-            case .down, .up, .act, .outfit: continue
+            case .down, .up, .act: continue
             default: break
             }
 

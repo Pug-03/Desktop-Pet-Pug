@@ -29,14 +29,10 @@ def canvas(w, h):
 
 
 class Pet:
-    def __init__(self, outfit=0):
-        """outfit 0 is the black suit from the character sheet; 1-16 come from outfits.py."""
-        self.outfit = outfit
-        self.hip = HIP if outfit != 16 else 283  # the long coat moves with the body, not the legs
-        if outfit:
-            self.front = {f: load(f"outfit{outfit}_{f}") for f in FACES}
-        else:
-            self.front = {f: load("front" if f == "normal" else f"front_{f}") for f in FACES}
+    def __init__(self):
+        """The black suit from the character sheet."""
+        self.hip = HIP
+        self.front = {f: load("front" if f == "normal" else f"front_{f}") for f in FACES}
         self.side = load("side")
         self.side_sleep = load("side_sleep")
         self.walk = [load(f"walk{i}") for i in range(8)]
@@ -100,7 +96,7 @@ class Pet:
         tops = np.array([np.argmax(placed[:, x]) if placed[:, x].any() else ground for x in range(W)], float)
         n = 25
         smooth = np.convolve(np.pad(tops, n // 2, mode="edge"), np.ones(n) / n, mode="valid")
-        x0, x1 = pad_l + 56, pad_l + bw - 34  # up to the chin, so any outfit works under it
+        x0, x1 = pad_l + 56, pad_l + bw - 34  # up to the chin
         top_at = smooth - 4 - breath * 2
         sheet = Image.new("RGBA", (W * k, H * k), (0, 0, 0, 0))
         d = ImageDraw.Draw(sheet)
@@ -130,20 +126,14 @@ class Pet:
         return out, {"anchor": [W // 2, H - 1], "head": [pad_l + 30, pad_top], "face": [pad_l + 34, pad_top + 12]}
 
 
-def build(outfit=0):
-    p = Pet(outfit)
+def build():
+    p = Pet()
     F = {}
     for face in FACES:
         for b in (0, 1):
             F[f"stand.{face}.{b}"] = p.stand(face, bob=b * 2)
     for i in range(8):
-        if outfit == 0:
-            F[f"walk.normal.{i}"] = p.walk_frame(i)
-        else:
-            # the outfit sheet only has a front view: walk facing the viewer, stepping in turn
-            s = np.sin(i / 8 * 2 * np.pi)
-            F[f"walk.normal.{i}"] = p.stand("normal", bob=[0, 1, 2, 1][i % 4], dx=[0, 1, 0, -1, 0, -1, 0, 1][i],
-                                            legs=((0, int(round(max(0, s) * 8))), (0, int(round(max(0, -s) * 8)))))
+        F[f"walk.normal.{i}"] = p.walk_frame(i)
         F[f"walk.blink.{i}"] = F[f"walk.normal.{i}"]
     for i, (dx, b) in enumerate(((-2, 0), (2, 2), (-2, 0), (2, 2))):
         F[f"laugh.{i}"] = p.stand("happy", bob=b, dx=dx, legs=((0, 3 * (i == 1)), (0, 3 * (i == 3))))
@@ -171,7 +161,7 @@ def build(outfit=0):
 
 
 def desk_frames():
-    """At the desk with the MacBook (see desk.py). Only drawn in the black suit, for every outfit."""
+    """At the desk with the MacBook (see desk.py)."""
     F, ax = {}, None
     for pose in ("type1", "type2", "think", "lookup", "turn", "sleep",
                  "happy", "surprised", "angry", "drink", "stretch"):

@@ -16,10 +16,6 @@ struct Settings {
         get { d.object(forKey: "walking") as? Bool ?? true }
         set { d.set(newValue, forKey: "walking") }
     }
-    static var outfit: Int {  // 0 = black suit, 1-16 = outfits sheet
-        get { d.object(forKey: "outfit") as? Int ?? 0 }
-        set { d.set(newValue, forKey: "outfit") }
-    }
     static var letterShown: Bool {
         get { d.bool(forKey: "letterShown") }
         set { d.set(newValue, forKey: "letterShown") }
@@ -105,24 +101,18 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     // MARK: - setup
 
-    /// Sprite atlas for an outfit; only the one being worn is kept in memory.
-    static func outfitFrames(_ n: Int) -> [String: Frame]? {
+    /// The pet's sprite atlas (he always wears the black suit).
+    static func petFrames() -> [String: Frame]? {
         let res = Bundle.main.resourceURL!.appendingPathComponent("sprites")
-        let name = n == 0 ? "pet" : "pet_o\(n)"
-        return Atlas.load(png: res.appendingPathComponent("\(name).png"), json: res.appendingPathComponent("\(name).json"))
+        return Atlas.load(png: res.appendingPathComponent("pet.png"), json: res.appendingPathComponent("pet.json"))
     }
-
-    private lazy var outfitNames: [String] = {
-        let url = Bundle.main.resourceURL!.appendingPathComponent("sprites/outfits.json")
-        return (try? JSONSerialization.jsonObject(with: Data(contentsOf: url))) as? [String] ?? ["สูทดำ"]
-    }()
 
     func applicationDidFinishLaunching(_ note: Notification) {
         let res = Bundle.main.resourceURL!
         messages = Messages(bundled: res.appendingPathComponent("messages.json"))
         guard let fx = Atlas.load(png: res.appendingPathComponent("sprites/effects.png"),
                                   json: res.appendingPathComponent("sprites/effects.json")),
-              let frames = AppController.outfitFrames(Settings.outfit) ?? AppController.outfitFrames(0)
+              let frames = AppController.petFrames()
         else {
             NSLog("Pug: sprites missing from bundle")
             NSApp.terminate(nil)
@@ -393,16 +383,6 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if engine.state == .sleeping { add("ปลุก", #selector(wake)) } else { add("ให้นอนเลย", #selector(sleepNow)) }
         m.addItem(.separator())
 
-        let outfits = NSMenu()
-        for (i, n) in outfitNames.enumerated() {
-            add(n, #selector(setOutfit(_:)), tag: i, on: Settings.outfit == i, to: outfits)
-        }
-        outfits.addItem(.separator())
-        add("สุ่มชุด", #selector(randomOutfit), to: outfits)
-        let oi = NSMenuItem(title: "เปลี่ยนชุด", action: nil, keyEquivalent: "")
-        oi.submenu = outfits
-        m.addItem(oi)
-
         let size = NSMenu()
         for (i, n) in ["เล็ก", "กลาง", "ใหญ่"].enumerated() {
             add(n, #selector(setSize(_:)), tag: i, on: Settings.size == i, to: size)
@@ -550,23 +530,6 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     @objc private func wake() { engine.wakeUp(); kick() }
     @objc private func sleepNow() { engine.goToSleep(); kick() }
-
-    @objc private func setOutfit(_ sender: NSMenuItem) { wear(sender.tag) }
-
-    @objc private func randomOutfit() {
-        var n = Int.random(in: 0..<outfitNames.count)
-        if n == Settings.outfit { n = (n + 1) % outfitNames.count }
-        wear(n)
-    }
-
-    private func wear(_ n: Int) {
-        guard let f = AppController.outfitFrames(n) else { return }
-        Settings.outfit = n
-        engine.setStyle(frames: f, scale: engine.scale)
-        engine.newOutfit()
-        resizeWindow()
-        kick()
-    }
 
     @objc private func setSize(_ sender: NSMenuItem) {
         Settings.size = sender.tag

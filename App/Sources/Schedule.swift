@@ -176,7 +176,7 @@ enum SchedulePreview {
             ScheduleEvent(id: "5", date: day(2), time: "10:00", title: "Exam", detail: "Statistics", notified: false),
             ScheduleEvent(id: "6", date: day(5), end: day(8), time: "08:00", title: "Trip to Chiang Mai", detail: "Anniversary", notified: false),
         ])
-        let frames = AppController.outfitFrames(0)
+        let frames = AppController.petFrames()
         let w = ScheduleWindow(store: store, avatar: ScheduleWindow.portrait(from: frames?["stand.normal.0"]))
         var done = false
         var status: Int32 = 1
