@@ -40,8 +40,12 @@ final class Messages {
     }
 
     static func parse(_ url: URL) -> [String: [String]]? {
-        guard let data = try? Data(contentsOf: url),
-              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return nil }
+        guard let data = try? Data(contentsOf: url) else { return nil }
+        // TextEdit turns typed quotes into curly ones, which breaks the JSON; try again with straight ones
+        let straight = String(decoding: data, as: UTF8.self)
+            .replacingOccurrences(of: "\u{201C}", with: "\"").replacingOccurrences(of: "\u{201D}", with: "\"")
+        guard let obj = ((try? JSONSerialization.jsonObject(with: data)) ?? (try? JSONSerialization.jsonObject(with: Data(straight.utf8))))
+                as? [String: Any] else { return nil }
         var out: [String: [String]] = [:]
         for (k, v) in obj {
             if let list = v as? [String] {
