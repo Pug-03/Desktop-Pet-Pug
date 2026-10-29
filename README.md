@@ -31,6 +31,7 @@ Poke him, pick him up, shake him, keep him company while he codes, let him remin
    - Enter your Mac password, then click **Open**
 5. The first time it opens there's a **letter for our 7-month anniversary**. Read it, then click **Open your gift** and Pug drops in from the top of the screen.
    From now on he comes by himself every time you turn on your Mac.
+   He speaks Thai to start with. For English, right-click him → **ภาษา (Language)** → **English**.
 
 <img src="docs/letter.png" width="380" alt="The anniversary letter"> <img src="docs/16_gift.gif" width="380" alt="Opening the gift">
 
