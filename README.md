@@ -123,6 +123,8 @@ Right-click him, or click Pug's face in the menu bar at the top of the screen.
 | Hide / Show | Hide him for a while |
 | Call him | He drops in where the mouse is |
 | Say something | He says one random line |
+| Miss you | Tells him on his phone that you miss him (the first time, type in the code he sends you) |
+| His last note… | He says his newest note again |
 | Schedule / reminders… | The calendar for your plans; he reminds you on time |
 | Anniversary letter… | Read the letter again (open the gift and he says its closing lines) |
 | How to play… | Short lessons on what you can do, with clips |
@@ -145,6 +147,15 @@ Menu → **Edit lines…** opens a file in TextEdit (in Thai, the Thai lines hav
 ```
 
 If the file gets broken, don't worry: Pug goes back to his usual lines.
+
+---
+
+## Little things from him
+
+- **Notes:** now and then he has a new message for you. He says it once, with hearts; menu → **His last note…** says it again.
+- **Every 29th:** it's your monthly anniversary. Hearts float up all day, he tells you how many months it's been, and sometimes there's a new letter (menu → **Anniversary letter…**).
+- **Through the day:** good morning, a lunch check, a reminder to drink water in the afternoon, and a nudge to go to bed if you're still up late. Once a day each, and only while you're at the Mac.
+- **Miss you:** click it in the menu and his phone buzzes. The first time, type in the code he sent you.
 
 ---
 
@@ -178,6 +189,24 @@ Your plans, settings and edited lines stay as they are, and the letter doesn't p
 build/Pug.app/Contents/MacOS/Pug --record demo        # record the demo clips into demo/ (needs ffmpeg)
 build/Pug.app/Contents/MacOS/Pug --update-now        # install the newest build from GitHub (tests the updater)
 ```
+
+**love.json** (repo root; edit it on GitHub and Pug reads it within an hour; the app ships a copy for offline):
+
+```json
+{
+  "since": "2026-03-29",
+  "notes": [
+    { "id": "2026-11-01-a", "show_from": "2026-11-01", "text": "First bubble\n\nSecond bubble" }
+  ],
+  "letters": {
+    "8": { "title": "Happy 8 Months", "pages": ["…", "…"], "button": "เปิดของขวัญ", "signature": "รักนะ — จากเรา", "after": ["…"] }
+  }
+}
+```
+
+- Each note is said once; give every new note a new `id`. `show_from` holds it back until that day.
+- A letter keyed by the month count replaces the first letter in the menu from that anniversary on.
+- Miss you: pick a long random topic, install the free **ntfy** app on your phone and subscribe to it, and send her the topic privately. Never put it in this repo: it's public, so anyone could read her pings or send you spam. To change it on her Mac: `defaults delete com.pug.desktoppet missYouTopic`, then she types the new one.
 
 `./build.sh` also writes `Pug.zip` and `latest.json`. To release: raise `CFBundleVersion` (and `CFBundleShortVersionString`) in `App/Info.plist`, run `./build.sh`, then commit and push. The app reads `latest.json` from GitHub; any build number higher than its own counts as an update.
 
