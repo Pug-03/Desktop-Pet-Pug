@@ -132,6 +132,7 @@ Right-click him, or click Pug's face in the menu bar at the top of the screen.
 | Language (ภาษา) | English or Thai: the menu, his lines, the letter, the calendar and the lessons |
 | Edit lines… | Change the things he says |
 | Open at login | On / off |
+| CPU usage… | Live graphs of how hard the whole Mac and Pug himself are working, over the last 2 minutes |
 | Check for updates… | Looks for a new Pug and installs it (shows **Update Pug to …** when one is ready) |
 
 ### Change what he says

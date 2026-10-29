@@ -106,6 +106,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var reminderTimer: Timer?
     private var recentAdds: [Date] = []
     private var letterWindow: LetterWindow?
+    private var cpuWindow: CPUWindow?
     private var update: Updater.Latest?  // a newer Pug that is ready to install
     private var updateTimer: Timer?
     private var guideWindow: GuideWindow?
@@ -426,6 +427,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         m.addItem(.separator())
         add(L.t("Edit lines…"), #selector(editMessages))
         add(L.t("Open at login"), #selector(toggleLogin), on: LoginItem.enabled)
+        add(L.t("CPU usage…"), #selector(openCPU))
         add(update.map { L.t("Update Pug to %@…", $0.version) } ?? L.t("Check for updates…"), #selector(checkForUpdates))
         m.addItem(.separator())
         add(L.t("Quit"), #selector(quit))
@@ -486,14 +488,19 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     // MARK: - schedule & reminders
 
+    @objc private func openCPU() {
+        if cpuWindow == nil { cpuWindow = CPUWindow() }
+        cpuWindow?.show()
+    }
+
     /// Switch every word the app shows; open windows are closed so they reopen in the new language.
     @objc private func setLanguage(_ sender: NSMenuItem) {
         let code = sender.tag == 1 ? "th" : "en"
         guard code != Settings.language else { return }
         Settings.language = code
         messages = Messages.current()
-        for w in [scheduleWindow?.window, guideWindow?.window, letterWindow?.window] { w?.close() }
-        scheduleWindow = nil; guideWindow = nil; letterWindow = nil
+        for w in [scheduleWindow?.window, guideWindow?.window, letterWindow?.window, cpuWindow?.window] { w?.close() }
+        scheduleWindow = nil; guideWindow = nil; letterWindow = nil; cpuWindow = nil
         setupEditMenu()
         engine.sayLines([messages.lines("hello").randomElement() ?? "Hi!"])
         kick()
