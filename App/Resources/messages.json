@@ -12,5 +12,8 @@
   "wake": ["Mmm... I'm up, I'm up", "Still sleepy...", "Why'd you wake me?"],
   "work": ["Coding away~", "Almost done, one sec", "Another bug...", "Thinking of you while I work"],
   "cheer": ["You've got this!", "Cheering for you!", "You did great today", "Tired? Rest. I'm always here", "I believe in you"],
-  "break": ["Time for a quick stretch", "Been sitting too long. Walk time", "Resting my eyes for a bit"]
+  "break": ["Time for a quick stretch", "Been sitting too long. Walk time", "Resting my eyes for a bit"],
+
+  "anniversary": ["{n} months together today!", "{n} months today. Thank you for being with me"],
+  "newLetter": ["There's a new letter for you. Right-click me and open the anniversary letter"]
 }

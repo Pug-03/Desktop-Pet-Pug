@@ -32,6 +32,10 @@ struct Settings {
         get { d.stringArray(forKey: "seenNotes") ?? [] }
         set { d.set(newValue, forKey: "seenNotes") }
     }
+    static var greeted: [String: String] {  // time of day ("morning", ...) -> the day he last said it
+        get { d.dictionary(forKey: "greeted") as? [String: String] ?? [:] }
+        set { d.set(newValue, forKey: "greeted") }
+    }
     static var announcedBuild: Int {  // the newest update he has already told her about
         get { d.integer(forKey: "announcedBuild") }
         set { d.set(newValue, forKey: "announcedBuild") }
@@ -461,8 +465,14 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     // MARK: - letter
 
     @objc private func openLetter() {
+        // after the first time, the newest monthly letter from love.json takes the original's place
+        let monthly = Settings.letterShown ? love.latestLetter() : nil
+        if let w = letterWindow, w.letter.title != (monthly?.letter.title ?? LetterWindow.load().title) {
+            w.window.close()
+            letterWindow = nil
+        }
         if letterWindow == nil {
-            let w = LetterWindow()
+            let w = LetterWindow(custom: monthly?.letter)
             w.onOpen = { [weak self] in self?.giftOpened() }
             // closed before opening the gift the first time: still bring the pet out
             w.onClose = { [weak self] in if self?.hidden == true && !Settings.letterShown { self?.giftOpened() } }
@@ -472,7 +482,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     private func giftOpened() {
-        let lines = LetterWindow.load().after
+        let lines = letterWindow?.letter.after ?? LetterWindow.load().after
         if !Settings.letterShown || hidden {
             Settings.letterShown = true
             hidden = false
@@ -623,10 +633,10 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     @objc private func toggleLogin() { LoginItem.set(!LoginItem.enabled) }
 
-    // MARK: - love notes
+    // MARK: - love notes and anniversaries
 
-    /// love.json comes in 20 seconds after launch and then every hour; every minute he looks for a
-    /// new note from him to say.
+    /// love.json comes in 20 seconds after launch and then every hour; every minute he looks for
+    /// something to say: a new note from him, or the monthly anniversary.
     private func startLove() {
         let fetch = Timer(timeInterval: 3600, repeats: true) { [weak self] _ in self?.love.refresh { self?.everyMinute() } }
         let minute = Timer(timeInterval: 60, repeats: true) { [weak self] _ in self?.everyMinute() }
@@ -647,7 +657,23 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     private func everyMinute() {
         let now = Date()
+        let months = love.anniversaryMonths(now: now)
+        if months != nil, !hidden { engine.sparkleHearts(); kick() }
         guard canSpeak else { return }
+        let today = Love.today(now)
+        var greeted = Settings.greeted
+
+        if let n = months, greeted["anniversary"] != today {
+            greeted["anniversary"] = today
+            Settings.greeted = greeted
+            var lines = [(messages.lines("anniversary").randomElement() ?? "{n} months together today!")
+                            .replacingOccurrences(of: "{n}", with: String(n))]
+            if love.latestLetter(now: now)?.months == n, let l = messages.lines("newLetter").randomElement() { lines.append(l) }
+            engine.sayLines(lines)
+            kick()
+            return
+        }
+
         var seen = Settings.seenNotes
         if let note = love.unseenNotes(seen: Set(seen), now: now).first {
             seen.append(note.id)

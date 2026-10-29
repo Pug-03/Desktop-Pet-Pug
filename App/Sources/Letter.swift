@@ -4,12 +4,14 @@ import WebKit
 /// The anniversary letter shown on first launch (and again from the menu). Its words live in
 /// letter.json; the last page has a gift that, when opened, brings the pet onto the screen.
 final class LetterWindow: NSObject, WKScriptMessageHandler, WKNavigationDelegate {
-    struct Letter: Decodable {
+    struct Letter: Codable {
         var title = ""
         var pages: [String] = []
         var button = ""
         var signature = ""
         var after: [String] = []
+        var back: String?
+        var next: String?
     }
 
     /// letter.json, or letter.th.json in Thai.
@@ -25,16 +27,25 @@ final class LetterWindow: NSObject, WKScriptMessageHandler, WKNavigationDelegate
     let window: NSWindow
     let web: WKWebView
     private let json: String
+    let letter: Letter
     var onOpen: (() -> Void)?
     var onClose: (() -> Void)?
 
-    override init() {
+    /// The first letter (letter.json), or `custom`: a monthly letter from love.json.
+    init(custom: Letter? = nil) {
         let config = WKWebViewConfiguration()
         web = WKWebView(frame: CGRect(x: 0, y: 0, width: 560, height: 600), configuration: config)
         window = NSWindow(contentRect: CGRect(x: 0, y: 0, width: 560, height: 600),
                           styleMask: [.titled, .closable, .miniaturizable], backing: .buffered, defer: false)
-        let raw = LetterWindow.url.flatMap { try? Data(contentsOf: $0) }
-        json = raw.flatMap { String(data: $0, encoding: .utf8) } ?? "{}"
+        if var c = custom {
+            if L.thai { c.back = c.back ?? "◀ ก่อนหน้า"; c.next = c.next ?? "ถัดไป ▶" }
+            letter = c
+            json = (try? JSONEncoder().encode(c)).flatMap { String(data: $0, encoding: .utf8) } ?? "{}"
+        } else {
+            letter = LetterWindow.load()
+            let raw = LetterWindow.url.flatMap { try? Data(contentsOf: $0) }
+            json = raw.flatMap { String(data: $0, encoding: .utf8) } ?? "{}"
+        }
         super.init()
         config.userContentController.add(WeakLetterHandler(self), name: "letter")
         web.navigationDelegate = self

@@ -1,7 +1,8 @@
 import Foundation
 
 /// Things he keeps sending her after the gift, from love.json on GitHub (a copy ships with the
-/// app for when she is offline): notes he says out loud once each.
+/// app for when she is offline): notes he says out loud once each, and a letter for each monthly
+/// anniversary.
 final class Love {
     struct Content: Decodable {
         struct Note: Decodable {
@@ -9,7 +10,9 @@ final class Love {
             let show_from: String?  // yyyy-MM-dd; not before this day
             let text: String
         }
+        var since: String?           // the day they got together, yyyy-MM-dd
         var notes: [Note]?
+        var letters: [String: LetterWindow.Letter]?  // by month count, "8", "9", ...
     }
 
     private(set) var content = Content()
@@ -58,6 +61,27 @@ final class Love {
     func latestNote(now: Date = Date()) -> Content.Note? {
         let t = Love.today(now)
         return (content.notes ?? []).last { ($0.show_from ?? "") <= t }
+    }
+
+    /// How many months together today is, when today is a monthly anniversary (the 29th, or a
+    /// short month's last day); nil on other days.
+    func anniversaryMonths(now: Date = Date()) -> Int? {
+        guard let s = content.since, let start = Love.day.date(from: s) else { return nil }
+        let cal = Love.day.calendar!
+        let months = cal.dateComponents([.month], from: start, to: now).month ?? 0
+        guard months >= 1, let d = cal.date(byAdding: .month, value: months, to: start) else { return nil }
+        return Love.day.string(from: d) == Love.today(now) ? months : nil
+    }
+
+    /// The letter for the newest anniversary that has one, up to today.
+    func latestLetter(now: Date = Date()) -> (months: Int, letter: LetterWindow.Letter)? {
+        guard let s = content.since, let start = Love.day.date(from: s) else { return nil }
+        var months = Love.day.calendar!.dateComponents([.month], from: start, to: now).month ?? 0
+        while months > 0 {
+            if let l = content.letters?[String(months)] { return (months, l) }
+            months -= 1
+        }
+        return nil
     }
 
 

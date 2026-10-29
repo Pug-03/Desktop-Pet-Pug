@@ -1,4 +1,6 @@
 {
-  "_how_to_edit": "Edit this file on GitHub; Pug picks it up within an hour. notes: each one is said once, from show_from on (yyyy-MM-dd); give every note a new id; a blank line (\\n\\n) splits a note into speech bubbles.",
-  "notes": []
+  "_how_to_edit": "Edit this file on GitHub; Pug picks it up within an hour. notes: each one is said once, from show_from on (yyyy-MM-dd); give every note a new id; a blank line (\\n\\n) splits a note into speech bubbles. letters: one per monthly anniversary, keyed by the month count; each needs title, pages, button, signature and after (the lines he says when she opens the gift). since: the day you got together.",
+  "since": "2026-03-29",
+  "notes": [],
+  "letters": {}
 }

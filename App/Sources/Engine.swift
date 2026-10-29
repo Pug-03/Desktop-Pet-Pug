@@ -217,6 +217,16 @@ final class PetEngine {
     }
 
     /// Say these lines in turn (the letter's closing words, when it is read again).
+    /// A few hearts float up from his head (monthly anniversaries).
+    func sparkleHearts() {
+        guard !isBusy, state != .sleeping, state != .deskSleeping else { return }
+        let h = headPoint
+        for k in 0..<3 {
+            spawn(k % 2 == 0 ? "heart" : "heart_s", at: CGPoint(x: h.x + CGFloat(rng.range(-30, 30)) * scale, y: h.y + CGFloat(k) * 8 * scale),
+                  vel: CGVector(dx: rng.range(-10, 10), dy: 30 + Double(k) * 6), life: 2.4, wobble: 1)
+        }
+    }
+
     func sayLines(_ lines: [String]) {
         guard !isBusy, !lines.isEmpty else { return }
         lastInteraction = clock
