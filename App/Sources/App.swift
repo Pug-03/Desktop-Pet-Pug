@@ -499,8 +499,8 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     private func startReminders() {
         // anything that was due while the Mac was off and is older than an hour is skipped quietly
-        for e in schedule.due(at: Date()) where Date().timeIntervalSince(e.due ?? Date()) > 3600 {
-            schedule.markNotified(e.id)
+        for d in schedule.due(at: Date()) where Date().timeIntervalSince(d.at) > 3600 {
+            schedule.markNotified(d.event.id, day: d.day)
         }
         let t = Timer(timeInterval: 10, repeats: true) { [weak self] _ in self?.checkReminders() }
         t.tolerance = 2
@@ -512,21 +512,27 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private func checkReminders() {
         // after a long Mac sleep, plans more than an hour overdue are skipped quietly, as at launch
         let now = Date()
-        var due: [ScheduleEvent] = [], skipped = false
-        for e in schedule.due(at: now) {
-            if now.timeIntervalSince(e.due ?? now) > 3600 { schedule.markNotified(e.id); skipped = true } else { due.append(e) }
+        var due: [(event: ScheduleEvent, day: String, at: Date)] = [], skipped = false
+        for d in schedule.due(at: now) {
+            if now.timeIntervalSince(d.at) > 3600 { schedule.markNotified(d.event.id, day: d.day); skipped = true } else { due.append(d) }
         }
         guard !due.isEmpty else { if skipped { scheduleWindow?.push() }; return }
         if hidden { toggleHidden() }
-        for e in due {
-            schedule.markNotified(e.id)
-            var text = "\(e.time)  \(e.title)"
-            if !e.detail.isEmpty { text += "\n\(e.detail)" }
-            engine.remind(text)
+        for d in due {
+            schedule.markNotified(d.event.id, day: d.day)
+            engine.remind(reminderText(d.event))
         }
         NSSound(named: "Glass")?.play()
         scheduleWindow?.push()
         kick()
+    }
+
+    /// "09:00  Exam", or "Tomorrow 09:00  Exam" when he reminds early.
+    private func reminderText(_ e: ScheduleEvent) -> String {
+        let early = [15: "In 15 min:", 60: "In 1 hour:", 1440: "Tomorrow"][e.ahead ?? 0]
+        var text = (early.map { $0 + " " } ?? "") + "\(e.time)  \(e.title)"
+        if !e.detail.isEmpty { text += "\n\(e.detail)" }
+        return text
     }
 
     /// Accessory apps have no menu bar, so give text fields the usual edit shortcuts.

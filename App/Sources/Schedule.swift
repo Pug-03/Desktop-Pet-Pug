@@ -10,8 +10,28 @@ struct ScheduleEvent: Codable {
     var title: String
     var detail: String
     var notified: Bool
+    var repeats: String?  // "week", "month" or "year"; repeating plans are one day long
+    var ahead: Int?       // remind this many minutes early
+    var lastNotified: String?  // the day of the last occurrence he reminded about (repeating plans)
 
-    var due: Date? { ScheduleStore.parser.date(from: "\(date) \(time)") }
+    /// The occurrence that is due by `now` (its day, and when to remind), if any is waiting.
+    func pending(at now: Date) -> (day: String, at: Date)? {
+        let early = TimeInterval((ahead ?? 0) * 60)
+        guard let first = ScheduleStore.parser.date(from: "\(date) \(time)") else { return nil }
+        guard let unit: Calendar.Component = ["week": .weekOfYear, "month": .month, "year": .year][repeats ?? ""] else {
+            return notified || first.addingTimeInterval(-early) > now ? nil : (date, first.addingTimeInterval(-early))
+        }
+        // the latest occurrence whose reminder time has passed; counting from the first keeps the 31st and Feb 29 right
+        let cal = ScheduleStore.parser.calendar!
+        var latest: Date?
+        for k in 0... {
+            guard let d = cal.date(byAdding: unit, value: k, to: first), d.addingTimeInterval(-early) <= now else { break }
+            latest = d
+        }
+        guard let d = latest else { return nil }
+        let day = String(ScheduleStore.parser.string(from: d).prefix(10))
+        return day == lastNotified ? nil : (day, d.addingTimeInterval(-early))
+    }
 }
 
 /// Events saved in ~/Library/Application Support/Pug/schedule.json.
@@ -47,9 +67,9 @@ final class ScheduleStore {
         save()
     }
 
-    func markNotified(_ id: String) {
+    func markNotified(_ id: String, day: String) {
         guard let i = events.firstIndex(where: { $0.id == id }) else { return }
-        events[i].notified = true
+        if events[i].repeats == nil { events[i].notified = true } else { events[i].lastNotified = day }
         save()
     }
 
@@ -62,10 +82,11 @@ final class ScheduleStore {
         if let data = try? enc.encode(events) { try? data.write(to: url, options: .atomic) }
     }
 
-    /// Events whose time has come and that have not been announced yet.
-    func due(at now: Date) -> [ScheduleEvent] {
-        events.filter { !$0.notified && ($0.due.map { $0 <= now } ?? false) }
-            .sorted { $0.time < $1.time }
+    /// Plans whose reminder time has come and that have not been announced yet, with the
+    /// occurrence's day and when the reminder was due.
+    func due(at now: Date) -> [(event: ScheduleEvent, day: String, at: Date)] {
+        events.compactMap { e in e.pending(at: now).map { (e, $0.day, $0.at) } }
+            .sorted { $0.at < $1.at }
     }
 }
 
@@ -187,6 +208,7 @@ enum SchedulePreview {
             ScheduleEvent(id: "4", date: day(0), time: "20:00", title: "Call", detail: "", notified: false),
             ScheduleEvent(id: "5", date: day(2), time: "10:00", title: "Exam", detail: "Statistics", notified: false),
             ScheduleEvent(id: "6", date: day(5), end: day(8), time: "08:00", title: "Trip to Chiang Mai", detail: "Anniversary", notified: false),
+            ScheduleEvent(id: "7", date: day(-20), time: "00:00", title: "Our anniversary", detail: "", notified: false, repeats: "month", ahead: 1440),
         ])
         let frames = AppController.petFrames()
         let w = ScheduleWindow(store: store, avatar: ScheduleWindow.portrait(from: frames?["stand.normal.0"]))

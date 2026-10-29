@@ -85,6 +85,7 @@
   .chip { flex: none; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
           background: var(--accent-soft); padding: 0 4px; border-left: 4px solid var(--accent); }
   .chip.span { border-left-color: #8fc6f0; }
+  .chip.again { border-left-color: var(--pink); }
   .chip.done { background: #e7edf3; border-left-color: var(--muted); color: var(--muted); }
   .more { flex: none; font-size: 12px; color: var(--muted); }
   .busy { position: absolute; right: 4px; top: 4px; }
@@ -113,7 +114,13 @@
     padding: 4px 8px; margin: 3px 4px; user-select: text;
     box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink);
   }
-  input:focus { background: #f0f8ff; }
+  input:focus, select:focus { background: #f0f8ff; }
+  select {
+    font: inherit; font-size: 13px; color: var(--ink); border: 0; outline: none; background: #fff;
+    padding: 4px 6px; margin: 3px 4px; min-width: 0; -webkit-appearance: none; appearance: none;
+    box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink);
+  }
+  input:disabled { color: var(--muted); background: #eef3f8; }
   .rest { background: var(--mint); padding: 10px 12px; display: flex; gap: 10px; align-items: center; }
   .rest[hidden] { display: none; }
   .heart { width: 22px; height: 20px; flex: none; }
@@ -174,6 +181,14 @@
           <p class="hint">Hold on a day, then drag, or Shift-click, to pick several days. Scroll the calendar to change month.</p>
           <label for="time">Time</label>
           <input id="time" type="time" value="09:00" required>
+          <div class="dates">
+            <div><label for="ahead">Remind me</label>
+              <select id="ahead"><option value="0">On time</option><option value="15">15 min before</option>
+                <option value="60">1 hour before</option><option value="1440">1 day before</option></select></div>
+            <div><label for="rep">Repeat</label>
+              <select id="rep"><option value="">Never</option><option value="week">Every week</option>
+                <option value="month">Every month</option><option value="year">Every year</option></select></div>
+          </div>
           <label for="t">Title</label>
           <input id="t" placeholder="e.g. Meeting, exam, dinner" required maxlength="60">
           <label for="d">Details</label>
@@ -221,11 +236,29 @@
     return e;
   }
   const endOf = (e) => e.end || e.date;
+  const dayMs = 86400000;
+  // does a repeating plan come round on this day? (the 31st falls on a short month's last day, Feb 29 on Feb 28)
+  function repeatsOn(e, key) {
+    if (key < e.date) return false;
+    const s = parse(e.date), k = parse(key);
+    const last = new Date(k.getFullYear(), k.getMonth() + 1, 0).getDate();
+    if (e.repeats === "week") return Math.round((k - s) / dayMs) % 7 === 0;
+    if (e.repeats === "month") return k.getDate() === Math.min(s.getDate(), last);
+    if (e.repeats === "year") return k.getMonth() === s.getMonth() && k.getDate() === Math.min(s.getDate(), last);
+    return false;
+  }
+  function occursOn(e, key) { return e.repeats ? repeatsOn(e, key) : e.date <= key && endOf(e) >= key; }
   // events that touch any day from a to b
   function between(a, b) {
-    return events.filter((e) => e.date <= b && endOf(e) >= a)
-                 .sort((x, y) => (x.date + x.time).localeCompare(y.date + y.time));
+    return events.filter((e) => {
+      if (!e.repeats) return e.date <= b && endOf(e) >= a;
+      for (let d = parse(a < e.date ? e.date : a); iso(d) <= b; d.setDate(d.getDate() + 1)) if (repeatsOn(e, iso(d))) return true;
+      return false;
+    }).sort((x, y) => (x.time + x.date).localeCompare(y.time + y.date));
   }
+  const doneOn = (e, key) => (e.repeats ? e.lastNotified === key : e.notified);
+  const REPEAT = { week: "Every week", month: "Every month", year: "Every year" };
+  const AHEAD = { 15: "15 min early", 60: "1 hour early", 1440: "1 day early" };
   function onDay(key) { return between(key, key); }
   function span(e) { return e.end && e.end !== e.date ? `${short(e.date)} – ${short(e.end)}` : ""; }
   function save() {
@@ -260,9 +293,9 @@
       if (key >= selected.from && key <= selected.to) cell.classList.add("sel");
       // the 1st shows its month, like "Nov 1", so the turn of the month is easy to see
       cell.appendChild(el("span", "num", d.getDate() === 1 ? `${SHORT[d.getMonth()]} 1` : d.getDate()));
-      const list = onDay(key);
+      const list = events.filter((e) => occursOn(e, key)).sort((x, y) => x.time.localeCompare(y.time));
       list.slice(0, 2).forEach((e) => {
-        const c = el("div", "chip" + (e.end && e.end !== e.date ? " span" : "") + (e.notified ? " done" : ""), e.title);
+        const c = el("div", "chip" + (e.end && e.end !== e.date ? " span" : "") + (e.repeats ? " again" : "") + (doneOn(e, key) ? " done" : ""), e.title);
         c.title = `${e.time} ${e.title}${span(e) ? " (" + span(e) + ")" : ""}`;
         cell.appendChild(c);
       });
@@ -291,11 +324,13 @@
     const items = between(selected.from, selected.to);
     if (!items.length) list.appendChild(el("div", "empty", one ? "Nothing planned. A free day!" : "Nothing planned on these days."));
     items.forEach((e) => {
-      const row = el("div", "item px flat" + (e.notified ? " done" : ""));
+      const done = one ? doneOn(e, selected.from) : !e.repeats && e.notified;
+      const row = el("div", "item px flat" + (done ? " done" : ""));
       row.appendChild(el("span", "time", e.time));
       const text = el("div");
       text.appendChild(el("b", "", e.title));
-      const notes = [span(e) || (one ? "" : short(e.date)), e.detail, e.notified ? "Reminded ✓" : ""].filter(Boolean);
+      const notes = [span(e) || (one || e.repeats ? "" : short(e.date)), REPEAT[e.repeats], AHEAD[e.ahead], e.detail,
+                     done ? "Reminded ✓" : ""].filter(Boolean);
       if (notes.length) text.appendChild(el("small", "", notes.join(" · ")));
       row.appendChild(text);
       const del = el("button", "del", "✕");
@@ -309,7 +344,7 @@
       list.appendChild(row);
     });
     $("rest").hidden = !one || items.length < BUSY;
-    const n = onDay(today).filter((e) => !e.notified && e.date === today).length;
+    const n = events.filter((e) => (e.repeats ? repeatsOn(e, today) : e.date === today) && !doneOn(e, today)).length;
     $("subtitle").textContent = n ? `${n} more ${n === 1 ? "plan" : "plans"} today. Pug will remind you.`
                                   : "Add your plans and Pug will remind you.";
   }
@@ -400,6 +435,12 @@
     });
   }
 
+  // a repeating plan is one day: the first day it happens
+  $("rep").addEventListener("change", () => {
+    $("to").disabled = !!$("rep").value;
+    if ($("rep").value) { pick(selected.from, selected.from); render(); }
+  });
+
   $("form").addEventListener("submit", (ev) => {
     ev.preventDefault();
     const title = $("t").value.trim();
@@ -407,14 +448,16 @@
     const time = $("time").value || "09:00";
     const e = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
                 date: selected.from, time, title, detail: $("d").value.trim(), notified: false };
-    if (selected.to !== selected.from) e.end = selected.to;
+    if ($("rep").value) e.repeats = $("rep").value;            // repeating plans are one day long
+    else if (selected.to !== selected.from) e.end = selected.to;
+    if (+$("ahead").value) e.ahead = +$("ahead").value;
     events.push(e);
     save();
     try { window.webkit.messageHandlers.pug.postMessage({ op: "added", date: selected.from }); } catch (_) {}
     $("t").value = "";
     $("d").value = "";
     render();
-    toast(`Added "${title}" at ${time}${span(e) ? ", " + span(e) : ""}`);
+    toast(`Added "${title}" at ${time}${span(e) ? ", " + span(e) : ""}${e.repeats ? ", " + REPEAT[e.repeats].toLowerCase() : ""}`);
   });
 
   window.PUG = {

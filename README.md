@@ -102,7 +102,7 @@ Right-click him → **Schedule / reminders…** to open a monthly calendar (ligh
 <img src="docs/schedule.png" width="100%" alt="The schedule window">
 
 1. Click a day on the calendar. For a plan over several days (for example Oct 30 – Nov 2), hold the mouse on the first day for a moment and then drag across the days, hold Shift and click the last day, or pick **From** / **To** (it works across months). Scroll over the calendar to change month. The 1st of each month shows the month's name, like "Nov 1".
-2. Fill in **Time**, **Title** and **Details** (optional), then click **+ Add to schedule**.
+2. Fill in **Time**, **Title** and **Details** (optional). Under **Remind me**, pick on time, 15 minutes, 1 hour or 1 day before. Under **Repeat**, pick every week, month or year for things like a class, a monthly anniversary or a birthday (a repeating plan is one day long). Then click **+ Add to schedule**.
 3. When it's time (a plan over several days reminds you on its first day) he jumps up (waking if he's asleep), a soft chime plays, and he waves the plan at you. Click him to say OK.
 
 <img src="docs/12_reminder.gif" width="380" alt="He jumps up to remind you">
