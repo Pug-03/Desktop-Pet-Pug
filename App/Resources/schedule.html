@@ -203,10 +203,42 @@
 
 <script>
 (() => {
-  const MONTHS = ["January", "February", "March", "April", "May", "June",
-                  "July", "August", "September", "October", "November", "December"];
-  const SHORT = MONTHS.map((m) => m.slice(0, 3));
-  const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  // Thai when Pug's menu says so (Swift sets window.LANG before this runs); years then use the Buddhist era
+  const TH = window.LANG === "th";
+  const tr = (en, th) => (TH ? th : en);
+  const STATIC_TH = {
+    "Pug's Schedule": "ตารางของ Pug", "Previous month": "เดือนก่อน", "Next month": "เดือนถัดไป", "Today": "วันนี้",
+    "Sun": "อา", "Mon": "จ", "Tue": "อ", "Wed": "พ", "Thu": "พฤ", "Fri": "ศ", "Sat": "ส",
+    "That's a lot for one day.": "วันนี้งานเยอะจัง", "Take a break too!": "อย่าลืมพักด้วยน้า",
+    "New plan": "เพิ่มแผน", "From": "ตั้งแต่", "To": "ถึง",
+    "Hold on a day, then drag, or Shift-click, to pick several days. Scroll the calendar to change month.":
+      "กดค้างที่วันแล้วลาก หรือกด Shift แล้วคลิก เพื่อเลือกหลายวัน เลื่อนบนปฏิทินเพื่อเปลี่ยนเดือน",
+    "Time": "เวลา", "Title": "เรื่อง", "Details": "รายละเอียด", "e.g. Meeting, exam, dinner": "เช่น ประชุม สอบ กินข้าว",
+    "Optional": "ไม่ใส่ก็ได้", "+ Add to schedule": "+ เพิ่มลงตาราง",
+    "Remind me": "เตือน", "On time": "ตรงเวลา", "15 min before": "ก่อน 15 นาที", "1 hour before": "ก่อน 1 ชั่วโมง",
+    "1 day before": "ก่อน 1 วัน", "Repeat": "ทำซ้ำ", "Never": "ไม่ซ้ำ", "Every week": "ทุกสัปดาห์",
+    "Every month": "ทุกเดือน", "Every year": "ทุกปี",
+  };
+  if (TH) {
+    document.documentElement.lang = "th";
+    document.title = STATIC_TH[document.title] || document.title;
+    const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let n; (n = walk.nextNode());) {
+      const k = n.nodeValue.trim();
+      if (STATIC_TH[k]) n.nodeValue = n.nodeValue.replace(k, STATIC_TH[k]);
+    }
+    for (const e of document.querySelectorAll("[placeholder], [title]")) {
+      for (const a of ["placeholder", "title"]) if (STATIC_TH[e.getAttribute(a)]) e.setAttribute(a, STATIC_TH[e.getAttribute(a)]);
+    }
+  }
+  const MONTHS = TH ? ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+                       "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"]
+                    : ["January", "February", "March", "April", "May", "June",
+                       "July", "August", "September", "October", "November", "December"];
+  const SHORT = TH ? ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."]
+                   : MONTHS.map((m) => m.slice(0, 3));
+  const WEEKDAYS = TH ? ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"]
+                      : ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const BUSY = 4;
 
   let events = [];
@@ -228,7 +260,7 @@
     const [y, m, d] = key.split("-").map(Number);
     return new Date(y, m - 1, d);
   }
-  function short(key) { const d = parse(key); return `${SHORT[d.getMonth()]} ${d.getDate()}`; }
+  function short(key) { const d = parse(key); return TH ? `${d.getDate()} ${SHORT[d.getMonth()]}` : `${SHORT[d.getMonth()]} ${d.getDate()}`; }
   function el(tag, cls, text) {
     const e = document.createElement(tag);
     if (cls) e.className = cls;
@@ -257,8 +289,10 @@
     }).sort((x, y) => (x.time + x.date).localeCompare(y.time + y.date));
   }
   const doneOn = (e, key) => (e.repeats ? e.lastNotified === key : e.notified);
-  const REPEAT = { week: "Every week", month: "Every month", year: "Every year" };
-  const AHEAD = { 15: "15 min early", 60: "1 hour early", 1440: "1 day early" };
+  const REPEAT = TH ? { week: "ทุกสัปดาห์", month: "ทุกเดือน", year: "ทุกปี" }
+                   : { week: "Every week", month: "Every month", year: "Every year" };
+  const AHEAD = TH ? { 15: "เตือนก่อน 15 นาที", 60: "เตือนก่อน 1 ชั่วโมง", 1440: "เตือนก่อน 1 วัน" }
+                  : { 15: "15 min early", 60: "1 hour early", 1440: "1 day early" };
   function onDay(key) { return between(key, key); }
   function span(e) { return e.end && e.end !== e.date ? `${short(e.date)} – ${short(e.end)}` : ""; }
   function save() {
@@ -278,7 +312,7 @@
   }
 
   function renderMonth() {
-    $("month").textContent = `${MONTHS[view.m]} ${view.y}`;
+    $("month").textContent = `${MONTHS[view.m]} ${TH ? view.y + 543 : view.y}`;
     const days = $("days");
     days.textContent = "";
     const first = new Date(view.y, view.m, 1);
@@ -292,14 +326,14 @@
       if (key === today) cell.classList.add("today");
       if (key >= selected.from && key <= selected.to) cell.classList.add("sel");
       // the 1st shows its month, like "Nov 1", so the turn of the month is easy to see
-      cell.appendChild(el("span", "num", d.getDate() === 1 ? `${SHORT[d.getMonth()]} 1` : d.getDate()));
+      cell.appendChild(el("span", "num", d.getDate() === 1 ? (TH ? `1 ${SHORT[d.getMonth()]}` : `${SHORT[d.getMonth()]} 1`) : d.getDate()));
       const list = events.filter((e) => occursOn(e, key)).sort((x, y) => x.time.localeCompare(y.time));
       list.slice(0, 2).forEach((e) => {
         const c = el("div", "chip" + (e.end && e.end !== e.date ? " span" : "") + (e.repeats ? " again" : "") + (doneOn(e, key) ? " done" : ""), e.title);
         c.title = `${e.time} ${e.title}${span(e) ? " (" + span(e) + ")" : ""}`;
         cell.appendChild(c);
       });
-      if (list.length > 2) cell.appendChild(el("div", "more", `+${list.length - 2} more`));
+      if (list.length > 2) cell.appendChild(el("div", "more", tr(`+${list.length - 2} more`, `+อีก ${list.length - 2}`)));
       if (list.length >= BUSY) {
         const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         s.setAttribute("class", "heart busy");
@@ -317,12 +351,12 @@
     const one = selected.from === selected.to;
     const d = parse(selected.from);
     $("dayTitle").textContent = one
-      ? `${WEEKDAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}`
+      ? tr(`${WEEKDAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}`, `วัน${WEEKDAYS[d.getDay()]}ที่ ${d.getDate()} ${MONTHS[d.getMonth()]}`)
       : `${short(selected.from)} – ${short(selected.to)}`;
     const list = $("list");
     list.textContent = "";
     const items = between(selected.from, selected.to);
-    if (!items.length) list.appendChild(el("div", "empty", one ? "Nothing planned. A free day!" : "Nothing planned on these days."));
+    if (!items.length) list.appendChild(el("div", "empty", one ? tr("Nothing planned. A free day!", "ยังไม่มีแผน ว่างทั้งวันเลย") : tr("Nothing planned on these days.", "ช่วงนี้ยังไม่มีแผน")));
     items.forEach((e) => {
       const done = one ? doneOn(e, selected.from) : !e.repeats && e.notified;
       const row = el("div", "item px flat" + (done ? " done" : ""));
@@ -330,11 +364,11 @@
       const text = el("div");
       text.appendChild(el("b", "", e.title));
       const notes = [span(e) || (one || e.repeats ? "" : short(e.date)), REPEAT[e.repeats], AHEAD[e.ahead], e.detail,
-                     done ? "Reminded ✓" : ""].filter(Boolean);
+                     done ? tr("Reminded ✓", "เตือนแล้ว ✓") : ""].filter(Boolean);
       if (notes.length) text.appendChild(el("small", "", notes.join(" · ")));
       row.appendChild(text);
       const del = el("button", "del", "✕");
-      del.title = "Delete";
+      del.title = tr("Delete", "ลบ");
       del.addEventListener("click", () => {
         events = events.filter((x) => x.id !== e.id);
         save();
@@ -345,8 +379,8 @@
     });
     $("rest").hidden = !one || items.length < BUSY;
     const n = events.filter((e) => (e.repeats ? repeatsOn(e, today) : e.date === today) && !doneOn(e, today)).length;
-    $("subtitle").textContent = n ? `${n} more ${n === 1 ? "plan" : "plans"} today. Pug will remind you.`
-                                  : "Add your plans and Pug will remind you.";
+    $("subtitle").textContent = n ? tr(`${n} more ${n === 1 ? "plan" : "plans"} today. Pug will remind you.`, `วันนี้เหลืออีก ${n} แผน เดี๋ยว Pug เตือนให้`)
+                                  : tr("Add your plans and Pug will remind you.", "ใส่แผนไว้ได้เลย เดี๋ยว Pug เตือนให้");
   }
 
   function render() { renderMonth(); renderDay(); }
@@ -457,7 +491,8 @@
     $("t").value = "";
     $("d").value = "";
     render();
-    toast(`Added "${title}" at ${time}${span(e) ? ", " + span(e) : ""}${e.repeats ? ", " + REPEAT[e.repeats].toLowerCase() : ""}`);
+    const extra = `${span(e) ? ", " + span(e) : ""}${e.repeats ? ", " + REPEAT[e.repeats].toLowerCase() : ""}`;
+    toast(tr(`Added "${title}" at ${time}${extra}`, `เพิ่ม "${title}" ตอน ${time} แล้ว${extra}`));
   });
 
   window.PUG = {

@@ -129,13 +129,14 @@ Right-click him, or click Pug's face in the menu bar at the top of the screen.
 | Size | Small · Medium · Large |
 | Work or sleep when left alone | After 1 · 3 · 5 · 10 · 30 min |
 | Walk around | Turn his walking on or off |
+| Language (ภาษา) | English or Thai: the menu, his lines, the letter, the calendar and the lessons |
 | Edit lines… | Change the things he says |
 | Open at login | On / off |
 | Check for updates… | Looks for a new Pug and installs it (shows **Update Pug to …** when one is ready) |
 
 ### Change what he says
 
-Menu → **Edit lines…** opens a file in TextEdit. Change the lines inside the `[ ]` brackets; saved changes apply right away.
+Menu → **Edit lines…** opens a file in TextEdit (in Thai, the Thai lines have their own file). Change the lines inside the `[ ]` brackets; saved changes apply right away.
 
 ```json
 "goodnight": ["Good night~", "Miss you already", "Call me if you can't sleep"],

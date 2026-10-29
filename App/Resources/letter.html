@@ -115,6 +115,8 @@
     $("page").textContent = letter.pages[at];
     $("giftArea").hidden = !last;
     $("open").textContent = letter.button;
+    if (letter.back) $("back").textContent = letter.back;
+    if (letter.next) $("next").textContent = letter.next;
     $("sign").textContent = last ? letter.signature : "";
     $("back").style.visibility = at === 0 ? "hidden" : "visible";
     $("next").style.visibility = last ? "hidden" : "visible";

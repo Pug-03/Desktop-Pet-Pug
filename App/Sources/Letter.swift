@@ -12,8 +12,11 @@ final class LetterWindow: NSObject, WKScriptMessageHandler, WKNavigationDelegate
         var after: [String] = []
     }
 
+    /// letter.json, or letter.th.json in Thai.
+    static var url: URL? { Bundle.main.url(forResource: L.thai ? "letter.th" : "letter", withExtension: "json") }
+
     static func load() -> Letter {
-        guard let url = Bundle.main.url(forResource: "letter", withExtension: "json"),
+        guard let url = url,
               let data = try? Data(contentsOf: url),
               let l = try? JSONDecoder().decode(Letter.self, from: data) else { return Letter() }
         return l
@@ -30,13 +33,13 @@ final class LetterWindow: NSObject, WKScriptMessageHandler, WKNavigationDelegate
         web = WKWebView(frame: CGRect(x: 0, y: 0, width: 560, height: 600), configuration: config)
         window = NSWindow(contentRect: CGRect(x: 0, y: 0, width: 560, height: 600),
                           styleMask: [.titled, .closable, .miniaturizable], backing: .buffered, defer: false)
-        let raw = Bundle.main.url(forResource: "letter", withExtension: "json").flatMap { try? Data(contentsOf: $0) }
+        let raw = LetterWindow.url.flatMap { try? Data(contentsOf: $0) }
         json = raw.flatMap { String(data: $0, encoding: .utf8) } ?? "{}"
         super.init()
         config.userContentController.add(WeakLetterHandler(self), name: "letter")
         web.navigationDelegate = self
         web.setValue(false, forKey: "drawsBackground")
-        window.title = "A letter for you"
+        window.title = L.t("A letter for you")
         window.contentView = web
         window.isReleasedWhenClosed = false
         window.center()
@@ -108,13 +111,16 @@ final class GuideWindow: NSObject, WKNavigationDelegate {
     let web: WKWebView
 
     override init() {
-        web = WKWebView(frame: CGRect(x: 0, y: 0, width: 760, height: 660))
+        let config = WKWebViewConfiguration()
+        config.userContentController.addUserScript(WKUserScript(source: "window.LANG = '\(Settings.language)'",
+                                                                injectionTime: .atDocumentStart, forMainFrameOnly: true))
+        web = WKWebView(frame: CGRect(x: 0, y: 0, width: 760, height: 660), configuration: config)
         window = NSWindow(contentRect: CGRect(x: 0, y: 0, width: 760, height: 660),
                           styleMask: [.titled, .closable, .miniaturizable, .resizable], backing: .buffered, defer: false)
         super.init()
         web.navigationDelegate = self
         web.setValue(false, forKey: "drawsBackground")
-        window.title = "How to play with Pug"
+        window.title = L.t("How to play with Pug")
         window.contentView = web
         window.minSize = CGSize(width: 420, height: 400)
         window.isReleasedWhenClosed = false

@@ -8,13 +8,19 @@ final class Messages {
     private var cache: [String: [String]] = [:]
     private var loadedStamp: Date?
 
-    init(bundled: URL?) {
+    /// The lines for the chosen language (Menu → Language).
+    static func current() -> Messages {
+        let name = L.thai ? "messages.th" : "messages"
+        return Messages(bundled: Bundle.main.url(forResource: name, withExtension: "json"), userFile: name + ".json")
+    }
+
+    init(bundled: URL?, userFile: String = "messages.json") {
         var d: [String: [String]] = [:]
         if let u = bundled, let parsed = Messages.parse(u) { d = parsed }
         defaults = d
         let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("Pug", isDirectory: true)
-        userURL = dir.appendingPathComponent("messages.json")
+        userURL = dir.appendingPathComponent(userFile)
         if !FileManager.default.fileExists(atPath: userURL.path), let b = bundled {
             try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
             try? FileManager.default.copyItem(at: b, to: userURL)

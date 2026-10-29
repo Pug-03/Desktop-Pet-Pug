@@ -135,7 +135,7 @@
     },
     {
       title: "Night: he goes to bed",
-      intro: "He only sleeps after 10 pm. Click him to wake him up.",
+      intro: "He only sleeps after 10 pm, and gets up by himself at 6 am. Click him to wake him up.",
       items: [
         { clip: "09_goodnight", tag: "After 10 pm", title: "Good night", text: "He yawns, says good night and sleeps under a blanket." },
         { clip: "14_desk_sleep", tag: "Working late", title: "Asleep at the desk", text: "Click him and he wakes up and carries on." },
@@ -148,6 +148,7 @@
         { clip: "12_reminder", tag: "Right-click him, then Schedule / reminders", title: "He reminds you on time", list: [
           "Click a day on the calendar (hold then drag, or Shift-click, for several days)",
           "Fill in the time, title and details, then Add to schedule",
+          "Remind me early, or repeat it every week, month or year (good for birthdays)",
           "When it's time he jumps up to tell you; click him to say OK",
           "Scroll over the calendar to change month",
         ] },
@@ -167,6 +168,7 @@
         ["Work or sleep when left alone", "How soon he starts working"],
         ["Size", "Make him small, medium or large"],
         ["Walk around", "Turn his walking on or off"],
+        ["Language", "English or Thai"],
         ["Edit lines", "Change the things he says"],
         ["Open at login", "He starts with your Mac"],
         ["Check for updates", "Get the newest Pug in one click"],
@@ -183,6 +185,103 @@
       ],
     },
   ];
+
+
+  const LESSONS_TH = [
+    {
+      title: "จิ้มเล่น",
+      intro: "Pug ยืนอยู่ขอบล่างของจอเสมอ ลองคลิกที่ตัวดูสิ",
+      items: [
+        { clip: "03_poke_tickle", tag: "คลิก 1 ที", title: "จั๊กจี้", text: "หัวเราะคิกคัก มีหัวใจลอยขึ้นมา" },
+        { clip: "04_poke_dizzy", tag: "คลิกรัวๆ 6 ที", title: "มึนหัว", text: "ตาเป็นก้นหอย มีดาววนรอบหัว" },
+      ],
+    },
+    {
+      title: "ยกขึ้น",
+      intro: "กดเมาส์ค้างไว้ที่ตัวแล้วลาก",
+      items: [
+        { clip: "05_hold_lift", tag: "กดค้างแล้วลาก", title: "ห้อยต่องแต่ง", text: "แกว่งไปตามเมาส์ ปล่อยแล้วตกลงพื้น ตัวยุบแล้วเด้ง" },
+        { clip: "07_shake_dizzy", tag: "ยกแล้วเขย่าแรงๆ", title: "ตกใจ", text: "เหงื่อตก แล้วลงพื้นแบบมึนๆ" },
+      ],
+    },
+    {
+      title: "โยน",
+      intro: "ยกขึ้น สะบัดเมาส์ไปทางไหนก็ได้ แล้วปล่อย",
+      items: [
+        { clip: "08_throw", tag: "ลาก สะบัด แล้วปล่อย", title: "ลอยไปชนขอบจอ", text: "ลอยข้ามจอ ชนขอบแล้วเด้งกลับมา" },
+      ],
+    },
+    {
+      title: "กลางวัน: ทำงาน",
+      intro: "ปล่อยไว้ 3 นาที จะลากโต๊ะออกมานั่งเขียนโค้ด",
+      items: [
+        { clip: "13_work", tag: "กลางวัน", title: "นั่งเขียนโค้ด", list: [
+          "คิดก่อน แล้วพิมพ์ยาวๆ มีโค้ดลอยขึ้นมา",
+          "พักเล็กๆ ระหว่างทาง: คิด ยิ้ม หงุดหงิด ดื่มน้ำ บิดขี้เกียจ",
+          "ทุก 5-10 นาทีจะหันมาให้กำลังใจ",
+          "ทำงานครบประมาณชั่วโมง จะลุกไปเดินเล่นแล้วกลับมาทำต่อ",
+          "คลิกตอนทำงานอยู่ จะหันมามอง",
+        ] },
+      ],
+    },
+    {
+      title: "กลางคืน: เข้านอน",
+      intro: "นอนเฉพาะหลัง 4 ทุ่ม และตื่นเองตอน 6 โมงเช้า คลิกเพื่อปลุกได้",
+      items: [
+        { clip: "09_goodnight", tag: "หลัง 4 ทุ่ม", title: "ฝันดี", text: "หาว บอกฝันดี แล้วนอนห่มผ้า" },
+        { clip: "14_desk_sleep", tag: "ทำงานดึก", title: "หลับคาโต๊ะ", text: "คลิกแล้วตื่นมาทำงานต่อ" },
+      ],
+    },
+    {
+      title: "ตารางและการเตือน",
+      intro: "ให้น้องช่วยจำแผน แล้วเตือนเมื่อถึงเวลา",
+      items: [
+        { clip: "12_reminder", tag: "คลิกขวาที่ตัว แล้วเลือก ตาราง / แจ้งเตือน", title: "เตือนตรงเวลา", list: [
+          "คลิกวันในปฏิทิน (กดค้างแล้วลาก หรือกด Shift แล้วคลิก เพื่อเลือกหลายวัน)",
+          "ใส่เวลา เรื่อง และรายละเอียด แล้วกดเพิ่มลงตาราง",
+          "ให้เตือนล่วงหน้า หรือทำซ้ำทุกสัปดาห์ ทุกเดือน ทุกปี ก็ได้ (เหมาะกับวันเกิด)",
+          "ถึงเวลาจะเด้งขึ้นมาบอก คลิกที่ตัวเพื่อรับทราบ",
+          "เลื่อนบนปฏิทินเพื่อเปลี่ยนเดือน",
+        ] },
+      ],
+    },
+    {
+      title: "เมนู",
+      intro: "คลิกขวาที่ตัว หรือคลิกหน้าปั๊กที่แถบเมนูด้านบนของจอ",
+      menu: [
+        ["ซ่อนตัว / แสดงตัว", "ซ่อนไว้สักพัก"],
+        ["เรียกมาหา", "หล่นลงมาตรงที่เมาส์อยู่"],
+        ["พูดอะไรหน่อย", "พูดสุ่มมาหนึ่งประโยค"],
+        ["ตาราง / แจ้งเตือน", "ปฏิทินสำหรับใส่แผน"],
+        ["จดหมายวันครบรอบ", "อ่านจดหมายอีกครั้ง"],
+        ["วิธีเล่น", "เปิดหน้านี้"],
+        ["ให้นอนเลย / ปลุก", "ส่งเข้านอน หรือปลุก"],
+        ["ไปทำงานเมื่อไม่มีใครเล่นด้วย", "ปล่อยไว้นานแค่ไหนถึงเริ่มทำงาน"],
+        ["ขนาด", "ตัวเล็ก กลาง หรือใหญ่"],
+        ["เดินเล่นไปมา", "เปิดหรือปิดการเดิน"],
+        ["ภาษา", "ภาษาอังกฤษหรือภาษาไทย"],
+        ["แก้ไขข้อความ", "เปลี่ยนสิ่งที่น้องพูด"],
+        ["เปิดเองตอนเปิดเครื่อง", "เปิดพร้อม Mac ทุกครั้ง"],
+        ["ตรวจหาเวอร์ชันใหม่", "อัปเดต Pug ได้ในคลิกเดียว"],
+      ],
+    },
+    {
+      title: "เรื่องเล็กๆ",
+      intro: "สิ่งที่น้องทำเอง",
+      tips: [
+        "ถ้า Dock อยู่ด้านล่าง น้องจะยืนบน Dock พอเดินเลยปลาย Dock จะกระโดดลงขอบจอ",
+        "วันไหนมีแผนตั้งแต่ 4 อัน น้องจะบอกให้พักบ้าง",
+        "บางทีก็พูดอะไรหวานๆ ขึ้นมาเอง",
+        "เปิดเองทุกครั้งที่เปิดเครื่อง",
+      ],
+    },
+  ];
+  if (window.LANG === "th") {
+    LESSONS.splice(0, LESSONS.length, ...LESSONS_TH);
+    document.documentElement.lang = "th";
+    document.getElementById("back").textContent = "ก่อนหน้า";
+    document.getElementById("next").textContent = "ถัดไป";
+  }
 
   const $ = (id) => document.getElementById(id);
   let at = 0;

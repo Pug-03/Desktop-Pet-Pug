@@ -14,11 +14,11 @@ enum Updater {
         case download, unpack, notNewer, notInApplications, replace(String)
         var errorDescription: String? {
             switch self {
-            case .download: return "The download didn't finish. Check that you're online, then try again."
-            case .unpack: return "The downloaded file was damaged. Try again in a few minutes."
-            case .notNewer: return "GitHub is still sending the old version. Try again in a few minutes."
-            case .notInApplications: return "Pug is running from Downloads. Drag Pug into your Applications folder, open it from there, then update."
-            case .replace(let why): return "Pug couldn't replace itself (\(why))."
+            case .download: return L.t("The download didn't finish. Check that you're online, then try again.")
+            case .unpack: return L.t("The downloaded file was damaged. Try again in a few minutes.")
+            case .notNewer: return L.t("GitHub is still sending the old version. Try again in a few minutes.")
+            case .notInApplications: return L.t("Pug is running from Downloads. Drag Pug into your Applications folder, open it from there, then update.")
+            case .replace(let why): return L.t("Pug couldn't replace itself (%@).", why)
             }
         }
     }

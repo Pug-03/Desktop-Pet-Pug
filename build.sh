@@ -20,7 +20,7 @@ lipo -create build/Pug-arm64 build/Pug-x86_64 -output "$APP/Contents/MacOS/Pug"
 rm build/Pug-arm64 build/Pug-x86_64
 
 cp App/Info.plist "$APP/Contents/Info.plist"
-cp -R App/Resources/sprites App/Resources/messages.json App/Resources/schedule.html App/Resources/letter.html App/Resources/letter.json App/Resources/guide.html App/Resources/guide "$APP/Contents/Resources/"
+cp -R App/Resources/sprites App/Resources/messages.json App/Resources/messages.th.json App/Resources/schedule.html App/Resources/letter.html App/Resources/letter.json App/Resources/letter.th.json App/Resources/guide.html App/Resources/guide "$APP/Contents/Resources/"
 [ -f App/Resources/AppIcon.icns ] && cp App/Resources/AppIcon.icns "$APP/Contents/Resources/"
 
 codesign --force --deep -s - "$APP"

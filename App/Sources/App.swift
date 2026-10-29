@@ -24,6 +24,10 @@ struct Settings {
         get { d.bool(forKey: "firstRunDone") }
         set { d.set(newValue, forKey: "firstRunDone") }
     }
+    static var language: String {  // "en" or "th"
+        get { d.string(forKey: "language") ?? "en" }
+        set { d.set(newValue, forKey: "language") }
+    }
     static var announcedBuild: Int {  // the newest update he has already told her about
         get { d.integer(forKey: "announcedBuild") }
         set { d.set(newValue, forKey: "announcedBuild") }
@@ -116,7 +120,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func applicationDidFinishLaunching(_ note: Notification) {
         let res = Bundle.main.resourceURL!
-        messages = Messages(bundled: res.appendingPathComponent("messages.json"))
+        messages = Messages.current()
         guard let fx = Atlas.load(png: res.appendingPathComponent("sprites/effects.png"),
                                   json: res.appendingPathComponent("sprites/effects.json")),
               let frames = AppController.petFrames()
@@ -386,38 +390,45 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             i.state = on ? .on : .off
             (menu ?? m).addItem(i)
         }
-        add(hidden ? "Show" : "Hide", #selector(toggleHidden))
-        add("Call him", #selector(summon))
-        add("Say something", #selector(talk))
-        add("Schedule / reminders…", #selector(openSchedule))
-        add("Anniversary letter…", #selector(openLetter))
-        add("How to play…", #selector(openGuide))
+        add(L.t(hidden ? "Show" : "Hide"), #selector(toggleHidden))
+        add(L.t("Call him"), #selector(summon))
+        add(L.t("Say something"), #selector(talk))
+        add(L.t("Schedule / reminders…"), #selector(openSchedule))
+        add(L.t("Anniversary letter…"), #selector(openLetter))
+        add(L.t("How to play…"), #selector(openGuide))
         let asleep: [PetState] = [.sleeping, .deskSleeping, .yawning, .rubbing, .sittingDown]
-        if asleep.contains(engine.state) { add("Wake up", #selector(wake)) } else { add("Sleep now", #selector(sleepNow)) }
+        if asleep.contains(engine.state) { add(L.t("Wake up"), #selector(wake)) } else { add(L.t("Sleep now"), #selector(sleepNow)) }
         m.addItem(.separator())
 
         let size = NSMenu()
         for (i, n) in ["Small", "Medium", "Large"].enumerated() {
-            add(n, #selector(setSize(_:)), tag: i, on: Settings.size == i, to: size)
+            add(L.t(n), #selector(setSize(_:)), tag: i, on: Settings.size == i, to: size)
         }
-        let zi = NSMenuItem(title: "Size", action: nil, keyEquivalent: "")
+        let zi = NSMenuItem(title: L.t("Size"), action: nil, keyEquivalent: "")
         zi.submenu = size
         m.addItem(zi)
 
         let sleep = NSMenu()
         for minutes in [1, 3, 5, 10, 30] {
-            add("\(minutes) min", #selector(setSleep(_:)), tag: minutes, on: Int(Settings.sleepMinutes) == minutes, to: sleep)
+            add(L.t("%d min", minutes), #selector(setSleep(_:)), tag: minutes, on: Int(Settings.sleepMinutes) == minutes, to: sleep)
         }
-        let li = NSMenuItem(title: "Work or sleep when left alone", action: nil, keyEquivalent: "")
+        let li = NSMenuItem(title: L.t("Work or sleep when left alone"), action: nil, keyEquivalent: "")
         li.submenu = sleep
         m.addItem(li)
-        add("Walk around", #selector(toggleWalking), on: Settings.walking)
+        add(L.t("Walk around"), #selector(toggleWalking), on: Settings.walking)
+        let lang = NSMenu()
+        for (i, (code, name)) in [("en", "English"), ("th", "ภาษาไทย")].enumerated() {
+            add(name, #selector(setLanguage(_:)), tag: i, on: Settings.language == code, to: lang)
+        }
+        let gi = NSMenuItem(title: L.thai ? "ภาษา (Language)" : "Language (ภาษา)", action: nil, keyEquivalent: "")
+        gi.submenu = lang
+        m.addItem(gi)
         m.addItem(.separator())
-        add("Edit lines…", #selector(editMessages))
-        add("Open at login", #selector(toggleLogin), on: LoginItem.enabled)
-        add(update.map { "Update Pug to \($0.version)…" } ?? "Check for updates…", #selector(checkForUpdates))
+        add(L.t("Edit lines…"), #selector(editMessages))
+        add(L.t("Open at login"), #selector(toggleLogin), on: LoginItem.enabled)
+        add(update.map { L.t("Update Pug to %@…", $0.version) } ?? L.t("Check for updates…"), #selector(checkForUpdates))
         m.addItem(.separator())
-        add("Quit", #selector(quit))
+        add(L.t("Quit"), #selector(quit))
         return m
     }
 
@@ -475,6 +486,19 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     // MARK: - schedule & reminders
 
+    /// Switch every word the app shows; open windows are closed so they reopen in the new language.
+    @objc private func setLanguage(_ sender: NSMenuItem) {
+        let code = sender.tag == 1 ? "th" : "en"
+        guard code != Settings.language else { return }
+        Settings.language = code
+        messages = Messages.current()
+        for w in [scheduleWindow?.window, guideWindow?.window, letterWindow?.window] { w?.close() }
+        scheduleWindow = nil; guideWindow = nil; letterWindow = nil
+        setupEditMenu()
+        engine.sayLines([messages.lines("hello").randomElement() ?? "Hi!"])
+        kick()
+    }
+
     @objc private func openSchedule() {
         let portrait = ScheduleWindow.portrait(from: engine.frames["stand.normal.0"])
         if scheduleWindow == nil {
@@ -530,7 +554,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     /// "09:00  Exam", or "Tomorrow 09:00  Exam" when he reminds early.
     private func reminderText(_ e: ScheduleEvent) -> String {
         let early = [15: "In 15 min:", 60: "In 1 hour:", 1440: "Tomorrow"][e.ahead ?? 0]
-        var text = (early.map { $0 + " " } ?? "") + "\(e.time)  \(e.title)"
+        var text = (early.map { L.t($0) + " " } ?? "") + "\(e.time)  \(e.title)"
         if !e.detail.isEmpty { text += "\n\(e.detail)" }
         return text
     }
@@ -541,18 +565,18 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let appItem = NSMenuItem()
         main.addItem(appItem)
         let appMenu = NSMenu()
-        appMenu.addItem(withTitle: "Close Window", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w")
+        appMenu.addItem(withTitle: L.t("Close Window"), action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w")
         appItem.submenu = appMenu
         let editItem = NSMenuItem()
         main.addItem(editItem)
-        let edit = NSMenu(title: "Edit")
-        edit.addItem(withTitle: "Undo", action: Selector(("undo:")), keyEquivalent: "z")
-        edit.addItem(withTitle: "Redo", action: Selector(("redo:")), keyEquivalent: "Z")
+        let edit = NSMenu(title: L.t("Edit"))
+        edit.addItem(withTitle: L.t("Undo"), action: Selector(("undo:")), keyEquivalent: "z")
+        edit.addItem(withTitle: L.t("Redo"), action: Selector(("redo:")), keyEquivalent: "Z")
         edit.addItem(.separator())
-        edit.addItem(withTitle: "Cut", action: #selector(NSText.cut(_:)), keyEquivalent: "x")
-        edit.addItem(withTitle: "Copy", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
-        edit.addItem(withTitle: "Paste", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
-        edit.addItem(withTitle: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
+        edit.addItem(withTitle: L.t("Cut"), action: #selector(NSText.cut(_:)), keyEquivalent: "x")
+        edit.addItem(withTitle: L.t("Copy"), action: #selector(NSText.copy(_:)), keyEquivalent: "c")
+        edit.addItem(withTitle: L.t("Paste"), action: #selector(NSText.paste(_:)), keyEquivalent: "v")
+        edit.addItem(withTitle: L.t("Select All"), action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
         editItem.submenu = edit
         NSApp.mainMenu = main
     }
@@ -603,7 +627,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             guard latest.build > Settings.announcedBuild, !self.hidden, !self.engine.isBusy,
                   !asleep.contains(self.engine.state) else { return }
             Settings.announcedBuild = latest.build
-            let line = self.messages.lines("update").randomElement() ?? "There's a new version of me! Right-click me and choose Update Pug"
+            let line = self.messages.lines("update").randomElement() ?? "There's a new version of me!"
             self.engine.sayLines([line])
             self.kick()
         }
@@ -613,28 +637,28 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         Updater.fetchLatest { [weak self] latest in
             guard let self else { return }
             guard let latest else {
-                self.alert("Couldn't check for updates", "Check that you're online, then try again.")
+                self.alert(L.t("Couldn't check for updates"), L.t("Check that you're online, then try again."))
                 return
             }
             guard latest.build > Updater.build else {
                 self.update = nil
-                self.alert("You have the newest Pug", "Version \(Updater.version).")
+                self.alert(L.t("You have the newest Pug"), L.t("Version %@.", Updater.version))
                 return
             }
             self.update = latest
-            let ok = self.alert("Pug \(latest.version) is ready",
-                                "You have \(Updater.version). Pug closes for a moment, updates, and comes right back. Your plans and settings stay as they are.",
-                                buttons: ["Update", "Later"])
+            let ok = self.alert(L.t("Pug %@ is ready", latest.version),
+                                L.t("You have %@. Pug closes for a moment, updates, and comes right back. Your plans and settings stay as they are.", Updater.version),
+                                buttons: [L.t("Update"), L.t("Later")])
             guard ok else { return }
             Updater.install(latest) { [weak self] message in
-                self?.alert("Pug couldn't update", message + "\n\nYou can also download Pug.zip from github.com/Pug-03/Desktop-Pet-Pug and drag Pug into Applications.")
+                self?.alert(L.t("Pug couldn't update"), message + "\n\n" + L.t("You can also download Pug.zip from github.com/Pug-03/Desktop-Pet-Pug and drag Pug into Applications."))
             }
         }
     }
 
     /// A small dialog; true when she picks the first button.
     @discardableResult
-    private func alert(_ title: String, _ text: String, buttons: [String] = ["OK"]) -> Bool {
+    private func alert(_ title: String, _ text: String, buttons: [String] = [L.t("OK")]) -> Bool {
         let a = NSAlert()
         a.messageText = title
         a.informativeText = text

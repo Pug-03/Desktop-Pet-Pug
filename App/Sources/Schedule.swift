@@ -118,9 +118,11 @@ final class ScheduleWindow: NSObject, WKScriptMessageHandler, WKNavigationDelega
                           styleMask: [.titled, .closable, .miniaturizable, .resizable], backing: .buffered, defer: false)
         super.init()
         config.userContentController.add(WeakHandler(self), name: "pug")
+        config.userContentController.addUserScript(WKUserScript(source: "window.LANG = '\(Settings.language)'",
+                                                                injectionTime: .atDocumentStart, forMainFrameOnly: true))
         web.navigationDelegate = self
         web.setValue(false, forKey: "drawsBackground")
-        window.title = "Pug's Schedule"
+        window.title = L.t("Pug's Schedule")
         window.contentView = web
         window.minSize = CGSize(width: 760, height: 560)
         window.isReleasedWhenClosed = false
