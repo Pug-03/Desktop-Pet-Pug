@@ -352,9 +352,9 @@ final class PetEngine {
             break
         }
         if state == .talking && talkPose == .alert {
-            // a poke acknowledges the reminder
-            talkQueue.removeAll { $0.1 == .alert }
+            // a poke acknowledges this reminder; the next one, if any, comes up
             bubble = nil
+            if talkQueue.contains(where: { $0.1 == .alert }) { nextLine(); return }
         }
         talkQueue.removeAll()
         pokes.append(clock)
