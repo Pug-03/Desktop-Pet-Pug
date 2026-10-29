@@ -49,6 +49,7 @@ final class LetterWindow: NSObject, WKScriptMessageHandler, WKNavigationDelegate
     }
 
     func show() {
+        web.evaluateJavaScript("LETTER.load(\(json))", completionHandler: nil)  // from the first page again
         NSApp.activate(ignoringOtherApps: true)
         window.makeKeyAndOrderFront(nil)
     }
