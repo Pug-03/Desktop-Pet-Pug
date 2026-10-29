@@ -15,5 +15,12 @@
   "break": ["Time for a quick stretch", "Been sitting too long. Walk time", "Resting my eyes for a bit"],
 
   "anniversary": ["{n} months together today!", "{n} months today. Thank you for being with me"],
+  "newLetter": ["There's a new letter for you. Right-click me and open the anniversary letter"],
+
+  "morning": ["Good morning! You've got this today", "Morning! Don't skip breakfast"],
+  "lunch": ["It's lunchtime. Have you eaten?", "Take a break and eat something"],
+  "water": ["Afternoon already. Drink some water", "Stand up and stretch for a minute"],
+  "late": ["It's late. Time for bed", "Finish it tomorrow. Go to sleep"],
+  "anniversary": ["{n} months together today!", "{n} months today. Thank you for being with me"],
   "newLetter": ["There's a new letter for you. Right-click me and open the anniversary letter"]
 }

@@ -633,10 +633,10 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     @objc private func toggleLogin() { LoginItem.set(!LoginItem.enabled) }
 
-    // MARK: - love notes and anniversaries
+    // MARK: - love notes, anniversaries, time of day
 
     /// love.json comes in 20 seconds after launch and then every hour; every minute he looks for
-    /// something to say: a new note from him, or the monthly anniversary.
+    /// something to say: a new note from him, the monthly anniversary, or a hello for the time of day.
     private func startLove() {
         let fetch = Timer(timeInterval: 3600, repeats: true) { [weak self] _ in self?.love.refresh { self?.everyMinute() } }
         let minute = Timer(timeInterval: 60, repeats: true) { [weak self] _ in self?.everyMinute() }
@@ -683,6 +683,18 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             return
         }
 
+        // a hello for the time of day, once a day each; the late one belongs to the evening it started
+        let c = Calendar.current.dateComponents([.hour, .minute], from: now)
+        let m = (c.hour ?? 0) * 60 + (c.minute ?? 0)
+        let slot: String? = (360..<600).contains(m) ? "morning" : (690..<810).contains(m) ? "lunch"
+            : (900..<990).contains(m) ? "water" : (m >= 1410 || m < 90) ? "late" : nil
+        guard let slot else { return }
+        let day = slot == "late" && m < 90 ? Love.today(now.addingTimeInterval(-3 * 3600)) : today
+        guard greeted[slot] != day, let line = messages.lines(slot).randomElement() else { return }
+        greeted[slot] = day
+        Settings.greeted = greeted
+        engine.sayLines([line])
+        kick()
     }
 
     @objc private func sayLastNote() {
