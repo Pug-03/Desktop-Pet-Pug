@@ -131,6 +131,7 @@ Right-click him, or click Pug's face in the menu bar at the top of the screen.
 | Walk around | Turn his walking on or off |
 | Edit lines… | Change the things he says |
 | Open at login | On / off |
+| Check for updates… | Looks for a new Pug and installs it (shows **Update Pug to …** when one is ready) |
 
 ### Change what he says
 
@@ -141,6 +142,19 @@ Menu → **Edit lines…** opens a file in TextEdit. Change the lines inside the
 ```
 
 If the file gets broken, don't worry: Pug goes back to his usual lines.
+
+---
+
+## Updating
+
+When there's a new version, he tells you himself. Then:
+
+1. Right-click him (or click Pug's face in the menu bar) and choose **Update Pug to …** (or **Check for updates…** to look yourself).
+2. Click **Update**. He disappears for a moment and comes right back as the new version.
+
+Your plans, settings and edited lines stay as they are, and the letter doesn't pop up again.
+
+> Coming from version 1.0, which has no update button: quit Pug from the menu, download `Pug.zip` again, drag the new **Pug** into Applications and click **Replace**. After that, updates are one click.
 
 ---
 
@@ -159,8 +173,10 @@ If the file gets broken, don't worry: Pug goes back to his usual lines.
 ```bash
 ./build.sh                                            # all sprites + build/Pug.app (universal)
 build/Pug.app/Contents/MacOS/Pug --record demo        # record the demo clips into demo/ (needs ffmpeg)
-ditto -c -k --keepParent build/Pug.app Pug.zip        # the zip to hand out
+build/Pug.app/Contents/MacOS/Pug --update-now        # install the newest build from GitHub (tests the updater)
 ```
+
+`./build.sh` also writes `Pug.zip` and `latest.json`. To release: raise `CFBundleVersion` (and `CFBundleShortVersionString`) in `App/Info.plist`, run `./build.sh`, then commit and push. The app reads `latest.json` from GitHub; any build number higher than its own counts as an update.
 
 | Part | Files |
 |---|---|
