@@ -489,7 +489,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     // MARK: - schedule & reminders
 
     @objc private func openCPU() {
-        if cpuWindow == nil { cpuWindow = CPUWindow() }
+        if cpuWindow == nil { cpuWindow = CPUWindow(avatar: ScheduleWindow.portrait(from: engine.frames["stand.normal.0"])) }
         cpuWindow?.show()
     }
 

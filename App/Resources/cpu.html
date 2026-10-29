@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CPU usage</title>
+<style>
+  /* same pixel look as the schedule: light blue checks, ink frames with notched corners */
+  :root {
+    --ink: #1f2d40;
+    --paper: #f8fcff;
+    --bg: #dcecfa;
+    --accent: #4fa3e3;
+    --accent-soft: #d3e9fb;
+    --pink: #ff7aa2;
+    --pink-soft: #ffe0ea;
+    --muted: #5c6f84;
+    --grid: #dbe6f0;
+    --line: 4px;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 15px/1.35 "Silom", "Thonburi", system-ui, sans-serif;
+    -webkit-font-smoothing: none;
+    user-select: none;
+    background-image:
+      linear-gradient(45deg, rgba(255,255,255,.35) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.35) 75%),
+      linear-gradient(45deg, rgba(255,255,255,.35) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.35) 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 8px 8px;
+  }
+  .px {
+    position: relative;
+    background: var(--paper);
+    margin: var(--line);
+    box-shadow:
+      0 calc(-1 * var(--line)) 0 0 var(--ink),
+      0 var(--line) 0 0 var(--ink),
+      calc(-1 * var(--line)) 0 0 0 var(--ink),
+      var(--line) 0 0 0 var(--ink),
+      var(--line) calc(2 * var(--line)) 0 0 rgba(31, 45, 64, .2),
+      calc(2 * var(--line)) var(--line) 0 0 rgba(31, 45, 64, .2);
+  }
+  .app { display: grid; grid-template-rows: auto 1fr 1fr auto; gap: 14px; height: 100%; padding: 16px 18px 14px; }
+
+  header { display: flex; align-items: center; gap: 14px; padding: 10px 14px; }
+  .avatar { width: 64px; height: 64px; object-fit: cover; background: var(--accent-soft); }
+  .title h1 { margin: 0; font-size: 22px; letter-spacing: .5px; }
+  .title p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+
+  .chart { display: grid; grid-template-rows: auto 1fr auto; gap: 6px; padding: 12px 14px 8px; min-height: 0; }
+  .top { display: flex; align-items: baseline; gap: 10px; }
+  .top h2 { margin: 0; font-size: 17px; }
+  .top .note { color: var(--muted); font-size: 13px; }
+  .top .avg { margin-left: auto; color: var(--muted); font-size: 13px; }
+  .now { min-width: 86px; text-align: right; font-size: 26px; font-weight: bold; font-variant-numeric: tabular-nums; }
+  .mac .now { color: var(--accent); }
+  .pug .now { color: #e2557f; }
+  .plot { display: grid; grid-template-columns: 44px 1fr; gap: 6px; min-height: 0; }
+  .scale { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+  canvas { width: 100%; height: 100%; min-height: 0; image-rendering: pixelated; background: #fff;
+           box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink); }
+  .time { display: flex; justify-content: space-between; margin-left: 50px; color: var(--muted); font-size: 12px; }
+
+  footer { color: var(--muted); font-size: 13px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="px">
+    <img class="avatar" id="avatar" alt="" hidden>
+    <div class="title">
+      <h1 id="h1">How hard is your Mac working?</h1>
+      <p id="sub">Live, one reading a second.</p>
+    </div>
+  </header>
+
+  <section class="chart px mac">
+    <div class="top"><h2 id="macTitle">Whole Mac</h2><span class="note" id="macNote">all cores</span><span class="avg" id="macAvg"></span><span class="now" id="macNow">–</span></div>
+    <div class="plot"><div class="scale" id="macScale"></div><canvas id="mac"></canvas></div>
+    <div class="time"><span class="ago">2 min ago</span><span class="nowlabel">now</span></div>
+  </section>
+
+  <section class="chart px pug">
+    <div class="top"><h2 id="pugTitle">Pug</h2><span class="note" id="pugNote">share of one core</span><span class="avg" id="pugAvg"></span><span class="now" id="pugNow">–</span></div>
+    <div class="plot"><div class="scale" id="pugScale"></div><canvas id="pug"></canvas></div>
+    <div class="time"><span class="ago">2 min ago</span><span class="nowlabel">now</span></div>
+  </section>
+
+  <footer id="foot">It only measures while this window is open.</footer>
+</div>
+
+<script>
+(() => {
+  const TH = window.LANG === "th";
+  const tr = (en, th) => (TH ? th : en);
+  const $ = (id) => document.getElementById(id);
+  const SPAN = 120;  // two minutes of readings
+  const CELL = 4;    // one pixel block
+  const data = { mac: [], pug: [] };
+  const color = { mac: "#4fa3e3", pug: "#ff7aa2" };
+  const top = { mac: 100, pug: 5 };
+
+  if (TH) {
+    document.documentElement.lang = "th";
+    document.title = "การใช้ CPU";
+    $("h1").textContent = "ตอนนี้ Mac ทำงานหนักแค่ไหน";
+    $("sub").textContent = "วัดสดๆ ทุกวินาที";
+    $("macTitle").textContent = "ทั้งเครื่อง";
+    $("macNote").textContent = "ทุกคอร์รวมกัน";
+    $("pugNote").textContent = "เทียบกับ 1 คอร์";
+    $("foot").textContent = "วัดเฉพาะตอนเปิดหน้าต่างนี้อยู่";
+    document.querySelectorAll(".ago").forEach((e) => (e.textContent = "2 นาทีก่อน"));
+    document.querySelectorAll(".nowlabel").forEach((e) => (e.textContent = "ตอนนี้"));
+  }
+
+  const pct = (v) => (v < 10 ? v.toFixed(1) : Math.round(v)) + "%";
+
+  function draw(key) {
+    const c = $(key), vals = data[key];
+    const w = Math.max(1, Math.floor(c.clientWidth / CELL)), h = Math.max(1, Math.floor(c.clientHeight / CELL));
+    if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+    const g = c.getContext("2d");
+    g.clearRect(0, 0, w, h);
+    // a grid line every quarter, drawn as dotted pixels
+    g.fillStyle = "#dbe6f0";
+    for (const f of [0.25, 0.5, 0.75]) {
+      const y = Math.round(h * (1 - f));
+      for (let x = 0; x < w; x += 2) g.fillRect(x, y, 1, 1);
+    }
+    // one column per reading, newest on the right; each is a stack of blocks with a darker cap
+    const col = w / SPAN;
+    vals.forEach((v, i) => {
+      const x0 = Math.floor(w - (vals.length - i) * col), x1 = Math.floor(w - (vals.length - i - 1) * col);
+      const bh = Math.round(Math.min(v, top[key]) / top[key] * h);
+      if (bh <= 0 || x1 <= x0) return;
+      g.fillStyle = color[key] + "80";
+      g.fillRect(x0, h - bh, x1 - x0, bh);
+      g.fillStyle = color[key];
+      g.fillRect(x0, h - bh, x1 - x0, 1);
+    });
+    const last = vals[vals.length - 1];
+    if (last !== undefined) {
+      const y = h - Math.round(Math.min(last, top[key]) / top[key] * h);
+      g.fillStyle = "#1f2d40";
+      g.fillRect(w - 2, Math.max(0, y - 1), 2, 2);
+    }
+  }
+
+  function render() {
+    const peak = Math.max(0, ...data.pug);
+    top.pug = [2, 5, 10, 25, 50, 100].find((t) => t >= peak * 1.2) || 100;
+    for (const key of ["mac", "pug"]) {
+      const vals = data[key];
+      const scale = $(key + "Scale");
+      scale.textContent = "";
+      for (const f of [1, 0.5, 0]) {
+        const s = document.createElement("span");
+        s.textContent = f === 0 ? "0%" : pct(top[key] * f);
+        scale.appendChild(s);
+      }
+      $(key + "Now").textContent = vals.length ? pct(vals[vals.length - 1]) : "–";
+      $(key + "Avg").textContent = vals.length ? tr("average ", "เฉลี่ย ") + pct(vals.reduce((a, b) => a + b, 0) / vals.length) : "";
+      draw(key);
+    }
+  }
+
+  window.CPU = {
+    // a new reading from Pug; either number can be null when it couldn't be measured yet
+    push(mac, pug) {
+      if (mac !== null) data.mac.push(mac);
+      if (pug !== null) data.pug.push(pug);
+      for (const k of ["mac", "pug"]) if (data[k].length > SPAN) data[k].splice(0, data[k].length - SPAN);
+      render();
+    },
+    reset(avatar) {
+      data.mac = []; data.pug = [];
+      if (avatar) { $("avatar").src = avatar; $("avatar").hidden = false; }  // Pug sends his face once the page loads
+      render();
+    },
+  };
+  window.addEventListener("resize", render);
+  render();
+})();
+</script>
+</body>
+</html>
