@@ -129,6 +129,12 @@ final class ScheduleWindow: NSObject, WKScriptMessageHandler, WKNavigationDelega
         web.evaluateJavaScript("PUG.load(\(json), '\(avatar)', '\(today)')", completionHandler: nil)
     }
 
+    /// macOS can stop an idle web page after a long time; load it again instead of showing a blank window.
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+        loaded = false
+        webView.reload()
+    }
+
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         loaded = true
         push()

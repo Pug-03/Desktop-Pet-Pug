@@ -57,6 +57,8 @@ final class LetterWindow: NSObject, WKScriptMessageHandler, WKNavigationDelegate
         web.evaluateJavaScript("LETTER.load(\(json))", completionHandler: nil)
     }
 
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) { webView.reload() }
+
     func userContentController(_ c: WKUserContentController, didReceive message: WKScriptMessage) {
         guard let body = message.body as? [String: Any], body["op"] as? String == "open" else { return }
         window.orderOut(nil)
@@ -100,14 +102,16 @@ enum LetterPreview {
 }
 
 /// "How to play": short lessons, one per page, on what she can do with the pet (guide.html).
-final class GuideWindow {
+final class GuideWindow: NSObject, WKNavigationDelegate {
     let window: NSWindow
     let web: WKWebView
 
-    init() {
+    override init() {
         web = WKWebView(frame: CGRect(x: 0, y: 0, width: 760, height: 660))
         window = NSWindow(contentRect: CGRect(x: 0, y: 0, width: 760, height: 660),
                           styleMask: [.titled, .closable, .miniaturizable, .resizable], backing: .buffered, defer: false)
+        super.init()
+        web.navigationDelegate = self
         web.setValue(false, forKey: "drawsBackground")
         window.title = "How to play with Pug"
         window.contentView = web
@@ -123,6 +127,8 @@ final class GuideWindow {
         NSApp.activate(ignoringOtherApps: true)
         window.makeKeyAndOrderFront(nil)
     }
+
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) { webView.reload() }
 }
 
 /// `Pug --guide-preview out.png [lesson]`: snapshot of one lesson of the how-to-play page.
