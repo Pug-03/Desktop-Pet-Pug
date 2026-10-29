@@ -1,18 +1,18 @@
 {
-  "_วิธีแก้": "แก้ข้อความได้เลย แต่ละหน้าคั่นด้วยลูกน้ำ ขึ้นบรรทัดใหม่ใช้ \n แล้วรัน ./build.sh ใหม่",
+  "_how_to_edit": "Edit the text freely. Pages are separated by commas; use \n for a new line. Then run ./build.sh again.",
 
   "title": "Happy 7 Months",
   "pages": [
-    "สุขสันต์วันครบรอบ 7 เดือนนะ\n\n7 เดือนที่ผ่านมา ขอบคุณที่อยู่ข้างๆ กันมาตลอด ทั้งวันที่สนุก วันที่เหนื่อย และวันที่งอนกัน เราดีใจทุกครั้งที่ได้คุยกับเธอ",
-    "เราอาจจะไม่ค่อยเก่งเรื่องพูดเท่าไหร่\nเลยลองทำอะไรบางอย่างขึ้นมาเองกับมือ ทีละนิดทีละหน่อย\n\nอยากให้มีอะไรอยู่ข้างๆ เธอ ในวันที่เราไม่ได้อยู่ด้วย",
-    "เรามีอะไรจะให้ด้วยนะ\nลองกดดูสิ"
+    "Happy 7-month anniversary.\n\nThank you for being by my side for these seven months: the fun days, the tiring days, and even the days we were upset with each other. Every time I get to talk to you makes me happy.",
+    "I'm not very good with words,\nso I tried to make something with my own hands, little by little.\n\nI wanted you to have something next to you on the days I can't be there.",
+    "I have something for you.\nGo on, open it."
   ],
-  "button": "เปิดของขวัญ",
-  "signature": "รักนะ — จากเรา",
+  "button": "Open your gift",
+  "signature": "Love you, from me",
   "after": [
-    "ตะเอ๋! เราเองง",
-    "ต่อจากนี้จะอยู่บนจอเป็นเพื่อนเธอทุกวันเลยนะ",
-    "จิ้มเล่น ยกเล่น ใส่ตารางให้เตือนก็ได้น้า",
-    "สุขสันต์ครบรอบ 7 เดือนนะ"
+    "Surprise! It's me!",
+    "From now on I'll be on your screen with you every day",
+    "Poke me, pick me up, or let me remind you of your plans",
+    "Happy 7 months!"
   ]
 }
