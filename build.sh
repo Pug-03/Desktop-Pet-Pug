@@ -24,4 +24,11 @@ cp -R App/Resources/sprites App/Resources/messages.json App/Resources/schedule.h
 [ -f App/Resources/AppIcon.icns ] && cp App/Resources/AppIcon.icns "$APP/Contents/Resources/"
 
 codesign --force --deep -s - "$APP"
-echo "built $APP"
+
+# what the app's "Check for updates" reads: bump CFBundleVersion in App/Info.plist for every release
+rm -f Pug.zip
+ditto -c -k --keepParent "$APP" Pug.zip
+VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" App/Info.plist)
+BUILD=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" App/Info.plist)
+printf '{"version": "%s", "build": %s}\n' "$VERSION" "$BUILD" > latest.json
+echo "built $APP, Pug.zip and latest.json ($VERSION, build $BUILD)"
