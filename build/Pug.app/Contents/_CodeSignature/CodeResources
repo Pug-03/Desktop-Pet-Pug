@@ -100,13 +100,17 @@
 		<data>
 		iB0vWW/sMAgLSn1XYEVAqS/f9ys=
 		</data>
+		<key>Resources/love.json</key>
+		<data>
+		4hCLi9JhTyHK7XgqCWSgUsbKO6Y=
+		</data>
 		<key>Resources/messages.json</key>
 		<data>
-		oDAUHPjRZ1XBnKiqk+2CV+sGJ8Y=
+		qHDJlFFd9QTGkN6RUW/EyJeht+c=
 		</data>
 		<key>Resources/messages.th.json</key>
 		<data>
-		dGLrji88k2VAF6fdfcSmTM89H/0=
+		q2MLrIbJKX1ROlRrNOyJa3KqFEc=
 		</data>
 		<key>Resources/schedule.html</key>
 		<data>
@@ -114,19 +118,19 @@
 		</data>
 		<key>Resources/sprites/effects.json</key>
 		<data>
-		Rm4eha7Nm5HhO+XIbzT+B0g9o4s=
+		kILuWbo14t+u36laumekr6l0B5Y=
 		</data>
 		<key>Resources/sprites/effects.png</key>
 		<data>
-		GSy/mFTuREgxM+ewdNuKMtFF77E=
+		bpU+F737Ac12/eYuHxx2dPsdD5E=
 		</data>
 		<key>Resources/sprites/pet.json</key>
 		<data>
-		DAj5yvBKWV6Pgq4h1RPiQXrAgaM=
+		n/Addp23IW3MAh1h/DrdXfVAOYQ=
 		</data>
 		<key>Resources/sprites/pet.png</key>
 		<data>
-		sQwsbdbVaeV7oyq91jYboD+Xdxk=
+		w/ODEgeJZAraFXAmGbc4kYHozds=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -299,18 +303,25 @@
 			mWIuh1kS0tYq25cr4y2O1P02CJCKlejJFZUkX+UZuC4=
 			</data>
 		</dict>
+		<key>Resources/love.json</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			i8/UjwT7Gh71srAzfMtL7+AOMN1mOcTBO2G9Q8IskUk=
+			</data>
+		</dict>
 		<key>Resources/messages.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			BHGjDW4BOdPY4yqI0JOrZflIc/UT+5NO22lmCFUrEHs=
+			5DMjVmcgCFne+f8XP5TlnAAn43Kc2j24Jk41xKL5gjk=
 			</data>
 		</dict>
 		<key>Resources/messages.th.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			DHJH5BR51TrEgL8uJJNSlBCW1NjD5iTmxZ1T9evpeOI=
+			BcYs4lOFq790r4s86PAzFOn4XQJxfhiWVcI1c5lhle8=
 			</data>
 		</dict>
 		<key>Resources/schedule.html</key>
@@ -324,28 +335,28 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			VJi0WStD8kfThddF9v7jc2y89fFeEP3QiN7D9IW2JyI=
+			l8XZTuXNVgmgc/TZBhWmUDNWvLoimynAsHKLPYKSCYY=
 			</data>
 		</dict>
 		<key>Resources/sprites/effects.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			2UaeNadcZngfz9esYcGxxBkQWbQIwACIZwPuXCmxdQQ=
+			G4vt39gK/G9BDZxVdwdhwHC64oLR8W4NsHglEdKUktU=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			wKpfd7ZdiSFgz9PXQx1sRhO16/9CnichuVp4VJL3ms8=
+			6R7Z+DsvtQOlEKtnNr2QKHRwzx8fPjNz4P536B/899o=
 			</data>
 		</dict>
 		<key>Resources/sprites/pet.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			uKLaB6Ypx1vN59290OPEgrn0aGBAO0oAILxBvZ1Ha9s=
+			vX89EwjcmewSp5QC8q1pyu6IATAIPXin8WkakX9jzVE=
 			</data>
 		</dict>
 	</dict>
