@@ -36,6 +36,10 @@ struct Settings {
         get { d.dictionary(forKey: "greeted") as? [String: String] ?? [:] }
         set { d.set(newValue, forKey: "greeted") }
     }
+    static var missYouTopic: String {  // the ntfy.sh topic for Miss you; on her Mac only
+        get { d.string(forKey: "missYouTopic") ?? "" }
+        set { d.set(newValue, forKey: "missYouTopic") }
+    }
     static var announcedBuild: Int {  // the newest update he has already told her about
         get { d.integer(forKey: "announcedBuild") }
         set { d.set(newValue, forKey: "announcedBuild") }
@@ -117,6 +121,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var cpuWindow: CPUWindow?
     private let love = Love()
     private var loveTimers: [Timer] = []
+    private var lastMissYou = Date.distantPast
     private var update: Updater.Latest?  // a newer Pug that is ready to install
     private var updateTimer: Timer?
     private var guideWindow: GuideWindow?
@@ -405,6 +410,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         add(L.t(hidden ? "Show" : "Hide"), #selector(toggleHidden))
         add(L.t("Call him"), #selector(summon))
         add(L.t("Say something"), #selector(talk))
+        add(L.t("Miss you"), #selector(missYou))
         if love.latestNote() != nil { add(L.t("His last note…"), #selector(sayLastNote)) }
         add(L.t("Schedule / reminders…"), #selector(openSchedule))
         add(L.t("Anniversary letter…"), #selector(openLetter))
@@ -633,7 +639,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     @objc private func toggleLogin() { LoginItem.set(!LoginItem.enabled) }
 
-    // MARK: - love notes, anniversaries, time of day
+    // MARK: - love notes, anniversaries, time of day, miss you
 
     /// love.json comes in 20 seconds after launch and then every hour; every minute he looks for
     /// something to say: a new note from him, the monthly anniversary, or a hello for the time of day.
@@ -695,6 +701,42 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         Settings.greeted = greeted
         engine.sayLines([line])
         kick()
+    }
+
+    /// Ring his phone. At most once a minute, so a few happy clicks don't flood it. The first time,
+    /// she types in the code he sent her (the ntfy.sh topic), which stays on her Mac.
+    @objc private func missYou() {
+        if Settings.missYouTopic.isEmpty {
+            let field = NSTextField(frame: CGRect(x: 0, y: 0, width: 260, height: 24))
+            field.placeholderString = "pug-…"
+            let a = NSAlert()
+            a.messageText = L.t("Miss you code")
+            a.informativeText = L.t("Type the code he sent you. You only need to do this once.")
+            a.accessoryView = field
+            a.addButton(withTitle: L.t("OK"))
+            a.addButton(withTitle: L.t("Later"))
+            NSApp.activate(ignoringOtherApps: true)
+            a.window.initialFirstResponder = field
+            guard a.runModal() == .alertFirstButtonReturn else { return }
+            let typed = field.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+            // a pasted link works too: keep what comes after the last slash
+            let topic = typed.split(separator: "/").last.map(String.init) ?? ""
+            guard topic.range(of: "^[A-Za-z0-9_-]{6,64}$", options: .regularExpression) != nil else {
+                alert(L.t("Miss you code"), L.t("That code doesn't look right. Ask him to send it again."))
+                return
+            }
+            Settings.missYouTopic = topic
+        }
+        guard Date().timeIntervalSince(lastMissYou) > 60 else {
+            engine.sayLines([messages.lines("missWait").randomElement() ?? "I just told him!"]); kick(); return
+        }
+        lastMissYou = Date()
+        Love.sendMissYou(topic: Settings.missYouTopic) { [weak self] ok in
+            guard let self else { return }
+            if !ok { self.lastMissYou = .distantPast }
+            self.engine.sayLines([self.messages.lines(ok ? "missSent" : "missFailed").randomElement() ?? (ok ? "Sent!" : "Couldn't send it")])
+            self.kick()
+        }
     }
 
     @objc private func sayLastNote() {

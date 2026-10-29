@@ -2,7 +2,8 @@ import Foundation
 
 /// Things he keeps sending her after the gift, from love.json on GitHub (a copy ships with the
 /// app for when she is offline): notes he says out loud once each, and a letter for each monthly
-/// anniversary.
+/// anniversary. "Miss you" rings his phone through ntfy.sh; its topic is kept on her Mac only,
+/// never in the public repo.
 final class Love {
     struct Content: Decodable {
         struct Note: Decodable {
@@ -84,5 +85,16 @@ final class Love {
         return nil
     }
 
-
+    /// Ring his phone: a push through ntfy.sh to the topic she was given.
+    static func sendMissYou(topic: String, _ done: @escaping (Bool) -> Void) {
+        guard !topic.isEmpty, let url = URL(string: "https://ntfy.sh/" + topic) else { return done(false) }
+        var req = URLRequest(url: url, timeoutInterval: 20)
+        req.httpMethod = "POST"
+        req.setValue("Pug", forHTTPHeaderField: "Title")
+        req.httpBody = "She misses you (from Pug)".data(using: .utf8)
+        URLSession.shared.dataTask(with: req) { _, resp, _ in
+            let ok = (resp as? HTTPURLResponse)?.statusCode == 200
+            DispatchQueue.main.async { done(ok) }
+        }.resume()
+    }
 }
