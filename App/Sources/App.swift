@@ -265,6 +265,10 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     /// Restart the timer at the rate the current state wants.
     func kick() {
+        if hidden {  // nothing to draw: stop the timer until he is shown again
+            timer?.invalidate(); timer = nil; timerFPS = 0
+            return
+        }
         let fps = engine.preferredFPS
         guard fps != timerFPS else { return }
         timerFPS = fps
@@ -444,6 +448,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             panel.orderFrontRegardless()
             let b = bounds(near: NSEvent.mouseLocation)
             engine.arrive(atX: b.midX, y: b.midY, saying: lines)
+            kick()
             // once he has said hello, show her what she can do with him
             let wait = 4 + Double(lines.count) * 4.5
             DispatchQueue.main.asyncAfter(deadline: .now() + wait) { [weak self] in self?.openGuide() }
