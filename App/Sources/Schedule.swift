@@ -30,9 +30,15 @@ final class ScheduleStore {
     init(url: URL? = nil) {
         self.url = url ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("Pug/schedule.json")
-        if let data = try? Data(contentsOf: self.url),
-           let list = try? JSONDecoder().decode([ScheduleEvent].self, from: data) {
-            events = list
+        if let data = try? Data(contentsOf: self.url) {
+            if let list = try? JSONDecoder().decode([ScheduleEvent].self, from: data) {
+                events = list
+            } else {
+                // unreadable: keep it aside so the next save can't wipe her plans
+                let bad = self.url.appendingPathExtension("bad")
+                try? FileManager.default.removeItem(at: bad)
+                try? FileManager.default.moveItem(at: self.url, to: bad)
+            }
         }
     }
 
