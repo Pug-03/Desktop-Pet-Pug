@@ -4,179 +4,180 @@
 
 # Pug
 
-**เพื่อนตัวเล็กที่เดินเล่นอยู่บนจอ Mac ของเธอ**
+**A tiny buddy who lives at the bottom of your Mac screen**
 
-จิ้มได้ ยกได้ เขย่าได้ นั่งเขียนโค้ดเป็นเพื่อน เตือนนัดให้ได้ และจะบอกฝันดีก่อนนอนทุกคืน
+Poke him, pick him up, shake him, keep him company while he codes, let him remind you of your plans, and he'll say good night every night.
 
-<img src="docs/hero.png" width="300" alt="Pug ยืน และนั่งทำงาน">
+<img src="docs/hero.png" width="300" alt="Pug standing, and working at his desk">
 
-[![ดาวน์โหลด](https://img.shields.io/badge/ดาวน์โหลด-Pug.zip-ff7aa2?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/Pug-03/Desktop-Pet-Pug/raw/main/Pug.zip)
+[![Download](https://img.shields.io/badge/Download-Pug.zip-ff7aa2?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/Pug-03/Desktop-Pet-Pug/raw/main/Pug.zip)
 
 ![macOS](https://img.shields.io/badge/macOS-12%2B-111?style=flat-square&logo=apple)
 ![Apple Silicon + Intel](https://img.shields.io/badge/Apple%20Silicon%20%2B%20Intel-✓-111?style=flat-square)
-![ขนาด](https://img.shields.io/badge/ขนาด-~4%20MB-111?style=flat-square)
+![Size](https://img.shields.io/badge/size-~4%20MB-111?style=flat-square)
 
 </div>
 
 ---
 
-## ติดตั้ง (สำหรับแฟน)
+## Install
 
-1. กดปุ่ม **ดาวน์โหลด** สีชมพูข้างบน จะได้ไฟล์ `Pug.zip` อยู่ในโฟลเดอร์ Downloads
-2. ดับเบิลคลิก `Pug.zip` จะได้แอป **Pug**
-3. ลาก **Pug** ไปวางในโฟลเดอร์ **Applications**
-4. ดับเบิลคลิกเปิด **Pug** ครั้งแรก Mac จะเตือนว่าไม่รู้จักผู้พัฒนา (เพราะเป็นแอปที่ทำเองให้เธอ ไม่ได้ขายใน App Store) ให้ทำตามนี้ครั้งเดียว
-   - กด **Done**
-   - เปิด **System Settings → Privacy & Security** เลื่อนลงล่างสุด เจอบรรทัด *"Pug" was blocked…* กด **Open Anyway**
-   - ใส่รหัสเครื่อง แล้วกด **Open**
-5. เปิดครั้งแรกจะมี **จดหมายวันครบรอบ 7 เดือน** อ่านจบแล้วกด **เปิดของขวัญ** แล้ว Pug จะตกลงมาจากข้างบนจอ 
-   ตั้งแต่นี้เปิดเครื่องเมื่อไหร่ก็จะมาเองทุกครั้ง
+1. Click the pink **Download** button above. You'll get `Pug.zip` in your Downloads folder.
+2. Double-click `Pug.zip` to get the **Pug** app.
+3. Drag **Pug** into your **Applications** folder.
+4. Double-click **Pug** to open it. The first time, your Mac will say it doesn't recognise the developer (it's an app made just for you, not one from the App Store). Do this once:
+   - Click **Done**
+   - Open **System Settings → Privacy & Security**, scroll to the bottom, find *"Pug" was blocked…* and click **Open Anyway**
+   - Enter your Mac password, then click **Open**
+5. The first time it opens there's a **letter for our 7-month anniversary**. Read it, then click **Open your gift** and Pug drops in from the top of the screen.
+   From now on he comes by himself every time you turn on your Mac.
 
-<img src="docs/letter.png" width="380" alt="จดหมายวันครบรอบ"> <img src="docs/16_gift.gif" width="380" alt="เปิดของขวัญ">
+<img src="docs/letter.png" width="380" alt="The anniversary letter"> <img src="docs/16_gift.gif" width="380" alt="Opening the gift">
 
-> น้องทักทายเสร็จ จะเปิดหน้า **วิธีเล่น** ให้เอง สอนทีละบท (9 บท เป็นภาษาอังกฤษ กด Next ไปเรื่อยๆ) ว่าทำอะไรได้บ้าง มีคลิปชัดๆ ประกอบ
-> อยากอ่านจดหมายหรือดูวิธีเล่นอีกรอบ คลิกขวาที่ตัว → **จดหมายวันครบรอบ…** หรือ **วิธีเล่น…**
+> Once he has said hello, the **How to play** page opens by itself: 8 short lessons with clips showing what you can do. Click **Next** to go through them.
+> To read the letter or the lessons again, right-click him → **Anniversary letter…** or **How to play…**
 
-> ถ้าหาตัวไม่เจอ ดูที่แถบเมนูด้านบนขวาของจอ จะมีหน้าเล็กๆ ของ Pug (ขาวดำ) กดแล้วเลือก **เรียกมาหา**
+> Can't find him? Look at the top right of the menu bar for Pug's little black-and-white face, click it and choose **Call him**.
 
 ---
 
-## เล่นยังไง
+## How to play
 
 <table>
 <tr>
-<td align="center" width="50%"><img src="docs/01_hello.gif" width="300"><br><b>เปิดแอป</b><br>ตกลงมาจากฟ้า แล้วโบกมือทักทาย</td>
-<td align="center" width="50%"><img src="docs/02_idle_walk.gif" width="300"><br><b>ปล่อยไว้เฉยๆ</b><br>ยืน กะพริบตา แล้วค่อยๆ เดินเล่นไปมา</td>
+<td align="center" width="50%"><img src="docs/01_hello.gif" width="300"><br><b>Open the app</b><br>He drops in from the sky and waves hello</td>
+<td align="center" width="50%"><img src="docs/02_idle_walk.gif" width="300"><br><b>Leave him be</b><br>He breathes, blinks and strolls around</td>
 </tr>
 <tr>
-<td align="center"><img src="docs/03_poke_tickle.gif" width="300"><br><b>คลิก 1 ที</b><br>จั๊กจี้ หัวเราะคิกคัก · คลิกรัวๆ = มึนหัว</td>
-<td align="center"><img src="docs/05_hold_lift.gif" width="300"><br><b>กดค้างแล้วลาก</b><br>ถูกยกขึ้น ตัวแกว่งตามเมาส์ · ปล่อยแล้วตกลงพื้น</td>
+<td align="center"><img src="docs/03_poke_tickle.gif" width="300"><br><b>Click once</b><br>It tickles and he giggles · click fast and he gets dizzy</td>
+<td align="center"><img src="docs/05_hold_lift.gif" width="300"><br><b>Hold and drag</b><br>He's picked up and swings with the mouse · let go and he drops</td>
 </tr>
 <tr>
-<td align="center"><img src="docs/07_shake_dizzy.gif" width="300"><br><b>เขย่าแรงๆ</b><br>ตกใจ เหงื่อตก ลงพื้นแล้วมึน</td>
-<td align="center"><img src="docs/09_goodnight.gif" width="300"><br><b>หลัง 4 ทุ่ม ไม่มีใครเล่นด้วย 3 นาที</b><br>หาว บอกฝันดี คิดถึง แล้วนอนห่มผ้า</td>
+<td align="center"><img src="docs/07_shake_dizzy.gif" width="300"><br><b>Shake him hard</b><br>He panics, sweats, and lands dizzy</td>
+<td align="center"><img src="docs/09_goodnight.gif" width="300"><br><b>After 10 pm, left alone for 3 minutes</b><br>He yawns, says good night and sleeps under a blanket</td>
 </tr>
 </table>
 
-| ทำอะไร | เกิดอะไรขึ้น |
+| Do this | What happens |
 |---|---|
-| คลิก 1 ที | จั๊กจี้ หัวเราะ มีหัวใจลอย |
-| คลิกรัวๆ 6 ที | มึนหัว ตาก้นหอย ดาววนรอบหัว |
-| กดค้าง / ลาก | ถูกยกขึ้น ห้อยแกว่งตามเมาส์ |
-| ยกสูงแล้วปล่อย | ตกลงพื้น ตัวยุบแล้วเด้ง |
-| ลากแล้วเหวี่ยง | ลอยไปชนขอบจอแล้วเด้งกลับ |
-| คลิกตอนหลับ | ตื่นงัวเงีย |
-| คลิกตอนนั่งทำงาน | หันมามอง แล้วพูดอะไรนิดหน่อย |
+| Click once | It tickles; he giggles and hearts float up |
+| Click 6 times fast | Dizzy: swirly eyes, stars round his head |
+| Hold / drag | He's picked up and dangles along with the mouse |
+| Lift him high and let go | He lands, squashes and bounces |
+| Drag and flick | He flies into the edge of the screen and bounces back |
+| Click while he sleeps | He wakes up groggy |
+| Click while he works | He turns to look at you and says something |
 
-นานๆ ที (20–40 นาที) จะพูดอะไรน่ารักๆ ขึ้นมาเอง
+Every so often (20–40 minutes) he says something sweet by himself.
 
-ถ้าเดินอยู่เหนือ Dock จะยืนบน Dock · เดินเลยปลาย Dock ไปจะกระโดดลงไปยืนบนขอบล่างสุดของจอ · ถ้า Dock ซ่อน (ซ่อนอัตโนมัติ หรือเปิดแอปเต็มจอ) จะยืนบนขอบจอเสมอ · ปัดสลับหน้าจอแล้ว จะยืนรออยู่บนพื้นของหน้าใหม่ทันที
+When he's above the Dock he stands on it; past either end of the Dock he hops down to the bottom edge of the screen. When the Dock is hidden (auto-hide, or a full-screen app) he always stands on the screen edge. After you swipe to another screen he's already standing on its floor.
 
-### นั่งเขียนโค้ด
+### Coding at his desk
 
 <table>
 <tr>
-<td align="center" width="50%"><img src="docs/13_work.gif" width="300"><br><b>กลางวัน ไม่มีใครเล่นด้วย 3 นาที</b><br>ยกโต๊ะกับ MacBook มานั่งคิดก่อน แล้วเขียนโค้ดยาวๆ มีโค้ดเว็บกับ AI ลอยขึ้นมา · แวะหันมาให้กำลังใจ</td>
-<td align="center" width="50%"><img src="docs/14_desk_sleep.gif" width="300"><br><b>ทำงานดึกหลัง 4 ทุ่ม</b><br>ฟุบหลับคาโต๊ะ Zzz · จิ้มแล้วตื่นมาทำต่อ</td>
+<td align="center" width="50%"><img src="docs/13_work.gif" width="300"><br><b>Daytime, left alone for 3 minutes</b><br>He pulls up a desk and MacBook, thinks first, then codes for a long stretch with web and AI code floating up · now and then he turns round to cheer you on</td>
+<td align="center" width="50%"><img src="docs/14_desk_sleep.gif" width="300"><br><b>Working after 10 pm</b><br>He nods off at the desk · click him and he carries on</td>
 </tr>
 </table>
 
-<img src="docs/15_desk_poses.gif" width="380" alt="ท่าระหว่างทำงาน">
+<img src="docs/15_desk_poses.gif" width="380" alt="Poses at the desk">
 
-- เริ่มด้วยนั่งเท้าคางคิดก่อน แล้วพิมพ์ยาวๆ ทีละ 1–2 นาที แล้วพักสั้นๆ แบบสุ่ม: คิด · เงยหน้า · ยิ้มเพราะโค้ดรันผ่าน · หงุดหงิดเพราะเจอบั๊ก · ดื่มน้ำ · บิดขี้เกียจ
-- จิ้มตอนทำงาน จะหันมามองหรือสะดุ้ง
-- ทุก 5–10 นาที จะหันมาให้กำลังใจ เช่น "สู้ๆ นะคนเก่ง" มีหัวใจลอย
-- ทำงานครบประมาณ 1 ชั่วโมง จะลุกไปเดินเล่น 2–5 นาที แล้วค่อยกลับมานั่งทำต่อ
-- นอนห่มผ้าเฉพาะหลัง 4 ทุ่ม (ถึง 6 โมงเช้า) ก่อนหน้านั้นจะนั่งทำงานแทน
+- He starts by thinking with his chin in his hand, then types for 1–2 minutes at a time, with short random breaks: thinking · looking up · smiling when the code works · frowning at a bug · a drink · a stretch
+- Click him while he works and he turns to look, or jumps a little
+- Every 5–10 minutes he turns round to cheer you on, for example "You've got this!", with hearts
+- After about an hour of work he gets up for a 2–5 minute walk, then sits back down
+- He only goes to bed after 10 pm (until 6 am); before that he works instead
 
-### สีหน้า
+### Faces
 
-<img src="docs/faces.png" width="100%" alt="สีหน้าทั้งหมด">
-
----
-
-## ตาราง & แจ้งเตือน
-
-คลิกขวาที่ตัว → **ตาราง / แจ้งเตือน…** จะเปิดปฏิทินรายเดือน (สไตล์ pixel สีฟ้าอ่อน เป็นภาษาอังกฤษทั้งหน้า)
-
-<img src="docs/schedule.png" width="100%" alt="หน้าตาราง">
-
-1. กดวันที่ในปฏิทิน ถ้างานกินหลายวัน (เช่น 30 ต.ค. – 2 พ.ย.) ให้ลากผ่านหลายวัน หรือกด Shift ค้างแล้วคลิกวันสุดท้าย หรือเลือกใน **From** / **To** (ข้ามเดือนได้) · เลื่อน (scroll) บนปฏิทินเพื่อเปลี่ยนเดือน · วันที่ 1 ของแต่ละเดือนจะมีชื่อเดือนย่อกำกับ เช่น "Nov 1"
-2. ใส่ **Time**, **Title** และ **Details** (ไม่ใส่ก็ได้) แล้วกด **+ Add to schedule**
-3. ถึงเวลาเมื่อไหร่ (งานหลายวันจะเตือนวันแรก) น้องจะเด้งขึ้นมา (ถ้าหลับอยู่ก็ตื่น) มีเสียงเตือนเบาๆ แล้วโบกมือบอกงานนั้น จิ้มที่ตัวเพื่อรับทราบ
-
-<img src="docs/12_reminder.gif" width="380" alt="น้องลุกมาเตือน">
-
-- งานที่เตือนแล้วจะขึ้น **Reminded ✓** ลบงานได้ด้วยปุ่ม ✕
-- วันไหนมีงานตั้งแต่ 4 อย่างขึ้นไป จะมีหัวใจที่วันนั้น และน้องจะบอกว่า **"งานเยอะจัง พักด้วยน้า"**
-- ถ้าปิดเครื่องไว้ตอนถึงเวลา เปิดเครื่องภายใน 1 ชั่วโมงก็ยังเตือนให้
+<img src="docs/faces.png" width="100%" alt="All of his faces">
 
 ---
 
-## เมนู
+## Schedule & reminders
 
-คลิกขวาที่ตัว หรือคลิกหน้า Pug บนแถบเมนูด้านบนจอ
+Right-click him → **Schedule / reminders…** to open a monthly calendar (light blue pixel style).
 
-| เมนู | ทำอะไร |
+<img src="docs/schedule.png" width="100%" alt="The schedule window">
+
+1. Click a day on the calendar. For a plan over several days (for example Oct 30 – Nov 2), drag across the days, hold Shift and click the last day, or pick **From** / **To** (it works across months). Scroll over the calendar to change month. The 1st of each month shows the month's name, like "Nov 1".
+2. Fill in **Time**, **Title** and **Details** (optional), then click **+ Add to schedule**.
+3. When it's time (a plan over several days reminds you on its first day) he jumps up (waking if he's asleep), a soft chime plays, and he waves the plan at you. Click him to say OK.
+
+<img src="docs/12_reminder.gif" width="380" alt="He jumps up to remind you">
+
+- Plans he has reminded you of show **Reminded ✓**. Delete a plan with the ✕ button.
+- A day with 4 or more plans gets a heart, and he tells you to take a break.
+- If your Mac was off when a plan was due, he still reminds you if you turn it on within an hour.
+
+---
+
+## Menu
+
+Right-click him, or click Pug's face in the menu bar at the top of the screen.
+
+| Menu | What it does |
 |---|---|
-| ซ่อนตัว / แสดงตัว | ซ่อนชั่วคราว |
-| เรียกมาหา | ให้ตกลงมาตรงเมาส์ |
-| พูดอะไรหน่อย | สุ่มพูด 1 ประโยค |
-| ตาราง / แจ้งเตือน… | เปิดปฏิทินใส่งาน ถึงเวลาน้องเตือน |
-| วิธีเล่น… | สอนทีละบทว่าทำอะไรได้บ้าง มีคลิปประกอบ |
-| จดหมายวันครบรอบ… | อ่านจดหมายอีกรอบ (เปิดของขวัญแล้วน้องจะพูดตามท้ายจดหมาย) |
-| ให้นอนเลย / ปลุก | สั่งนอนหรือปลุก |
-| ขนาด | เล็ก · กลาง · ใหญ่ |
-| ไปทำงาน (หรือนอนหลัง 4 ทุ่ม) เมื่อไม่มีใครเล่นด้วย | 1 · 3 · 5 · 10 · 30 นาที |
-| เดินเล่นไปมา | เปิด/ปิดการเดิน |
-| แก้ไขข้อความ… | แก้คำพูดเองได้ |
-| เปิดเองตอนเปิดเครื่อง | เปิด/ปิด |
+| Hide / Show | Hide him for a while |
+| Call him | He drops in where the mouse is |
+| Say something | He says one random line |
+| Schedule / reminders… | The calendar for your plans; he reminds you on time |
+| Anniversary letter… | Read the letter again (open the gift and he says its closing lines) |
+| How to play… | Short lessons on what you can do, with clips |
+| Sleep now / Wake up | Send him to bed, or wake him |
+| Size | Small · Medium · Large |
+| Work or sleep when left alone | After 1 · 3 · 5 · 10 · 30 min |
+| Walk around | Turn his walking on or off |
+| Edit lines… | Change the things he says |
+| Open at login | On / off |
 
-### แก้คำพูด
+### Change what he says
 
-เมนู → **แก้ไขข้อความ…** จะเปิดไฟล์ใน TextEdit แก้ข้อความในวงเล็บ `[ ]` ได้เลย บันทึกแล้วมีผลทันที
+Menu → **Edit lines…** opens a file in TextEdit. Change the lines inside the `[ ]` brackets; saved changes apply right away.
 
 ```json
-"goodnight": ["ฝันดีน้าา", "คิดถึงนะ", "โทรมาหาได้น้าา"],
+"goodnight": ["Good night~", "Miss you already", "Call me if you can't sleep"],
 ```
 
-ถ้าแก้แล้วไฟล์พัง ไม่เป็นไร Pug จะใช้ข้อความเดิมแทน
+If the file gets broken, don't worry: Pug goes back to his usual lines.
 
 ---
 
-## ถอนการติดตั้ง
+## Uninstall
 
-1. เมนู → ปิด **เปิดเองตอนเปิดเครื่อง** แล้วกด **ออก**
-2. ลบ **Pug** ออกจากโฟลเดอร์ Applications
+1. Menu → turn off **Open at login**, then click **Quit**
+2. Delete **Pug** from your Applications folder
 
 ---
 
 <details>
-<summary><b>สำหรับคนทำ</b></summary>
+<summary><b>For the maker</b></summary>
 
 <br>
 
 ```bash
-./build.sh                                            # สร้าง sprite ทั้งหมด + build/Pug.app (universal)
-build/Pug.app/Contents/MacOS/Pug --record demo        # อัดคลิปตัวอย่างลง demo/ (ต้องมี ffmpeg)
-ditto -c -k --keepParent build/Pug.app Pug.zip        # ทำไฟล์สำหรับแจก
+./build.sh                                            # all sprites + build/Pug.app (universal)
+build/Pug.app/Contents/MacOS/Pug --record demo        # record the demo clips into demo/ (needs ffmpeg)
+ditto -c -k --keepParent build/Pug.app Pug.zip        # the zip to hand out
 ```
 
-| ส่วน | ไฟล์ |
+| Part | Files |
 |---|---|
-| รูปต้นฉบับ | `reference/sheet3.png` (ตัว ท่าเดิน มุมข้าง) · `expressions.png` (สีหน้า 11 แบบ) · `yawn.jpg` · `desk.png` (นั่งทำงาน ใช้ 11 ท่า) |
-| ตัดภาพ + แปะสีหน้า | `tools/extract.py` → `art/parts/` (ลบขอบขาวของชีตออกด้วย รวมถึงช่องแคบระหว่างแขนกับตัว ช่องในกำปั้น ระหว่างขา — วางบนเดสก์ท็อปสีเข้มแล้วไม่มีเส้นขาวโผล่) |
-| นั่งทำงาน | `tools/desk.py` (ตัด 11 ท่านั่งโต๊ะจาก `desk.png` ปรับขนาดแล้วจัดโต๊ะให้ตรงกันทุกท่า) |
-| ประกอบท่า | `tools/poses.py` (ยืน เดิน หัวเราะ ถูกยก ตก มึน นอนห่มผ้า) |
-| เอฟเฟกต์ pixel | `tools/effects.py` |
-| รวม atlas / ไอคอน | `tools/build_sprites.py` · `tools/make_icon.py` |
-| แอป (Swift) | `App/Sources/` — `Engine` พฤติกรรม/ฟิสิกส์ · `Renderer` วาด · `App` หน้าต่าง/เมนู/แจ้งเตือน · `Schedule` ตาราง · `Messages` คำพูด · `Recorder` อัดคลิป |
-| วิธีเล่น | `App/Resources/guide.html` (ภาษาอังกฤษ) + คลิป mp4 ใน `App/Resources/guide/` · `Pug --guide-preview out.png [บท]` |
-| จดหมาย | `App/Resources/letter.json` (แก้ข้อความจดหมายและคำพูดหลังเปิดของขวัญ) · `letter.html` · `Pug --letter-preview out.png [หน้า]` ถ่ายภาพจดหมาย · อยากเห็นจดหมายตอนเปิดครั้งแรกอีกรอบ: `defaults delete com.pug.desktoppet letterShown` |
-| หน้าตาราง | `App/Resources/schedule.html` (ข้อมูลเก็บที่ `~/Library/Application Support/Pug/schedule.json`) · `Pug --schedule-preview out.png` ถ่ายภาพหน้าตารางตัวอย่าง |
+| Source art | `reference/sheet3.png` (body, walk, side view) · `expressions.png` (11 faces) · `yawn.jpg` · `desk.png` (11 desk poses used) |
+| Cut-out + faces | `tools/extract.py` → `art/parts/` (also clears the sheet's white outline, including narrow gaps between arm and body, inside fists and between the legs, so nothing light shows on a dark desktop) |
+| Desk | `tools/desk.py` (cuts 11 desk poses from `desk.png`, scales them and lines the desk up across poses) |
+| Poses | `tools/poses.py` (stand, walk, laugh, held, fall, dizzy, asleep under a blanket) |
+| Pixel effects | `tools/effects.py` |
+| Atlas / icon | `tools/build_sprites.py` · `tools/make_icon.py` |
+| App (Swift) | `App/Sources/` — `Engine` behaviour/physics · `Renderer` drawing · `App` window/menu/reminders · `Schedule` calendar · `Messages` lines · `Letter` letter and guide · `Recorder` demo clips |
+| How to play | `App/Resources/guide.html` + mp4 clips in `App/Resources/guide/` · `Pug --guide-preview out.png [lesson]` |
+| Letter | `App/Resources/letter.json` (the letter and his lines after the gift) · `letter.html` · `Pug --letter-preview out.png [page]` · to see the first-launch letter again: `defaults delete com.pug.desktoppet letterShown` |
+| Schedule | `App/Resources/schedule.html` (data in `~/Library/Application Support/Pug/schedule.json`) · `Pug --schedule-preview out.png` |
+| Demo clips | `demo/` (one per behaviour, `00_all.mp4` has them all) |
 
 </details>
 
 <div align="center">
-<sub>ทำด้วยความคิดถึง</sub>
+<sub>Made with love</sub>
 </div>
