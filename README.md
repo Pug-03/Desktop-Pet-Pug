@@ -87,7 +87,7 @@ When he's above the Dock he stands on it; past either end of the Dock he hops do
 - Click him while he works and he turns to look, or jumps a little
 - Every 5–10 minutes he turns round to cheer you on, for example "You've got this!", with hearts
 - After about an hour of work he gets up for a 2–5 minute walk, then sits back down
-- He only goes to bed after 10 pm (until 6 am); before that he works instead
+- He only goes to bed after 10 pm (until 6 am); before that he works instead. If he is still asleep when 6 am comes, he gets up by himself
 
 ### Faces
 

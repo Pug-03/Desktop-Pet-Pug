@@ -47,6 +47,7 @@ final class PetEngine {
     var sleepAfter: Double = 180
     var walkingEnabled = true
     private var dropScreen: CGRect?     // the screen he is dropping onto, until he lands
+    private var wakeInMorning = false   // went to bed at night, so he gets up by himself when it ends
     var chatEvery: ClosedRange<Double> = 1200...2400
     /// Bedtime: only then does he go to bed (or nod off at the desk); the rest of the day he works.
     var isNight: () -> Bool = {
@@ -407,10 +408,11 @@ final class PetEngine {
             frameKey = "sit.sleepy.0"
             let k = CGFloat(exp(-t * 8) * cos(t * 18))
             sy = 1 - 0.12 * k; sx = 1 + 0.08 * k
-            if t > 1.0 { sx = 1; sy = 1; go(.sleeping) }
+            if t > 1.0 { sx = 1; sy = 1; wakeInMorning = isNight(); go(.sleeping) }
         case .sleeping:
             snap()
             frameKey = "sit.sleep.\(Int(clock / 1.4) % 2)"
+            if wakeInMorning && !isNight() { wakeInMorning = false; lastInteraction = clock; go(.waking); break }
             if clock > nextSpark {
                 let big = Int(clock / 1.5) % 2 == 0
                 spawn(big ? "z_l" : "z_s", at: headPoint + CGVector(dx: 18 * scale, dy: 2 * scale),
@@ -780,6 +782,7 @@ final class PetEngine {
     private func deskSleeping() {
         snap()
         frameKey = "desk.sleep"
+        if !isNight() { wakeAtDesk(); return }  // morning: back to work
         if clock > nextSpark {
             let big = Int(clock / 1.5) % 2 == 0
             spawn(big ? "z_l" : "z_s", at: headPoint + CGVector(dx: 22 * scale, dy: 6 * scale),
