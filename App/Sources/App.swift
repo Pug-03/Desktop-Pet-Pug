@@ -385,7 +385,8 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         add("Schedule / reminders…", #selector(openSchedule))
         add("Anniversary letter…", #selector(openLetter))
         add("How to play…", #selector(openGuide))
-        if engine.state == .sleeping { add("Wake up", #selector(wake)) } else { add("Sleep now", #selector(sleepNow)) }
+        let asleep: [PetState] = [.sleeping, .deskSleeping, .yawning, .rubbing, .sittingDown]
+        if asleep.contains(engine.state) { add("Wake up", #selector(wake)) } else { add("Sleep now", #selector(sleepNow)) }
         m.addItem(.separator())
 
         let size = NSMenu()
