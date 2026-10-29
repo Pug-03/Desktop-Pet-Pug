@@ -495,8 +495,13 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     private func checkReminders() {
-        let due = schedule.due(at: Date())
-        guard !due.isEmpty else { return }
+        // after a long Mac sleep, plans more than an hour overdue are skipped quietly, as at launch
+        let now = Date()
+        var due: [ScheduleEvent] = [], skipped = false
+        for e in schedule.due(at: now) {
+            if now.timeIntervalSince(e.due ?? now) > 3600 { schedule.markNotified(e.id); skipped = true } else { due.append(e) }
+        }
+        guard !due.isEmpty else { if skipped { scheduleWindow?.push() }; return }
         if hidden { toggleHidden() }
         for e in due {
             schedule.markNotified(e.id)
