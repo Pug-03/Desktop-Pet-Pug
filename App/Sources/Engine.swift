@@ -249,8 +249,9 @@ final class PetEngine {
     }
 
     func sayRandom() {
-        guard !isBusy, state != .sleeping, state != .deskSleeping else { return }
+        guard !isBusy, state != .sleeping, state != .deskSleeping, !(state == .talking && talkPose == .alert) else { return }
         lastInteraction = clock
+        if state == .working { say("random"); return }  // he says it from the desk
         startTalk([(pick("random") ?? "Miss you", rng.chance(0.5) ? .love : .wave)], then: .idle)
     }
 
@@ -280,6 +281,7 @@ final class PetEngine {
     func sayRest() {
         guard !isBusy, state != .sleeping, state != .deskSleeping, !(state == .talking && talkPose == .alert) else { return }
         lastInteraction = clock
+        if state == .working { say("rest"); return }
         startTalk([(pick("rest") ?? "Take a break, okay?", .love)], then: .idle)
     }
 
@@ -774,7 +776,8 @@ final class PetEngine {
         let m = 45 * scale
         var x = pivot.x + CGFloat(rng.range(160, 420)) * (rng.chance(0.5) ? 1 : -1)
         if x < b.minX + m || x > b.maxX - m { x = pivot.x - (x - pivot.x) }
-        walkTarget = min(max(x, b.minX + m), b.maxX - m)
+        // with walking turned off he stands next to the desk for his break
+        walkTarget = walkingEnabled ? min(max(x, b.minX + m), b.maxX - m) : pivot.x
         facing = walkTarget >= pivot.x ? 1 : -1
         startTalk([(pick("break") ?? "Quick break", .wave)], then: .walking)
     }
