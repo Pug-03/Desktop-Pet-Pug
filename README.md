@@ -128,6 +128,8 @@ Right-click him, or click Pug's face in the menu bar at the top of the screen.
 | Schedule / reminders… | The calendar for your plans; he reminds you on time |
 | Anniversary letter… | Read the letter again (open the gift and he says its closing lines) |
 | How to play… | Short lessons on what you can do, with clips |
+| Stash… | Pictures and files you left with him (see below) |
+| Leave the clipboard with Pug | Keeps the picture or file you copied (shows only when there is one) |
 | Sleep now / Wake up | Send him to bed, or wake him |
 | Size | Small · Medium · Large |
 | Work or sleep when left alone | After 1 · 3 · 5 · 10 · 30 min |
@@ -147,6 +149,20 @@ Menu → **Edit lines…** opens a file in TextEdit (in Thai, the Thai lines hav
 ```
 
 If the file gets broken, don't worry: Pug goes back to his usual lines.
+
+---
+
+## Leave things with him
+
+Take a screenshot and drag the little preview from the corner of the screen onto Pug, or drag pictures and files from Finder, a website or a chat. He keeps a copy and says so. Copied a screenshot instead (Control-Shift-Command-4)? Menu → **Leave the clipboard with Pug**.
+
+To get them back, menu → **Stash…**:
+
+- Drag a picture out of the window into a chat, an email or a folder
+- Double-click to open it
+- Right-click to copy it, show it in Finder, or move it to the Bin (Delete does the same; Command-C and Command-V work too)
+
+They're kept in `~/Library/Application Support/Pug/Stash`.
 
 ---
 
