@@ -99,6 +99,18 @@ final class PetView: NSView {
         guard let c = controller else { return }
         NSMenu.popUpContextMenu(c.buildMenu(), with: event, for: self)
     }
+
+    // pictures and files dropped on him go into the stash
+    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        StashStore.canTake(sender.draggingPasteboard) ? .copy : []
+    }
+    override func draggingUpdated(_ sender: NSDraggingInfo) -> NSDragOperation {
+        StashStore.canTake(sender.draggingPasteboard) ? .copy : []
+    }
+    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        controller?.stash(sender.draggingPasteboard)
+        return true
+    }
 }
 
 final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
@@ -119,6 +131,8 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var recentAdds: [Date] = []
     private var letterWindow: LetterWindow?
     private var cpuWindow: CPUWindow?
+    private let stashStore = StashStore()
+    private var stashWindow: StashWindow?
     private let love = Love()
     private var loveTimers: [Timer] = []
     private var lastMissYou = Date.distantPast
@@ -167,6 +181,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         panel.becomesKeyOnlyIfNeeded = true
         view = PetView(frame: CGRect(origin: .zero, size: winSize))
         view.controller = self
+        view.registerForDraggedTypes(StashStore.dropTypes)
         view.wantsLayer = true
         panel.contentView = view
         resizeWindow()
@@ -415,6 +430,9 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         add(L.t("Schedule / reminders…"), #selector(openSchedule))
         add(L.t("Anniversary letter…"), #selector(openLetter))
         add(L.t("How to play…"), #selector(openGuide))
+        let kept = stashStore.items.count
+        add(L.t("Stash…") + (kept > 0 ? " (\(kept))" : ""), #selector(openStash))
+        if StashStore.canTake(.general) { add(L.t("Leave the clipboard with Pug"), #selector(stashClipboard)) }
         let asleep: [PetState] = [.sleeping, .deskSleeping, .yawning, .rubbing, .sittingDown]
         if asleep.contains(engine.state) { add(L.t("Wake up"), #selector(wake)) } else { add(L.t("Sleep now"), #selector(sleepNow)) }
         m.addItem(.separator())
@@ -512,6 +530,28 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     // MARK: - schedule & reminders
 
+    @objc private func openStash() {
+        if stashWindow == nil {
+            stashWindow = StashWindow(store: stashStore)
+            stashStore.onChange = { [weak self] in self?.stashWindow?.reload() }
+        }
+        stashWindow?.show()
+    }
+
+    @objc private func stashClipboard() { stash(.general) }
+
+    /// Keep what she dropped on him (or the clipboard) and tell her so.
+    func stash(_ pb: NSPasteboard) {
+        stashStore.take(pb) { [weak self] n in
+            guard let self, n > 0 else { return }
+            let line = (self.messages.lines("stashed").randomElement() ?? "Got it! I'll keep it for you")
+                .replacingOccurrences(of: "{n}", with: String(n))
+            self.engine.sayLines([line])
+            self.engine.sparkleHearts()
+            self.kick()
+        }
+    }
+
     @objc private func openCPU() {
         if cpuWindow == nil { cpuWindow = CPUWindow(avatar: ScheduleWindow.portrait(from: engine.frames["stand.normal.0"])) }
         cpuWindow?.show()
@@ -523,8 +563,8 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         guard code != Settings.language else { return }
         Settings.language = code
         messages = Messages.current()
-        for w in [scheduleWindow?.window, guideWindow?.window, letterWindow?.window, cpuWindow?.window] { w?.close() }
-        scheduleWindow = nil; guideWindow = nil; letterWindow = nil; cpuWindow = nil
+        for w in [scheduleWindow?.window, guideWindow?.window, letterWindow?.window, cpuWindow?.window, stashWindow?.window] { w?.close() }
+        scheduleWindow = nil; guideWindow = nil; letterWindow = nil; cpuWindow = nil; stashWindow = nil
         setupEditMenu()
         engine.sayLines([messages.lines("hello").randomElement() ?? "Hi!"])
         kick()

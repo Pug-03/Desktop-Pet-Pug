@@ -22,5 +22,6 @@
   "newLetter": ["There's a new letter for you. Right-click me and open the anniversary letter"],
   "missSent": ["Sent! I told the real me", "Done. He knows you miss him"],
   "missWait": ["I just told him a moment ago"],
-  "missFailed": ["It didn't go through. Try again in a bit"]
+  "missFailed": ["It didn't go through. Try again in a bit"],
+  "stashed": ["Got it! I'll keep it for you", "Kept {n} for you. Find it in the Stash"]
 }
