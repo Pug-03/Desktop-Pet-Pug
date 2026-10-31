@@ -729,6 +729,25 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             return
         }
 
+        // counting down to plans that asked for it: the nearest one he hasn't mentioned today
+        let f = ScheduleStore.parser
+        let ahead = schedule.events.filter { $0.countdown == true }.compactMap { e -> (ScheduleEvent, Int)? in
+            guard let next = e.nextDay(from: today), let a = f.date(from: "\(today) 00:00"), let b = f.date(from: "\(next) 00:00") else { return nil }
+            let n = Int((b.timeIntervalSince(a) / 86400).rounded())
+            return n >= 1 && greeted["countdown:" + e.id] != today ? (e, n) : nil
+        }.sorted { $0.1 < $1.1 }
+        if let (e, n) = ahead.first {
+            greeted = greeted.filter { !$0.key.hasPrefix("countdown:") || $0.value == today }  // forget older days
+            greeted["countdown:" + e.id] = today
+            Settings.greeted = greeted
+            let key = n == 1 ? "countdownTomorrow" : "countdown"
+            let line = (messages.lines(key).randomElement() ?? "{n} days until {title}!")
+                .replacingOccurrences(of: "{n}", with: String(n)).replacingOccurrences(of: "{title}", with: e.title)
+            engine.sayLines([line])
+            kick()
+            return
+        }
+
         // a hello for the time of day, once a day each; the late one belongs to the evening it started
         let c = Calendar.current.dateComponents([.hour, .minute], from: now)
         let m = (c.hour ?? 0) * 60 + (c.minute ?? 0)

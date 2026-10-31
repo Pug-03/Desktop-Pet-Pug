@@ -13,6 +13,22 @@ struct ScheduleEvent: Codable {
     var repeats: String?  // "week", "month" or "year"; repeating plans are one day long
     var ahead: Int?       // remind this many minutes early
     var lastNotified: String?  // the day of the last occurrence he reminded about (repeating plans)
+    var countdown: Bool?  // he says how many days are left, once a day
+
+    /// The day it next happens, today or later (nil when it's over).
+    func nextDay(from today: String) -> String? {
+        guard let unit: Calendar.Component = ["week": .weekOfYear, "month": .month, "year": .year][repeats ?? ""] else {
+            return date >= today ? date : nil
+        }
+        let f = ScheduleStore.parser
+        guard let first = f.date(from: "\(date) 00:00") else { return nil }
+        for k in 0..<2000 {
+            guard let d = f.calendar.date(byAdding: unit, value: k, to: first) else { return nil }
+            let day = String(f.string(from: d).prefix(10))
+            if day >= today { return day }
+        }
+        return nil
+    }
 
     /// The occurrence that is due by `now` (its day, and when to remind), if any is waiting.
     func pending(at now: Date) -> (day: String, at: Date)? {
@@ -209,7 +225,7 @@ enum SchedulePreview {
             ScheduleEvent(id: "3", date: day(0), time: "15:00", title: "Hand in report", detail: "Chapter 3", notified: false),
             ScheduleEvent(id: "4", date: day(0), time: "20:00", title: "Call", detail: "", notified: false),
             ScheduleEvent(id: "5", date: day(2), time: "10:00", title: "Exam", detail: "Statistics", notified: false),
-            ScheduleEvent(id: "6", date: day(5), end: day(8), time: "08:00", title: "Trip to Chiang Mai", detail: "Anniversary", notified: false),
+            ScheduleEvent(id: "6", date: day(5), end: day(8), time: "08:00", title: "Trip to Chiang Mai", detail: "Anniversary", notified: false, countdown: true),
             ScheduleEvent(id: "7", date: day(-20), time: "00:00", title: "Our anniversary", detail: "", notified: false, repeats: "month", ahead: 1440),
         ])
         let frames = AppController.petFrames()
