@@ -121,6 +121,12 @@
     box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink);
   }
   input:disabled { color: var(--muted); background: #eef3f8; }
+  .check { display: flex; gap: 8px; align-items: center; margin: 6px 4px 2px; color: var(--ink); cursor: pointer; }
+  .check input {
+    -webkit-appearance: none; appearance: none; flex: none; width: 16px; height: 16px; margin: 3px; padding: 0;
+    background: #fff; box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink);
+  }
+  .check input:checked { background: var(--accent); box-shadow: inset 0 0 0 3px #fff, 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink); }
   .rest { background: var(--mint); padding: 10px 12px; display: flex; gap: 10px; align-items: center; }
   .rest[hidden] { display: none; }
   .heart { width: 22px; height: 20px; flex: none; }
@@ -189,6 +195,7 @@
               <select id="rep"><option value="">Never</option><option value="week">Every week</option>
                 <option value="month">Every month</option><option value="year">Every year</option></select></div>
           </div>
+          <label class="check" for="count"><input id="count" type="checkbox"><span>Count down: Pug tells you how many days are left</span></label>
           <label for="t">Title</label>
           <input id="t" placeholder="e.g. Meeting, exam, dinner" required maxlength="60">
           <label for="d">Details</label>
@@ -218,6 +225,7 @@
     "Remind me": "เตือน", "On time": "ตรงเวลา", "15 min before": "ก่อน 15 นาที", "1 hour before": "ก่อน 1 ชั่วโมง",
     "1 day before": "ก่อน 1 วัน", "Repeat": "ทำซ้ำ", "Never": "ไม่ซ้ำ", "Every week": "ทุกสัปดาห์",
     "Every month": "ทุกเดือน", "Every year": "ทุกปี",
+    "Count down: Pug tells you how many days are left": "นับถอยหลัง: Pug บอกทุกวันว่าเหลืออีกกี่วัน",
   };
   if (TH) {
     document.documentElement.lang = "th";
@@ -287,6 +295,18 @@
       for (let d = parse(a < e.date ? e.date : a); iso(d) <= b; d.setDate(d.getDate() + 1)) if (repeatsOn(e, iso(d))) return true;
       return false;
     }).sort((x, y) => (x.time + x.date).localeCompare(y.time + y.date));
+  }
+  // days from today until the plan next comes round (null if it's today or already past)
+  function daysLeft(e) {
+    let next = e.date;
+    if (e.repeats) {
+      next = null;
+      for (let d = parse(today > e.date ? today : e.date), i = 0; i < 400 && !next; i++, d.setDate(d.getDate() + 1)) {
+        if (repeatsOn(e, iso(d))) next = iso(d);
+      }
+    }
+    if (!next || next <= today) return null;
+    return Math.round((parse(next) - parse(today)) / dayMs);
   }
   const doneOn = (e, key) => (e.repeats ? e.lastNotified === key : e.notified);
   const REPEAT = TH ? { week: "ทุกสัปดาห์", month: "ทุกเดือน", year: "ทุกปี" }
@@ -363,7 +383,9 @@
       row.appendChild(el("span", "time", e.time));
       const text = el("div");
       text.appendChild(el("b", "", e.title));
-      const notes = [span(e) || (one || e.repeats ? "" : short(e.date)), REPEAT[e.repeats], AHEAD[e.ahead], e.detail,
+      const left = e.countdown ? daysLeft(e) : null;
+      const notes = [span(e) || (one || e.repeats ? "" : short(e.date)), REPEAT[e.repeats], AHEAD[e.ahead],
+                     left ? tr(`${left} ${left === 1 ? "day" : "days"} to go`, `อีก ${left} วัน`) : "", e.detail,
                      done ? tr("Reminded ✓", "เตือนแล้ว ✓") : ""].filter(Boolean);
       if (notes.length) text.appendChild(el("small", "", notes.join(" · ")));
       row.appendChild(text);
@@ -485,6 +507,8 @@
     if ($("rep").value) e.repeats = $("rep").value;            // repeating plans are one day long
     else if (selected.to !== selected.from) e.end = selected.to;
     if (+$("ahead").value) e.ahead = +$("ahead").value;
+    if ($("count").checked) e.countdown = true;
+    $("count").checked = false;
     events.push(e);
     save();
     try { window.webkit.messageHandlers.pug.postMessage({ op: "added", date: selected.from }); } catch (_) {}
