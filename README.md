@@ -154,12 +154,12 @@ If the file gets broken, don't worry: Pug goes back to his usual lines.
 
 ## Leave things with him
 
-Take a screenshot and drag the little preview from the corner of the screen onto Pug, or drag pictures and files from Finder, a website or a chat. He keeps a copy and says so. Copied a screenshot instead (Control-Shift-Command-4)? Menu → **Leave the clipboard with Pug**.
+Take a screenshot and drag the little preview from the corner of the screen onto Pug, or drag pictures and files from Finder, a website or a chat. Text (a tracking number, an address) becomes a yellow note, and a web link is kept as a link. He keeps a copy and says so. Copied a screenshot instead (Control-Shift-Command-4)? Menu → **Leave the clipboard with Pug**.
 
 To get them back, menu → **Stash…**:
 
 - Drag a picture out of the window into a chat, an email or a folder
-- Double-click to open it
+- Double-click to open it (a link opens the website)
 - Right-click to copy it, show it in Finder, or move it to the Bin (Delete does the same; Command-C and Command-V work too)
 
 They're kept in `~/Library/Application Support/Pug/Stash`.

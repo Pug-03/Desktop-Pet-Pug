@@ -17,10 +17,11 @@ enum L {
         "Leave the clipboard with Pug": "ฝากของในคลิปบอร์ด",
         "Stash": "ของที่ฝากไว้",
         "Things you left with Pug": "ของที่ฝากไว้กับ Pug",
-        "Drop pictures or files on Pug or here. Drag them out to use them; double-click to open.":
-            "ลากรูปหรือไฟล์มาวางบนน้องหรือตรงนี้ ลากออกไปใช้ได้เลย ดับเบิลคลิกเพื่อเปิด",
+        "Drop pictures, files, text or links on Pug or here. Drag them out to use them; double-click to open.":
+            "ลากรูป ไฟล์ ข้อความ หรือลิงก์ มาวางบนน้องหรือตรงนี้ ลากออกไปใช้ได้เลย ดับเบิลคลิกเพื่อเปิด",
         "Nothing here yet. Take a screenshot and drag it onto Pug.": "ยังไม่มีอะไรเลย ลองแคปหน้าจอแล้วลากมาวางบนน้องดูสิ",
         "Open": "เปิด",
+        "Note": "โน้ต",
         "Show in Finder": "แสดงใน Finder",
         "Move to Bin": "ย้ายไปถังขยะ",
         "Miss you code": "รหัสปุ่มคิดถึง",

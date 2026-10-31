@@ -3,7 +3,8 @@ import UniformTypeIdentifiers
 
 /// Things she leaves with him: screenshots, pictures and files dropped on him (or pasted from
 /// the clipboard) are copied into ~/Library/Application Support/Pug/Stash, and come back out
-/// of the "Stash" window by dragging, double-clicking or the right-click menu.
+/// of the "Stash" window by dragging, double-clicking or the right-click menu. Text becomes a
+/// note (.txt) and a web link a .webloc.
 final class StashStore {
     let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         .appendingPathComponent("Pug/Stash", isDirectory: true)
@@ -19,11 +20,21 @@ final class StashStore {
 
     /// Pasteboard types a drop can bring: files, promised files (the screenshot thumbnail), images.
     static let dropTypes: [NSPasteboard.PasteboardType] =
-        [.fileURL, .tiff, .png] + NSFilePromiseReceiver.readableDraggedTypes.map { NSPasteboard.PasteboardType($0) }
+        [.fileURL, .tiff, .png, .URL, .string] + NSFilePromiseReceiver.readableDraggedTypes.map { NSPasteboard.PasteboardType($0) }
 
     static func canTake(_ pb: NSPasteboard) -> Bool {
-        pb.canReadObject(forClasses: [NSURL.self, NSFilePromiseReceiver.self, NSImage.self],
-                         options: [.urlReadingFileURLsOnly: true])
+        pb.canReadObject(forClasses: [NSURL.self, NSFilePromiseReceiver.self, NSImage.self, NSString.self], options: [:])
+    }
+
+    static func isNote(_ url: URL) -> Bool { url.pathExtension == "txt" }
+    static func isLink(_ url: URL) -> Bool { url.pathExtension == "webloc" }
+
+    /// The web address saved in a .webloc.
+    static func link(_ url: URL) -> URL? {
+        guard let data = try? Data(contentsOf: url),
+              let plist = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any],
+              let s = plist["URL"] as? String else { return nil }
+        return URL(string: s)
     }
 
     /// Copy whatever is on the pasteboard into the stash; `done` gets how many things came in.
@@ -47,6 +58,13 @@ final class StashStore {
         } else if let img = NSImage(pasteboard: pb), let png = Self.png(img) {
             let url = unique("Picture \(Self.stamp()).png")
             finish((try? png.write(to: url)) != nil ? 1 : 0, done)
+        } else if let web = (pb.readObjects(forClasses: [NSURL.self], options: [:]) as? [URL])?.first(where: { !$0.isFileURL }),
+                  let data = try? PropertyListSerialization.data(fromPropertyList: ["URL": web.absoluteString], format: .xml, options: 0) {
+            let url = unique(Self.fileName(web.host ?? "Link") + ".webloc")
+            finish((try? data.write(to: url)) != nil ? 1 : 0, done)
+        } else if let text = pb.string(forType: .string)?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty {
+            let url = unique(Self.fileName(text) + ".txt")
+            finish((try? text.write(to: url, atomically: true, encoding: .utf8)) != nil ? 1 : 0, done)
         } else {
             done(0)
         }
@@ -88,6 +106,14 @@ final class StashStore {
     static func png(_ img: NSImage) -> Data? {
         guard let tiff = img.tiffRepresentation, let rep = NSBitmapImageRep(data: tiff) else { return nil }
         return rep.representation(using: .png, properties: [:])
+    }
+
+    /// The start of a note (or a site's name) as a file name: one line, no slashes, not too long.
+    static func fileName(_ text: String) -> String {
+        let line = text.components(separatedBy: .newlines).first ?? text
+        let clean = line.replacingOccurrences(of: "/", with: "-").replacingOccurrences(of: ":", with: "-")
+            .trimmingCharacters(in: .whitespaces)
+        return clean.isEmpty ? "Note \(stamp())" : String(clean.prefix(40))
     }
 
     static func stamp() -> String {
@@ -139,6 +165,7 @@ final class StashShelf: NSView, NSDraggingSource {
     private static let paper = NSColor(calibratedRed: 0.973, green: 0.988, blue: 1, alpha: 1)
     private static let muted = NSColor(calibratedRed: 0.36, green: 0.435, blue: 0.518, alpha: 1)
     private static let accent = NSColor(calibratedRed: 0.31, green: 0.64, blue: 0.89, alpha: 1)
+    private static let sticky = NSColor(calibratedRed: 1.0, green: 0.95, blue: 0.62, alpha: 1)
     private static func font(_ size: CGFloat, bold: Bool = false) -> NSFont {
         let f = NSFont(name: "Silom", size: size) ?? .systemFont(ofSize: size)
         return bold ? NSFontManager.shared.convert(f, toHaveTrait: .boldFontMask) : f
@@ -231,7 +258,7 @@ final class StashShelf: NSView, NSDraggingSource {
         let title = L.t("Things you left with Pug") + (items.isEmpty ? "" : "  (\(items.count))")
         (title as NSString).draw(at: CGPoint(x: head.minX + 16, y: head.minY + 9),
                                  withAttributes: [.font: Self.font(18, bold: true), .foregroundColor: Self.ink])
-        let hint = L.t("Drop pictures or files on Pug or here. Drag them out to use them; double-click to open.")
+        let hint = L.t("Drop pictures, files, text or links on Pug or here. Drag them out to use them; double-click to open.")
         (hint as NSString).draw(in: CGRect(x: head.minX + 16, y: head.minY + 33, width: head.width - 32, height: 20),
                                 withAttributes: [.font: Self.font(12), .foregroundColor: Self.muted])
 
@@ -248,8 +275,18 @@ final class StashShelf: NSView, NSDraggingSource {
         for (i, url) in items.enumerated() {
             let r = rect(i)
             guard r.intersects(dirty) else { continue }
-            pixelBox(r, fill: url == selected ? Self.accent.blended(withFraction: 0.7, of: .white)! : Self.paper)
+            let note = StashStore.isNote(url)
+            pixelBox(r, fill: url == selected ? Self.accent.blended(withFraction: 0.7, of: .white)! : note ? Self.sticky : Self.paper)
             let pic = CGRect(x: r.minX + 12, y: r.minY + 12, width: r.width - 24, height: r.height - 48)
+            if note || StashStore.isLink(url) {
+                // a note shows its words, a link its address
+                let text = note ? ((try? String(contentsOf: url, encoding: .utf8)) ?? "") : (StashStore.link(url)?.absoluteString ?? "")
+                let p = NSMutableParagraphStyle(); p.lineBreakMode = .byWordWrapping
+                (String(text.prefix(220)) as NSString).draw(in: pic, withAttributes: [.font: Self.font(12), .foregroundColor: Self.ink, .paragraphStyle: p])
+                let name = note ? L.t("Note") : url.deletingPathExtension().lastPathComponent
+                (name as NSString).draw(in: CGRect(x: r.minX + 8, y: r.maxY - 30, width: r.width - 16, height: 18), withAttributes: label)
+                continue
+            }
             let img = thumb(url)
             let k = min(pic.width / max(img.size.width, 1), pic.height / max(img.size.height, 1), 1.0 * (img.size.width < 64 ? 2 : 1))
             let sz = CGSize(width: img.size.width * k, height: img.size.height * k)
@@ -266,14 +303,14 @@ final class StashShelf: NSView, NSDraggingSource {
         selected = item(at: p)
         downAt = selected.map { (p, $0) }
         needsDisplay = true
-        if event.clickCount == 2, let s = selected { NSWorkspace.shared.open(s) }
+        if event.clickCount == 2, let s = selected { open(s) }
     }
 
     override func mouseDragged(with event: NSEvent) {
         let p = convert(event.locationInWindow, from: nil)
         guard let d = downAt, hypot(p.x - d.point.x, p.y - d.point.y) > 4, let i = items.firstIndex(of: d.item) else { return }
         downAt = nil
-        let drag = NSDraggingItem(pasteboardWriter: d.item as NSURL)
+        let drag = NSDraggingItem(pasteboardWriter: writer(d.item))
         drag.setDraggingFrame(rect(i).insetBy(dx: 12, dy: 12), contents: thumb(d.item))
         beginDraggingSession(with: [drag], event: event, source: self)
     }
@@ -297,7 +334,17 @@ final class StashShelf: NSView, NSDraggingSource {
         return m
     }
 
-    @objc private func openItem(_ s: NSMenuItem) { (s.representedObject as? URL).map { _ = NSWorkspace.shared.open($0) } }
+    @objc private func openItem(_ s: NSMenuItem) { (s.representedObject as? URL).map(open) }
+
+    /// A link opens the website; anything else opens in its usual app.
+    private func open(_ url: URL) { NSWorkspace.shared.open(StashStore.isLink(url) ? StashStore.link(url) ?? url : url) }
+
+    /// What a drag or Copy hands over: a note's words, a link's address, otherwise the file.
+    private func writer(_ url: URL) -> NSPasteboardWriting {
+        if StashStore.isNote(url), let text = try? String(contentsOf: url, encoding: .utf8) { return text as NSString }
+        if StashStore.isLink(url), let web = StashStore.link(url) { return web as NSURL }
+        return url as NSURL
+    }
     @objc private func revealItem(_ s: NSMenuItem) { (s.representedObject as? URL).map { NSWorkspace.shared.activateFileViewerSelecting([$0]) } }
     @objc private func deleteItem(_ s: NSMenuItem) { (s.representedObject as? URL).map { store.remove($0) } }
 
@@ -309,7 +356,7 @@ final class StashShelf: NSView, NSDraggingSource {
         if (UTType(filenameExtension: url.pathExtension)?.conforms(to: .image)) ?? false, let img = NSImage(contentsOf: url) {
             pb.writeObjects([img, url as NSURL])
         } else {
-            pb.writeObjects([url as NSURL])
+            pb.writeObjects([writer(url)])
         }
     }
 
