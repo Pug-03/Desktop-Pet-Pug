@@ -46,6 +46,7 @@ final class PetEngine {
     private(set) var scale: CGFloat
     var sleepAfter: Double = 180
     var walkingEnabled = true
+    var stayAtDesk = false  // he sits at his desk working all the time: no strolls, no breaks
     private var dropScreen: CGRect?     // the screen he is dropping onto, until he lands
     private var wakeInMorning = false   // went to bed at night, so he gets up by himself when it ends
     var chatEvery: ClosedRange<Double> = 1200...2400
@@ -477,6 +478,10 @@ final class PetEngine {
         snap()
         frameKey = "stand.\(eyes).\(breath)"
         guard t > idleFor else { return }
+        if stayAtDesk {  // back to the desk after a poke, a drop or a chat
+            startWork()
+            return
+        }
         if clock - lastInteraction > sleepAfter && isNight() {
             go(.yawning)
         } else if clock - lastInteraction > sleepAfter && clock > breakUntil {
@@ -745,7 +750,7 @@ final class PetEngine {
             bubble = nil
             go(.deskSleeping)
         } else if deskPose == "type" && clock > workUntil && !isNight() {
-            takeBreak()
+            if stayAtDesk { workUntil = clock + rng.range(workSession.lowerBound, workSession.upperBound) } else { takeBreak() }
         }
     }
 

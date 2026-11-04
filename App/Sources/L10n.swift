@@ -40,6 +40,7 @@ enum L {
         "%d min": "%d นาที",
         "Work or sleep when left alone": "ไปทำงาน (หรือนอนหลัง 4 ทุ่ม) เมื่อไม่มีใครเล่นด้วย",
         "Walk around": "เดินเล่นไปมา",
+        "Always at his desk": "นั่งทำงานตลอด",
         "Edit lines…": "แก้ไขข้อความ…",
         "Open at login": "เปิดเองตอนเปิดเครื่อง",
         "Language": "ภาษา",

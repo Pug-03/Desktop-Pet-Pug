@@ -24,6 +24,10 @@ struct Settings {
         get { d.bool(forKey: "firstRunDone") }
         set { d.set(newValue, forKey: "firstRunDone") }
     }
+    static var stayAtDesk: Bool {  // sits and works all day instead of walking about
+        get { d.bool(forKey: "stayAtDesk") }
+        set { d.set(newValue, forKey: "stayAtDesk") }
+    }
     static var language: String {  // "th" or "en"; Thai unless she picks English
         get { d.string(forKey: "language") ?? "th" }
         set { d.set(newValue, forKey: "language") }
@@ -219,7 +223,8 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     private func applySettings() {
         engine.sleepAfter = Settings.sleepMinutes * 60
-        engine.walkingEnabled = Settings.walking
+        engine.walkingEnabled = Settings.walking && !Settings.stayAtDesk
+        engine.stayAtDesk = Settings.stayAtDesk
     }
 
     private func resizeWindow() {
@@ -452,7 +457,8 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let li = NSMenuItem(title: L.t("Work or sleep when left alone"), action: nil, keyEquivalent: "")
         li.submenu = sleep
         m.addItem(li)
-        add(L.t("Walk around"), #selector(toggleWalking), on: Settings.walking)
+        add(L.t("Always at his desk"), #selector(toggleDesk), on: Settings.stayAtDesk)
+        if !Settings.stayAtDesk { add(L.t("Walk around"), #selector(toggleWalking), on: Settings.walking) }
         let lang = NSMenu()
         for (i, (code, name)) in [("en", "English"), ("th", "ภาษาไทย")].enumerated() {
             add(name, #selector(setLanguage(_:)), tag: i, on: Settings.language == code, to: lang)
@@ -664,6 +670,13 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         Settings.sleepMinutes = Double(sender.tag)
         applySettings()
         engine.noteInteraction()
+    }
+
+    @objc private func toggleDesk() {
+        Settings.stayAtDesk.toggle()
+        applySettings()
+        if Settings.stayAtDesk { engine.startWork() } else { engine.noteInteraction() }
+        kick()
     }
 
     @objc private func toggleWalking() {

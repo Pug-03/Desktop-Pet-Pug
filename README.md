@@ -134,6 +134,7 @@ Right-click him, or click Pug's face in the menu bar at the top of the screen.
 | Size | Small · Medium · Large |
 | Work or sleep when left alone | After 1 · 3 · 5 · 10 · 30 min |
 | Walk around | Turn his walking on or off |
+| Always at his desk | He sits at his desk working all day, so he doesn't wander across your screen. After you poke or drag him he goes straight back; at night he nods off at the desk |
 | Language (ภาษา) | Thai (the default) or English: the menu, his lines, the letter, the calendar and the lessons with their clips |
 | Edit lines… | Change the things he says |
 | Open at login | On / off |
