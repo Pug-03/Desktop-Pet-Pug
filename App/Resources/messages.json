@@ -25,5 +25,8 @@
   "missFailed": ["It didn't go through. Try again in a bit"],
   "stashed": ["Got it! I'll keep it for you", "Kept {n} for you. Find it in the Stash"],
   "countdown": ["{n} days until {title}!", "Counting down: {n} days to {title}"],
-  "countdownTomorrow": ["{title} is tomorrow!", "Tomorrow's the day: {title}"]
+  "countdownTomorrow": ["{title} is tomorrow!", "Tomorrow's the day: {title}"],
+  "studyDone": ["Today's 5 done! You're getting better every day", "Five for five today. So proud of you"],
+  "studyStreak": ["Five right in a row!", "You're on a roll!"],
+  "studyNudge": ["Done today's 5 SAT questions yet? Just five", "SAT time? Five quick questions"]
 }

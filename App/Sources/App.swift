@@ -137,6 +137,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var cpuWindow: CPUWindow?
     private let stashStore = StashStore()
     private var stashWindow: StashWindow?
+    private var studyWindow: StudyWindow?
     private let love = Love()
     private var loveTimers: [Timer] = []
     private var lastMissYou = Date.distantPast
@@ -196,6 +197,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         startReminders()
         startUpdateChecks()
         startLove()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 40) { StudyWindow.refreshBank() }
 
         if !Settings.firstRunDone {
             Settings.firstRunDone = true
@@ -437,6 +439,8 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         add(L.t("How to play…"), #selector(openGuide))
         let kept = stashStore.items.count
         add(L.t("Stash…") + (kept > 0 ? " (\(kept))" : ""), #selector(openStash))
+        add(L.t("SAT Math…"), #selector(openStudy))
+        if NSImage(pasteboard: .general) != nil { add(L.t("Ask the tutor about the copied picture"), #selector(askClipboard)) }
         if StashStore.canTake(.general) { add(L.t("Leave the clipboard with Pug"), #selector(stashClipboard)) }
         let asleep: [PetState] = [.sleeping, .deskSleeping, .yawning, .rubbing, .sittingDown]
         if asleep.contains(engine.state) { add(L.t("Wake up"), #selector(wake)) } else { add(L.t("Sleep now"), #selector(sleepNow)) }
@@ -536,6 +540,28 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     // MARK: - schedule & reminders
 
+    @objc private func openStudy() { study().show() }
+
+    /// A screenshot copied with Control-Shift-Command-4 goes straight to the tutor.
+    @objc private func askClipboard() {
+        guard let img = NSImage(pasteboard: .general), let png = StashStore.png(img) else { return }
+        study().ask(withImage: png)
+    }
+
+    private func study() -> StudyWindow {
+        if let w = studyWindow { return w }
+        let w = StudyWindow()
+        w.onCheer = { [weak self] kind in
+            guard let self else { return }
+            let key = kind == "daily" ? "studyDone" : "studyStreak"
+            self.engine.sayLines([self.messages.lines(key).randomElement() ?? "Well done!"])
+            self.engine.sparkleHearts()
+            self.kick()
+        }
+        studyWindow = w
+        return w
+    }
+
     @objc private func openStash() {
         if stashWindow == nil {
             stashWindow = StashWindow(store: stashStore)
@@ -569,8 +595,8 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         guard code != Settings.language else { return }
         Settings.language = code
         messages = Messages.current()
-        for w in [scheduleWindow?.window, guideWindow?.window, letterWindow?.window, cpuWindow?.window, stashWindow?.window] { w?.close() }
-        scheduleWindow = nil; guideWindow = nil; letterWindow = nil; cpuWindow = nil; stashWindow = nil
+        for w in [scheduleWindow?.window, guideWindow?.window, letterWindow?.window, cpuWindow?.window, stashWindow?.window, studyWindow?.window] { w?.close() }
+        scheduleWindow = nil; guideWindow = nil; letterWindow = nil; cpuWindow = nil; stashWindow = nil; studyWindow = nil
         setupEditMenu()
         engine.sayLines([messages.lines("hello").randomElement() ?? "Hi!"])
         kick()
@@ -756,6 +782,17 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
             let key = n == 1 ? "countdownTomorrow" : "countdown"
             let line = (messages.lines(key).randomElement() ?? "{n} days until {title}!")
                 .replacingOccurrences(of: "{n}", with: String(n)).replacingOccurrences(of: "{title}", with: e.title)
+            engine.sayLines([line])
+            kick()
+            return
+        }
+
+        // an evening nudge to do today's five SAT questions, once a day
+        let hm = Calendar.current.dateComponents([.hour], from: now).hour ?? 0
+        if (19..<21).contains(hm), greeted["study"] != today, !StudyWindow.practisedToday,
+           let line = messages.lines("studyNudge").randomElement() {
+            greeted["study"] = today
+            Settings.greeted = greeted
             engine.sayLines([line])
             kick()
             return
