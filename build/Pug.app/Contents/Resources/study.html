@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SAT Math</title>
+<style>
+  /* the schedule's pixel look: light blue checks, ink frames with notched corners */
+  :root {
+    --ink: #1f2d40;
+    --paper: #f8fcff;
+    --bg: #dcecfa;
+    --accent: #4fa3e3;
+    --accent-soft: #d3e9fb;
+    --pink: #ff7aa2;
+    --pink-soft: #ffe0ea;
+    --good: #2f9e6e;
+    --good-soft: #d4f3e1;
+    --bad: #d6455d;
+    --bad-soft: #fde1e6;
+    --muted: #5c6f84;
+    --line: 4px;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.45 "Silom", "Thonburi", system-ui, sans-serif;
+    -webkit-font-smoothing: none;
+    background-image:
+      linear-gradient(45deg, rgba(255,255,255,.35) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.35) 75%),
+      linear-gradient(45deg, rgba(255,255,255,.35) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.35) 75%);
+    background-size: 16px 16px; background-position: 0 0, 8px 8px;
+  }
+  .px {
+    position: relative; background: var(--paper); margin: var(--line);
+    box-shadow: 0 calc(-1 * var(--line)) 0 0 var(--ink), 0 var(--line) 0 0 var(--ink),
+      calc(-1 * var(--line)) 0 0 0 var(--ink), var(--line) 0 0 0 var(--ink),
+      var(--line) calc(2 * var(--line)) 0 0 rgba(31, 45, 64, .2), calc(2 * var(--line)) var(--line) 0 0 rgba(31, 45, 64, .2);
+  }
+  .app { display: grid; grid-template-rows: auto 1fr; gap: 12px; height: 100%; padding: 14px 18px 18px; }
+  header { display: flex; align-items: center; gap: 16px; padding: 10px 16px; }
+  header h1 { margin: 0; font-size: 22px; }
+  header p { margin: 0; color: var(--muted); font-size: 14px; }
+  .tabs { margin-left: auto; display: flex; gap: 10px; }
+  button { font: inherit; color: var(--ink); cursor: pointer; border: 0; background: var(--accent-soft); padding: 6px 14px; }
+  button.px:active { transform: translate(2px, 2px); }
+  button.primary { background: var(--accent); color: #fff; }
+  .tabs button.on { background: var(--ink); color: #fff; }
+  button:disabled { opacity: .5; cursor: default; }
+  button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid var(--pink); outline-offset: 2px; }
+
+  /* practice */
+  .practice { display: grid; grid-template-columns: 250px 1fr; gap: 16px; min-height: 0; }
+  .side { display: flex; flex-direction: column; gap: 8px; padding: 12px; overflow-y: auto; min-height: 0; }
+  .side h2 { margin: 4px 2px 2px; font-size: 13px; color: var(--muted); font-weight: normal; letter-spacing: .04em; text-transform: uppercase; }
+  .pick { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; text-align: left; padding: 6px 10px; background: transparent; }
+  .pick:hover { background: var(--accent-soft); }
+  .pick.on { background: var(--accent-soft); box-shadow: inset 4px 0 0 var(--accent); }
+  .pick small { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .bar { grid-column: 1 / -1; height: 6px; background: #e3edf6; }
+  .bar i { display: block; height: 100%; background: var(--good); }
+  .special { background: var(--pink-soft); }
+  .card { display: flex; flex-direction: column; gap: 14px; padding: 18px 22px; overflow-y: auto; min-height: 0; }
+  .meta { display: flex; gap: 10px; align-items: center; color: var(--muted); font-size: 13px; }
+  .tag { background: var(--accent-soft); color: var(--ink); padding: 0 8px; }
+  .lvl { letter-spacing: 2px; color: var(--pink); }
+  .prompt { font-size: 17px; line-height: 1.6; white-space: pre-wrap; }
+  .choices { display: flex; flex-direction: column; gap: 10px; }
+  .choice { display: grid; grid-template-columns: 30px 1fr; gap: 10px; text-align: left; padding: 9px 12px; background: #fff;
+            box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink); margin: 3px; }
+  .choice b { color: var(--accent); }
+  .choice.sel { background: var(--accent-soft); }
+  .choice.right { background: var(--good-soft); }
+  .choice.wrong { background: var(--bad-soft); }
+  .spr { display: flex; gap: 10px; align-items: center; }
+  .spr input { font: inherit; font-size: 18px; width: 180px; padding: 6px 10px; border: 0; background: #fff; color: var(--ink);
+               box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink); margin: 3px; }
+  .spr small { color: var(--muted); }
+  .actions { display: flex; gap: 12px; align-items: center; }
+  .verdict { padding: 10px 14px; font-weight: bold; }
+  .verdict.good { background: var(--good-soft); color: var(--good); }
+  .verdict.bad { background: var(--bad-soft); color: var(--bad); }
+  .steps { margin: 0; padding: 10px 14px 10px 34px; background: #fff; }
+  .steps li { margin: 4px 0; }
+  .desmos { color: var(--muted); font-size: 14px; }
+  .empty { color: var(--muted); padding: 30px 6px; text-align: center; }
+  sup { font-size: .75em; }
+
+  /* tutor */
+  .tutor { display: grid; grid-template-rows: 1fr auto; gap: 12px; min-height: 0; }
+  .log { display: flex; flex-direction: column; gap: 14px; padding: 16px; overflow-y: auto; min-height: 0; }
+  .msg { max-width: 82%; padding: 10px 14px; white-space: pre-wrap; }
+  .msg.me { align-self: flex-end; background: var(--accent-soft); }
+  .msg.him { align-self: flex-start; background: #fff; box-shadow: inset 4px 0 0 var(--pink); }
+  .msg img { display: block; max-width: 100%; max-height: 260px; margin-bottom: 8px; }
+  .msg .ans { display: inline-block; margin-top: 4px; padding: 2px 8px; background: var(--good-soft); color: var(--good); font-weight: bold; }
+  .msg.err { align-self: center; background: var(--bad-soft); color: var(--bad); }
+  .thinking { align-self: flex-start; color: var(--muted); }
+  .compose { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: end; padding: 12px; }
+  .shot { width: 96px; height: 72px; display: grid; place-items: center; background: #fff; color: var(--muted); font-size: 12px; text-align: center;
+          box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink); margin: 3px; overflow: hidden; }
+  .shot img { width: 100%; height: 100%; object-fit: cover; }
+  textarea { font: inherit; resize: none; height: 72px; padding: 8px 10px; border: 0; background: #fff; color: var(--ink);
+             box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink); margin: 3px; }
+  .compose.drop { background: var(--pink-soft); }
+  .keybox { display: flex; flex-direction: column; gap: 10px; padding: 16px 18px; }
+  .keybox input { font: inherit; padding: 6px 10px; border: 0; background: #fff;
+                  box-shadow: 0 -3px 0 0 var(--ink), 0 3px 0 0 var(--ink), -3px 0 0 0 var(--ink), 3px 0 0 0 var(--ink); margin: 3px; }
+  .keybox p { margin: 0; color: var(--muted); font-size: 14px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="px">
+    <div>
+      <h1>SAT Math</h1>
+      <p id="sub"></p>
+    </div>
+    <div class="tabs">
+      <button class="px on" id="tabPractice"></button>
+      <button class="px" id="tabTutor"></button>
+    </div>
+  </header>
+
+  <section class="practice" id="practice">
+    <nav class="side px" id="side"></nav>
+    <article class="card px" id="card"></article>
+  </section>
+
+  <section class="tutor" id="tutor" hidden>
+    <div class="log px" id="log"></div>
+    <div class="keybox px" id="keybox" hidden>
+      <b id="keyTitle"></b>
+      <p id="keyHelp"></p>
+      <input id="key" type="password" placeholder="sk-ant-..." autocomplete="off">
+      <div><button class="px primary" id="keySave"></button></div>
+    </div>
+    <div class="compose px" id="compose">
+      <div class="shot" id="shot"></div>
+      <textarea id="q"></textarea>
+      <button class="px primary" id="send"></button>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  const TH = window.LANG === "th";
+  const tr = (en, th) => (TH ? th : en);
+  const $ = (id) => document.getElementById(id);
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+  const post = (m) => { try { window.webkit.messageHandlers.study.postMessage(m); } catch (_) {} };
+  const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+
+  let bank = { topics: [], questions: [] };
+  let progress = {};  // { answers: {id: {right, wrong, last}}, daily: {date, done, ids} }
+  let mode = { kind: "daily" };  // daily | mistakes | topic(id)
+  let queue = [], current = null, picked = null, checked = false, streak = 0;
+
+  // ---------- text: escape, then x^2 / x^(1/2) as superscripts
+  function mathHTML(s) {
+    const esc = String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    return esc.replace(/\^\(([^()]*)\)/g, "<sup>$1</sup>").replace(/\^(-?[\w.]+)/g, "<sup>$1</sup>");
+  }
+
+  // ---------- progress
+  const ans = (id) => (progress.answers ||= {})[id] ||= { right: 0, wrong: 0, last: null };
+  const mistakes = () => bank.questions.filter((q) => progress.answers?.[q.id]?.last === false);
+  function topicStats(t) {
+    const qs = bank.questions.filter((q) => q.topic === t);
+    return { total: qs.length, right: qs.filter((q) => progress.answers?.[q.id]?.last === true).length };
+  }
+  function daily() {
+    if (progress.daily?.date !== today()) {
+      // five a day: up to two from the mistake log, then ones she hasn't done, in course order
+      const seen = (q) => progress.answers?.[q.id];
+      const pool = [...mistakes().slice(0, 2), ...bank.questions.filter((q) => !seen(q))];
+      const rest = bank.questions.filter((q) => !pool.includes(q)).sort(() => Math.random() - 0.5);
+      progress.daily = { date: today(), done: 0, ids: [...pool, ...rest].slice(0, 5).map((q) => q.id) };
+      save();
+    }
+    return progress.daily;
+  }
+  function save() { post({ op: "save", progress }); }
+
+  // ---------- practice: side list
+  function renderSide() {
+    const side = $("side");
+    side.textContent = "";
+    const d = daily();
+    const add = (label, sub, on, frac, cls, go) => {
+      const b = el("button", "pick" + (on ? " on" : "") + (cls ? " " + cls : ""));
+      b.append(el("span", "", label), el("small", "", sub));
+      if (frac !== null) { const bar = el("span", "bar"); const i = el("i"); i.style.width = Math.round(frac * 100) + "%"; bar.append(i); b.append(bar); }
+      b.onclick = go;
+      side.append(b);
+    };
+    add(tr("Today's 5", "ฝึกวันนี้ 5 ข้อ"), `${Math.min(d.done, 5)}/5`, mode.kind === "daily", Math.min(d.done, 5) / 5, "special", () => start({ kind: "daily" }));
+    add(tr("Mistakes to redo", "ข้อที่ผิด ทำใหม่"), String(mistakes().length), mode.kind === "mistakes", null, "special", () => start({ kind: "mistakes" }));
+    side.append(el("h2", "", tr("Lessons", "บทเรียน")));
+    for (const t of bank.topics) {
+      const s = topicStats(t.id);
+      add(`${t.lesson}. ${t.title}`, `${s.right}/${s.total}`, mode.kind === "topic" && mode.id === t.id, s.total ? s.right / s.total : 0, "", () => start({ kind: "topic", id: t.id }));
+    }
+    const all = bank.questions.length, right = bank.questions.filter((q) => progress.answers?.[q.id]?.last === true).length;
+    $("sub").textContent = tr(`${right} of ${all} questions right so far`, `ทำถูกแล้ว ${right} จาก ${all} ข้อ`);
+  }
+
+  function start(m) {
+    mode = m;
+    if (m.kind === "daily") queue = daily().ids.slice(daily().done).map((id) => bank.questions.find((q) => q.id === id)).filter(Boolean);
+    else if (m.kind === "mistakes") queue = mistakes();
+    else queue = bank.questions.filter((q) => q.topic === m.id).sort((a, b) => (progress.answers?.[a.id]?.last === true) - (progress.answers?.[b.id]?.last === true));
+    next();
+  }
+
+  function next() {
+    current = queue.shift() || null;
+    picked = null; checked = false;
+    renderSide();
+    renderCard();
+  }
+
+  // ---------- practice: question card
+  function renderCard() {
+    const card = $("card");
+    card.textContent = "";
+    if (!bank.questions.length) { card.append(el("div", "empty", tr("No questions yet.", "ยังไม่มีโจทย์"))); return; }
+    if (!current) {
+      const msg = mode.kind === "daily" ? tr("Today's 5 are done. Great work! Pick a lesson for more.", "ฝึกวันนี้ครบ 5 ข้อแล้ว เก่งมาก! อยากทำต่อ เลือกบทได้เลย")
+        : mode.kind === "mistakes" ? tr("No mistakes left to redo.", "ไม่มีข้อผิดค้างแล้ว")
+        : tr("That's every question in this lesson.", "ทำครบทุกข้อในบทนี้แล้ว");
+      card.append(el("div", "empty", msg));
+      return;
+    }
+    const q = current, t = bank.topics.find((x) => x.id === q.topic);
+    const meta = el("div", "meta");
+    meta.append(el("span", "tag", t ? `${t.lesson}. ${t.title}` : q.topic), el("span", "lvl", "★".repeat(q.level || 1)));
+    if (q.type === "spr") meta.append(el("span", "", tr("Type your answer", "พิมพ์คำตอบ")));
+    const prompt = el("div", "prompt"); prompt.innerHTML = mathHTML(q.prompt);
+    card.append(meta, prompt);
+
+    if (q.type === "mc") {
+      const box = el("div", "choices");
+      q.choices.forEach((c, i) => {
+        const b = el("button", "choice");
+        const letter = el("b", "", "ABCD"[i]); const txt = el("span"); txt.innerHTML = mathHTML(c);
+        b.append(letter, txt);
+        b.onclick = () => { if (checked) return; picked = i; box.querySelectorAll(".choice").forEach((x, j) => x.classList.toggle("sel", j === i)); $("check").disabled = false; };
+        box.append(b);
+      });
+      card.append(box);
+    } else {
+      const row = el("div", "spr");
+      const inp = el("input"); inp.id = "spr"; inp.autocomplete = "off"; inp.placeholder = "e.g. 7/2";
+      inp.oninput = () => { $("check").disabled = !inp.value.trim(); };
+      inp.onkeydown = (e) => { if (e.key === "Enter" && inp.value.trim()) check(); };
+      row.append(inp, el("small", "", tr("Exact value: a fraction like 7/2 or a decimal", "ค่าที่แน่นอน: เศษส่วนเช่น 7/2 หรือทศนิยม")));
+      card.append(row);
+      setTimeout(() => inp.focus(), 0);
+    }
+    const actions = el("div", "actions");
+    const b = el("button", "px primary", tr("Check", "ตรวจคำตอบ")); b.id = "check"; b.disabled = true; b.onclick = check;
+    actions.append(b);
+    card.append(actions);
+  }
+
+  // a typed answer: exact match, or the SAT rule for a repeating decimal (fill the boxes)
+  function num(s) {
+    s = String(s).trim().replace(/\s+/g, "").replace(/−/g, "-");
+    const m = s.match(/^(-?\d*\.?\d+)\/(-?\d*\.?\d+)$/);
+    if (m) return parseFloat(m[1]) / parseFloat(m[2]);
+    return /^-?\d*\.?\d+$/.test(s) ? parseFloat(s) : NaN;
+  }
+  function gradeSpr(q, input) {
+    const v = num(input);
+    if (isNaN(v)) return { ok: false, note: tr("That isn't a number the test would accept.", "รูปแบบนี้ข้อสอบไม่รับ ลองพิมพ์เป็นตัวเลขหรือเศษส่วน") };
+    const targets = q.answers.map(num).filter((x) => !isNaN(x));
+    if (targets.some((t) => Math.abs(t - v) < 1e-9)) return { ok: true };
+    const t = targets[0];
+    const decimal = /\./.test(input) && !/\//.test(input);
+    const repeating = Math.abs(t * 10000 - Math.round(t * 10000)) > 1e-9;  // needs more than 4 decimal places
+    if (decimal && repeating && input.replace("-", "").length >= 5 && Math.abs(t - v) < 0.0006) return { ok: true };
+    if (Math.abs(t - v) < Math.max(0.02, Math.abs(t) * 0.01))
+      return { ok: false, note: tr("Close, but the test wants the exact value, not a rounded one.", "ใกล้แล้ว แต่ข้อสอบต้องการค่าที่แน่นอน ไม่ใช่ค่าที่ปัดเศษ") };
+    return { ok: false };
+  }
+
+  function check() {
+    if (checked || !current) return;
+    const q = current;
+    let ok, note;
+    if (q.type === "mc") {
+      if (picked === null) return;
+      ok = picked === q.answer;
+      document.querySelectorAll(".choice").forEach((x, j) => { x.classList.toggle("right", j === q.answer); x.classList.toggle("wrong", j === picked && !ok); });
+    } else {
+      const r = gradeSpr(q, $("spr").value);
+      ok = r.ok; note = r.note;
+      $("spr").disabled = true;
+    }
+    checked = true;
+    const a = ans(q.id);
+    if (ok) a.right++; else a.wrong++;
+    a.last = ok;
+    streak = ok ? streak + 1 : 0;
+    if (mode.kind === "daily") {
+      const d = daily();
+      d.done = Math.min(5, d.done + 1);
+      if (d.done === 5) post({ op: "cheer", kind: "daily" });
+    }
+    if (streak > 0 && streak % 5 === 0) post({ op: "cheer", kind: "streak" });
+    save();
+
+    const card = $("card");
+    const shown = q.type === "mc" ? `${"ABCD"[q.answer]}. ${q.choices[q.answer]}` : q.answers[0];
+    const v = el("div", "verdict " + (ok ? "good" : "bad"));
+    v.innerHTML = mathHTML(ok ? tr("Correct!", "ถูกต้อง!") + (note ? " " + note : "") : tr("Not quite. Answer: ", "ยังไม่ใช่ คำตอบคือ ") + shown + (note ? " — " + note : ""));
+    const steps = el("ol", "steps");
+    for (const s of q.steps || []) { const li = el("li"); li.innerHTML = mathHTML(s); steps.append(li); }
+    card.querySelector(".actions").before(v, steps);
+    if (q.desmos) card.querySelector(".actions").before(el("div", "desmos", tr("Tip: Desmos is quicker for this one (see the last step).", "เคล็ดลับ: ข้อนี้ใช้ Desmos จะเร็วกว่า (ดูขั้นสุดท้าย)")));
+    const b = $("check");
+    b.textContent = queue.length ? tr("Next", "ข้อต่อไป") : tr("Done", "เสร็จแล้ว");
+    b.disabled = false;
+    b.onclick = next;
+    renderSide();
+    b.focus();
+  }
+
+  // ---------- tutor
+  let chat = [];       // the API conversation: her turns and his replies exactly as returned
+  let shot = null;     // {data, type, url} waiting to be sent
+  let waiting = 0, hasKey = false;
+
+  function setShot(s) {
+    shot = s;
+    const box = $("shot");
+    box.textContent = "";
+    if (s) { const i = el("img"); i.src = s.url; box.append(i); }
+    else box.textContent = tr("Paste or drop a screenshot", "วางหรือลากรูปโจทย์มาที่นี่");
+  }
+
+  // shrink big screenshots (the API limits image size, and smaller is quicker)
+  function loadImage(src, done) {
+    const img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, 1600 / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+      const url = c.toDataURL("image/jpeg", 0.9);
+      done({ url, type: "image/jpeg", data: url.split(",")[1] });
+    };
+    img.src = src;
+  }
+  function fromFile(file) {
+    if (!file || !file.type.startsWith("image/")) return false;
+    const r = new FileReader();
+    r.onload = () => loadImage(r.result, setShot);
+    r.readAsDataURL(file);
+    return true;
+  }
+
+  function bubble(cls, text, img) {
+    const m = el("div", "msg " + cls);
+    if (img) { const i = el("img"); i.src = img; m.append(i); }
+    if (text) {
+      // his "Answer:" line stands out
+      const lines = text.split("\n");
+      lines.forEach((line, k) => {
+        const span = el("span", /^\s*\**answer:?/i.test(line) ? "ans" : "");
+        span.innerHTML = mathHTML(line.replace(/\*\*/g, ""));
+        m.append(span);
+        if (k < lines.length - 1) m.append(document.createTextNode("\n"));
+      });
+    }
+    $("log").append(m);
+    $("log").scrollTop = $("log").scrollHeight;
+    return m;
+  }
+
+  function send() {
+    if (waiting) return;
+    const text = $("q").value.trim();
+    if (!shot && !text) return;
+    if (!hasKey) { $("keybox").hidden = false; return; }
+    const content = [];
+    if (shot) content.push({ type: "image", source: { type: "base64", media_type: shot.type, data: shot.data } });
+    content.push({ type: "text", text: text || (shot ? "Help me with this question." : "") });
+    chat.push({ role: "user", content });
+    bubble("me", text, shot && shot.url);
+    $("q").value = ""; setShot(null);
+    const think = el("div", "thinking", tr("Thinking...", "กำลังคิด..."));
+    $("log").append(think); $("log").scrollTop = $("log").scrollHeight;
+    waiting = Date.now();
+    $("send").disabled = true;
+    post({ op: "ask", id: waiting, messages: chat });
+    STUDY._think = think;
+  }
+
+  // ---------- from Pug
+  window.STUDY = {
+    load(b, p, key) {
+      if (b && Array.isArray(b.questions)) bank = b;
+      progress = p || {};
+      hasKey = !!key;
+      start({ kind: "daily" });
+    },
+    answer(id, r) {
+      if (id !== waiting) return;
+      waiting = 0;
+      $("send").disabled = false;
+      STUDY._think?.remove();
+      if (r.ok) {
+        chat.push({ role: "assistant", content: r.content });  // kept exactly, thinking blocks included
+        bubble("him", r.content.filter((c) => c.type === "text").map((c) => c.text).join("\n").trim());
+      } else {
+        chat.pop();  // her turn wasn't answered: drop it so she can send it again
+        bubble("err", r.error);
+      }
+    },
+    askWith(b64) {
+      showTab("tutor");
+      loadImage("data:image/png;base64," + b64, setShot);
+      $("q").focus();
+    },
+    keySaved(ok) {
+      hasKey = ok;
+      $("keybox").hidden = ok;
+      $("key").value = "";
+      if (ok) bubble("him", tr("Ready! Paste a screenshot of a question and press Ask.", "พร้อมแล้ว! วางรูปโจทย์แล้วกดถามได้เลย"));
+    },
+  };
+
+  function showTab(t) {
+    $("practice").hidden = t !== "practice";
+    $("tutor").hidden = t !== "tutor";
+    $("tabPractice").classList.toggle("on", t === "practice");
+    $("tabTutor").classList.toggle("on", t === "tutor");
+    if (t === "tutor") { $("keybox").hidden = hasKey; $("q").focus(); }
+  }
+
+  // ---------- wiring
+  $("tabPractice").textContent = tr("Practice", "ฝึกทำโจทย์");
+  $("tabTutor").textContent = tr("Ask the tutor", "ถามครู");
+  $("tabPractice").onclick = () => showTab("practice");
+  $("tabTutor").onclick = () => showTab("tutor");
+  $("send").textContent = tr("Ask", "ถาม");
+  $("send").onclick = send;
+  $("q").placeholder = tr("Ask about the screenshot, or anything in SAT Math (Enter to send)", "พิมพ์คำถาม หรือวางรูปโจทย์แล้วกด Enter");
+  $("q").onkeydown = (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } };
+  $("keyTitle").textContent = tr("One step first: the tutor's key", "ขั้นตอนแรก: ใส่กุญแจของครู");
+  $("keyHelp").textContent = tr("Paste the Claude API key he sent you. It's kept in your Mac's Keychain.", "วาง Claude API key ที่เค้าส่งให้ เก็บไว้ใน Keychain ของเครื่อง ใส่ครั้งเดียวพอ");
+  $("keySave").textContent = tr("Save", "บันทึก");
+  $("keySave").onclick = () => { const k = $("key").value.trim(); if (k) post({ op: "key", key: k }); };
+  setShot(null);
+  bubble("him", tr("Hi! Take a screenshot of a SAT Math question (Cmd-Ctrl-Shift-4 copies it), paste it here with Cmd-V or drag it in, and ask me. I'll explain what to think about and the answer.",
+                   "สวัสดี! แคปรูปโจทย์ SAT Math (Cmd-Ctrl-Shift-4 จะคัดลอกรูปไว้) แล้วกด Cmd-V วางตรงนี้ หรือลากรูปมาวาง แล้วถามได้เลย เดี๋ยวอธิบายวิธีคิดกับคำตอบให้"));
+
+  document.addEventListener("paste", (e) => {
+    if ($("tutor").hidden) return;
+    for (const item of e.clipboardData?.items || []) if (fromFile(item.getAsFile?.())) { e.preventDefault(); return; }
+  });
+  const compose = $("compose");
+  compose.addEventListener("dragover", (e) => { e.preventDefault(); compose.classList.add("drop"); });
+  compose.addEventListener("dragleave", () => compose.classList.remove("drop"));
+  compose.addEventListener("drop", (e) => { e.preventDefault(); compose.classList.remove("drop"); fromFile(e.dataTransfer.files[0]); });
+  $("log").addEventListener("dragover", (e) => e.preventDefault());
+  $("log").addEventListener("drop", (e) => { e.preventDefault(); fromFile(e.dataTransfer.files[0]); });
+})();
+</script>
+</body>
+</html>
