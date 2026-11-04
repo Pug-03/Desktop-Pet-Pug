@@ -129,6 +129,8 @@ Right-click him, or click Pug's face in the menu bar at the top of the screen.
 | Anniversary letter… | Read the letter again (open the gift and he says its closing lines) |
 | How to play… | Short lessons on what you can do, with clips |
 | Stash… | Pictures and files you left with him (see below) |
+| SAT Math… | Practice by lesson, today's 5, the mistakes to redo, and a tutor for your own screenshots (see below) |
+| Ask the tutor about the copied picture | Sends a screenshot you copied straight to the tutor (shows only when there is one) |
 | Leave the clipboard with Pug | Keeps the picture or file you copied (shows only when there is one) |
 | Sleep now / Wake up | Send him to bed, or wake him |
 | Size | Small · Medium · Large |
@@ -150,6 +152,22 @@ Menu → **Edit lines…** opens a file in TextEdit (in Thai, the Thai lines hav
 ```
 
 If the file gets broken, don't worry: Pug goes back to his usual lines.
+
+---
+
+## SAT Math
+
+Menu → **SAT Math…** opens two tabs.
+
+**Practice** follows the 13 lessons of the course (polynomials through word problems), 78 questions in the style of the Digital SAT. Each one says right or wrong and shows the steps, with a tip when Desmos is the quicker way.
+
+- **Today's 5:** five a day, starting with two you got wrong before; in the evening he reminds you if you haven't done them
+- **Mistakes to redo:** every question whose last try was wrong, until you get it right
+- **Typed answers** want the exact value: 2, not 1.999 (a fraction like 7/2 is fine; for a repeating decimal, fill the boxes as on the real test)
+
+He cheers when you finish today's 5 and when you get five in a row.
+
+**Ask the tutor:** take a screenshot of any question (Control-Shift-Command-4 copies it), paste it with Command-V or drag it in, and ask. Claude tells you what the question asks, the key idea, the steps and the answer, and you can keep asking. Copied a screenshot? Menu → **Ask the tutor about the copied picture** opens it straight away. The first time it asks for a key (below).
 
 ---
 
@@ -224,6 +242,8 @@ build/Pug.app/Contents/MacOS/Pug --update-now        # install the newest build 
 - Each note is said once; give every new note a new `id`. `show_from` holds it back until that day.
 - A letter keyed by the month count replaces the first letter in the menu from that anniversary on.
 - Miss you: pick a long random topic, install the free **ntfy** app on your phone and subscribe to it, and send her the topic privately. Never put it in this repo: it's public, so anyone could read her pings or send you spam. To change it on her Mac: `defaults delete com.pug.desktoppet missYouTopic`, then she types the new one.
+
+**SAT Math:** the questions are in `App/Resources/study.json` (Pug picks up a newer copy from GitHub, so new questions don't need a new version); `python3 tools/verify_study.py` recomputes every answer. The tutor calls the Claude API (`claude-opus-5-5`, adaptive thinking at high effort, refusal fallbacks on) with the API key she pastes once; it's kept in her Keychain, never in this repo. Make a key at console.anthropic.com, set a monthly spend limit there, and send it to her privately. A question with a screenshot costs a few cents.
 
 `./build.sh` also writes `Pug.zip` and `latest.json`. To release: raise `CFBundleVersion` (and `CFBundleShortVersionString`) in `App/Info.plist`, run `./build.sh`, then commit and push. The app reads `latest.json` from GitHub; any build number higher than its own counts as an update.
 
