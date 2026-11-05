@@ -77,6 +77,8 @@ final class StudyWindow: NSObject, WKScriptMessageHandler, WKNavigationDelegate 
             try? data.write(to: StudyWindow.progressURL, options: .atomic)
         case "cheer":
             onCheer?(body["kind"] as? String ?? "")
+        case "openClaude":
+            Tutor.openClaude(image: (body["image"] as? String).flatMap { Data(base64Encoded: $0) }, question: body["text"] as? String ?? "")
         case "key":
             Tutor.saveKey((body["key"] as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines))
             web.evaluateJavaScript("STUDY.keySaved(\(Tutor.hasKey))", completionHandler: nil)
@@ -160,6 +162,25 @@ enum Tutor {
     preamble, no restating the whole question. Plain text with numbered lists; write math inline \
     like x^2, √(x+1), 3/4.
     """
+
+    // MARK: free: claude.ai in the browser
+
+    /// Put the picture on the clipboard (she pastes it with Command-V) and open a new claude.ai
+    /// chat with the tutor's instructions and her question typed in. Free with her own account.
+    static func openClaude(image: Data?, question: String) {
+        if let image, let img = NSImage(data: image) {
+            NSPasteboard.general.clearContents()
+            NSPasteboard.general.writeObjects([img])
+        }
+        let ask = question.isEmpty ? "Help me with this SAT Math question (screenshot attached)." : question
+        let prompt = """
+        I'm a Thai student preparing for Digital SAT Math (Bluebook, with Desmos). \(ask)
+        Reply in simple English: 1) what it asks, 2) the key idea or wording trap, 3) short numbered steps,         4) "Answer:" on its own line (the letter and value for multiple choice; the exact value for a typed answer, never rounded),         5) a one-line Desmos tip only if it's faster. Keep it short.
+        """
+        var c = URLComponents(string: "https://claude.ai/new")!
+        c.queryItems = [URLQueryItem(name: "q", value: prompt)]
+        if let url = c.url { NSWorkspace.shared.open(url) }
+    }
 
     // MARK: key (Keychain)
 

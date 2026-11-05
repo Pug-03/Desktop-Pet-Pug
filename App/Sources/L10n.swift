@@ -16,6 +16,7 @@ enum L {
         "Stash…": "ของที่ฝากไว้…",
         "SAT Math…": "ติว SAT Math…",
         "Ask the tutor about the copied picture": "ถามครูเรื่องรูปที่คัดลอกไว้",
+        "Ask Claude about the copied picture (free)": "ถาม Claude เรื่องรูปที่คัดลอกไว้ (ฟรี)",
         "SAT Math": "ติว SAT Math",
         "Add an API key first.": "ใส่ API key ก่อนนะ",
         "Couldn't reach Claude. Check that you're online, then try again.": "ติดต่อ Claude ไม่ได้ ลองเช็กว่าต่อเน็ตอยู่ แล้วลองใหม่",

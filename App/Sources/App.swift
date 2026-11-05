@@ -440,7 +440,9 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let kept = stashStore.items.count
         add(L.t("Stash…") + (kept > 0 ? " (\(kept))" : ""), #selector(openStash))
         add(L.t("SAT Math…"), #selector(openStudy))
-        if NSImage(pasteboard: .general) != nil { add(L.t("Ask the tutor about the copied picture"), #selector(askClipboard)) }
+        if NSImage(pasteboard: .general) != nil {
+            add(L.t(Tutor.hasKey ? "Ask the tutor about the copied picture" : "Ask Claude about the copied picture (free)"), #selector(askClipboard))
+        }
         if StashStore.canTake(.general) { add(L.t("Leave the clipboard with Pug"), #selector(stashClipboard)) }
         let asleep: [PetState] = [.sleeping, .deskSleeping, .yawning, .rubbing, .sittingDown]
         if asleep.contains(engine.state) { add(L.t("Wake up"), #selector(wake)) } else { add(L.t("Sleep now"), #selector(sleepNow)) }
@@ -545,7 +547,8 @@ final class AppController: NSObject, NSApplicationDelegate, NSMenuDelegate {
     /// A screenshot copied with Control-Shift-Command-4 goes straight to the tutor.
     @objc private func askClipboard() {
         guard let img = NSImage(pasteboard: .general), let png = StashStore.png(img) else { return }
-        study().ask(withImage: png)
+        // without a key: straight to claude.ai, the picture is already on the clipboard
+        if Tutor.hasKey { study().ask(withImage: png) } else { Tutor.openClaude(image: nil, question: "") }
     }
 
     private func study() -> StudyWindow {
