@@ -87,7 +87,8 @@
   sup { font-size: .75em; }
 
   /* tutor */
-  .tutor { display: grid; grid-template-rows: 1fr auto; gap: 12px; min-height: 0; }
+  .tutor { display: grid; grid-template-rows: 1fr auto auto auto; gap: 8px; min-height: 0; }
+  .link { background: transparent; color: var(--muted); text-decoration: underline; padding: 0 6px; font-size: 13px; }
   .log { display: flex; flex-direction: column; gap: 14px; padding: 16px; overflow-y: auto; min-height: 0; }
   .msg { max-width: 82%; padding: 10px 14px; white-space: pre-wrap; }
   .msg.me { align-self: flex-end; background: var(--accent-soft); }
@@ -130,6 +131,7 @@
 
   <section class="tutor" id="tutor" hidden>
     <div class="log px" id="log"></div>
+    <div><button class="link" id="keyLink"></button></div>
     <div class="keybox px" id="keybox" hidden>
       <b id="keyTitle"></b>
       <p id="keyHelp"></p>
@@ -385,7 +387,16 @@
     if (waiting) return;
     const text = $("q").value.trim();
     if (!shot && !text) return;
-    if (!hasKey) { $("keybox").hidden = false; return; }
+    if (!hasKey) {
+      // free: copy the picture and open claude.ai with the tutor's instructions ready
+      post({ op: "openClaude", image: shot ? shot.data : null, text });
+      bubble("me", text, shot && shot.url);
+      bubble("him", shot ? tr("Claude is opening in your browser. Press Cmd-V there to attach the picture, then Enter.",
+                              "เปิด Claude ในเบราว์เซอร์แล้ว กด Cmd-V เพื่อแนบรูป แล้วกด Enter")
+                         : tr("Claude is opening in your browser with your question.", "เปิด Claude ในเบราว์เซอร์พร้อมคำถามแล้ว"));
+      $("q").value = ""; setShot(null);
+      return;
+    }
     const content = [];
     if (shot) content.push({ type: "image", source: { type: "base64", media_type: shot.type, data: shot.data } });
     content.push({ type: "text", text: text || (shot ? "Help me with this question." : "") });
@@ -405,7 +416,7 @@
     load(b, p, key) {
       if (b && Array.isArray(b.questions)) bank = b;
       progress = p || {};
-      hasKey = !!key;
+      STUDY.keySaved(!!key);
       start({ kind: "daily" });
     },
     answer(id, r) {
@@ -428,9 +439,12 @@
     },
     keySaved(ok) {
       hasKey = ok;
-      $("keybox").hidden = ok;
+      $("send").textContent = ok ? tr("Ask", "ถาม") : tr("Open in Claude (free)", "เปิดใน Claude (ฟรี)");
+      $("keyLink").hidden = ok;
+      if (ok) $("keybox").hidden = true;
       $("key").value = "";
-      if (ok) bubble("him", tr("Ready! Paste a screenshot of a question and press Ask.", "พร้อมแล้ว! วางรูปโจทย์แล้วกดถามได้เลย"));
+      if (ok && STUDY._loaded) bubble("him", tr("Ready! Paste a screenshot of a question and press Ask.", "พร้อมแล้ว! วางรูปโจทย์แล้วกดถามได้เลย"));
+      STUDY._loaded = true;
     },
   };
 
@@ -439,7 +453,7 @@
     $("tutor").hidden = t !== "tutor";
     $("tabPractice").classList.toggle("on", t === "practice");
     $("tabTutor").classList.toggle("on", t === "tutor");
-    if (t === "tutor") { $("keybox").hidden = hasKey; $("q").focus(); }
+    if (t === "tutor") { $("q").focus(); }
   }
 
   // ---------- wiring
@@ -447,7 +461,7 @@
   $("tabTutor").textContent = tr("Ask the tutor", "ถามครู");
   $("tabPractice").onclick = () => showTab("practice");
   $("tabTutor").onclick = () => showTab("tutor");
-  $("send").textContent = tr("Ask", "ถาม");
+  $("send").textContent = tr("Open in Claude (free)", "เปิดใน Claude (ฟรี)");
   $("send").onclick = send;
   $("q").placeholder = tr("Ask about the screenshot, or anything in SAT Math (Enter to send)", "พิมพ์คำถาม หรือวางรูปโจทย์แล้วกด Enter");
   $("q").onkeydown = (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } };
@@ -456,8 +470,10 @@
   $("keySave").textContent = tr("Save", "บันทึก");
   $("keySave").onclick = () => { const k = $("key").value.trim(); if (k) post({ op: "key", key: k }); };
   setShot(null);
-  bubble("him", tr("Hi! Take a screenshot of a SAT Math question (Cmd-Ctrl-Shift-4 copies it), paste it here with Cmd-V or drag it in, and ask me. I'll explain what to think about and the answer.",
-                   "สวัสดี! แคปรูปโจทย์ SAT Math (Cmd-Ctrl-Shift-4 จะคัดลอกรูปไว้) แล้วกด Cmd-V วางตรงนี้ หรือลากรูปมาวาง แล้วถามได้เลย เดี๋ยวอธิบายวิธีคิดกับคำตอบให้"));
+  $("keyLink").textContent = tr("Have an API key? Answers right here instead", "มี API key ไหม? ใส่แล้วตอบในนี้ได้เลย");
+  $("keyLink").onclick = () => { $("keybox").hidden = !$("keybox").hidden; };
+  bubble("him", tr("Hi! Take a screenshot of a SAT Math question (Cmd-Ctrl-Shift-4 copies it), paste it here with Cmd-V or drag it in, and press the button. Claude opens with my tutor instructions; press Cmd-V there to attach the picture, then Enter. It's free with your Claude account.",
+                   "สวัสดี! แคปรูปโจทย์ SAT Math (Cmd-Ctrl-Shift-4 จะคัดลอกรูปไว้) แล้วกด Cmd-V วางตรงนี้ หรือลากรูปมาวาง แล้วกดปุ่ม จะเปิด Claude พร้อมคำสั่งติวให้ ไปกด Cmd-V แนบรูป แล้วกด Enter ใช้บัญชี Claude ฟรีได้เลย"));
 
   document.addEventListener("paste", (e) => {
     if ($("tutor").hidden) return;
