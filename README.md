@@ -167,7 +167,9 @@ Menu → **SAT Math…** opens two tabs.
 
 He cheers when you finish today's 5 and when you get five in a row.
 
-**Ask the tutor:** take a screenshot of any question (Control-Shift-Command-4 copies it), paste it with Command-V or drag it in, and ask. Claude tells you what the question asks, the key idea, the steps and the answer, and you can keep asking. Copied a screenshot? Menu → **Ask the tutor about the copied picture** opens it straight away. The first time it asks for a key (below).
+**Ask the tutor:** take a screenshot of any question (Control-Shift-Command-4 copies it), paste it with Command-V or drag it in, and press **Open in Claude (free)**. Claude opens in your browser with the tutor's instructions typed in; press Command-V there to attach the picture, then Enter. It tells you what the question asks, the key idea, the steps and the answer. This is free with your own Claude account (the free plan has a daily limit). Copied a screenshot? Menu → **Ask Claude about the copied picture (free)** does it in one step.
+
+With an API key (the link under the chat), the answers come right in the window instead, and you can keep asking there; that costs a few cents a question.
 
 ---
 
@@ -243,7 +245,7 @@ build/Pug.app/Contents/MacOS/Pug --update-now        # install the newest build 
 - A letter keyed by the month count replaces the first letter in the menu from that anniversary on.
 - Miss you: pick a long random topic, install the free **ntfy** app on your phone and subscribe to it, and send her the topic privately. Never put it in this repo: it's public, so anyone could read her pings or send you spam. To change it on her Mac: `defaults delete com.pug.desktoppet missYouTopic`, then she types the new one.
 
-**SAT Math:** the questions are in `App/Resources/study.json` (Pug picks up a newer copy from GitHub, so new questions don't need a new version); `python3 tools/verify_study.py` recomputes every answer. The tutor calls the Claude API (`claude-opus-5-5`, adaptive thinking at high effort, refusal fallbacks on) with the API key she pastes once; it's kept in her Keychain, never in this repo. Make a key at console.anthropic.com, set a monthly spend limit there, and send it to her privately. A question with a screenshot costs a few cents.
+**SAT Math:** the questions are in `App/Resources/study.json` (Pug picks up a newer copy from GitHub, so new questions don't need a new version); `python3 tools/verify_study.py` recomputes every answer. The tutor is free by default: it puts the screenshot on the clipboard and opens `claude.ai/new?q=…` with the instructions. Optionally, with an API key she pastes once (kept in her Keychain, never in this repo), it calls the Claude API in the window instead (`claude-opus-5-5`, adaptive thinking at high effort, refusal fallbacks on; a few cents a question). Make a key at console.anthropic.com, set a monthly spend limit there, and send it to her privately.
 
 `./build.sh` also writes `Pug.zip` and `latest.json`. To release: raise `CFBundleVersion` (and `CFBundleShortVersionString`) in `App/Info.plist`, run `./build.sh`, then commit and push. The app reads `latest.json` from GitHub; any build number higher than its own counts as an update.
 
